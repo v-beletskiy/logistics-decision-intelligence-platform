@@ -4,9 +4,11 @@
 /tmp
 /.temp
 /.likec4
+/.turbo
 
 # Dependencies
-/node_modules
+**/node_modules
+.pnpm-store/
 
 # Environment Variables & Secrets
 .env

@@ -1,9 +1,18 @@
 {
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
   "scripts": {
-    "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams"
+    "dev:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform dev",
+    "start:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform start",
+    "build": "turbo run build",
+    "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "likec4": "^1.59.0",
-    "turbo": "^2.10.5"
+    "likec4": "1.59.0",
+    "turbo": "2.10.5"
   }
 }
