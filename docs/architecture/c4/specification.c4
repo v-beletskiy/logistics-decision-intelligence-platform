@@ -1,0 +1,42 @@
+specification {
+  color lightBlue #a1c5dc
+
+  element actor {
+    style {
+      shape person
+      color green
+    }
+  }
+
+  element system {
+    style {
+      color gray
+    }
+  }
+
+  element container {
+    style {
+      color blue
+    }
+  }
+
+  element component {
+    style {
+      shape component
+      color sky
+    }
+  }
+
+  element subcomponent {
+    style {
+      color lightBlue
+    }
+  }
+
+  element database {
+    style {
+      shape cylinder
+      color amber
+    }
+  }
+}

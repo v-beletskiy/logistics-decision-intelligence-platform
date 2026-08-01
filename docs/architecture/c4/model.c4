@@ -1,0 +1,404 @@
+model {
+
+  //
+  // Actors
+  //
+
+  dispatcher = actor 'Dispatcher' {
+    description 'Manages day-to-day transportation operations.'
+  }
+
+  operationsManager = actor 'Operations Manager' {
+    description 'Monitors operational performance and analytics.'
+  }
+
+  //
+  // External systems
+  //
+
+  tms = system 'Transportation Management System (TMS)' {
+    description 'Enterprise system of record for transportation operations.'
+  }
+
+  fleet = system 'Fleet Management System' {
+    description 'Manages vehicles, drivers and fleet availability.'
+  }
+
+  telematics = system 'Telematics Platform' {
+    description 'Provides near real-time vehicle telemetry.'
+  }
+
+  externalSystems = system 'External Systems' {
+    description 'Consume platform APIs, Webhooks and MCP.'
+  }
+
+  llmProviders = system 'LLM Providers' {
+    description 'External AI model providers.'
+  }
+
+  //
+  // Our platform
+  //
+
+  platform = system 'Logistics Decision Intelligence Platform' {
+    description '''
+    Decision intelligence platform for enterprise logistics.
+    Operates alongside existing Systems of Record rather than replacing them.
+    '''
+
+    style {
+      color blue
+    }
+
+    webApp = container 'Web Application' {
+      description 'React-based application providing the user interface for the Logistics Decision Intelligence Platform.'
+
+      //
+      // Components
+      //
+
+      authentication = component 'Authentication' {
+        description 'Provides user authentication and account lifecycle.'
+
+        registration = subcomponent 'Registration' {
+          description 'Registers new user accounts.'
+        }
+
+        login = subcomponent 'Login' {
+          description 'Authenticates users.'
+        }
+
+        oauth = subcomponent 'OAuth (Google)' {
+          description 'Authenticates users with Google.'
+        }
+
+        passwordRecovery = subcomponent 'Password Recovery' {
+          description 'Forgot password and password reset.'
+        }
+
+        passwordManagement = subcomponent 'Password Management' {
+          description 'Allows authenticated users to change their password.'
+        }
+
+        logout = subcomponent 'Logout' {
+          description 'Terminates user sessions.'
+        }
+      }
+
+      operationalWorkspace = component 'Operational Workspace' {
+        description 'Provides operational workflows for transportation execution.'
+
+        shipments = subcomponent 'Shipments' {
+          description 'Shipment management and execution.'
+        }
+
+        resourceManagement = subcomponent 'Resource Management' {
+          description 'Vehicles, drivers and depots.'
+        }
+
+        routePlanning = subcomponent 'Route Planning' {
+          description 'Transportation routes and assignments.'
+        }
+
+        liveOperations = subcomponent 'Live Operations' {
+          description 'Real-time operational monitoring.'
+        }
+      }
+
+      decisionCenter = component 'Decision Center' {
+        description 'Provides visibility into operational decisions.'
+
+        exceptionDashboard = subcomponent 'Exception Dashboard' {
+          description 'Displays active operational exceptions.'
+        }
+
+        activeDecisions = subcomponent 'Active Decisions' {
+          description 'Displays decisions requiring user attention.'
+        }
+
+        decisionHistory = subcomponent 'Decision History' {
+          description 'Displays historical operational decisions.'
+        }
+      }
+
+      analytics = component 'Analytics' {
+        description 'Provides analytical dashboards and reporting.'
+
+        operationalDashboards = subcomponent 'Operational Dashboards' {
+          description 'Operational KPIs and execution performance.'
+        }
+
+        geographicDashboards = subcomponent 'Geographic Dashboards' {
+          description 'Spatial and route analytics.'
+        }
+
+        predictiveDashboards = subcomponent 'Predictive Dashboards' {
+          description 'Forecasts and predictive insights.'
+        }
+
+        decisionDashboards = subcomponent 'Decision Dashboards' {
+          description 'Decision quality and business impact.'
+        }
+      }
+
+      aiPlatform = component 'AI Platform' {
+        description '''
+      AI-powered assistant embedded throughout the application providing
+      operational Q&A, decision explanations and analytics assistance.
+      '''
+      }
+
+      administration = component 'Administration' {
+        description 'Provides platform administration capabilities.'
+
+        userManagement = subcomponent 'User Management' {
+          description 'Manages platform users.'
+        }
+
+        accessControl = subcomponent 'Access Control' {
+          description 'RBAC / ABAC authorization.'
+        }
+
+        featureFlags = subcomponent 'Feature Flags' {
+          description 'Controls feature rollout.'
+        }
+
+        auditLog = subcomponent 'Audit Log' {
+          description 'Displays security and operational audit events.'
+        }
+
+        systemSettings = subcomponent 'System Settings' {
+          description 'Manages platform configuration.'
+        }
+      }
+
+      //
+      // Cross-component relationships
+      //
+
+      authentication -> operationalWorkspace 'Authenticates users'
+      operationalWorkspace -> decisionCenter 'Provides operational context'
+      operationalWorkspace -> analytics 'Provides operational data'
+      decisionCenter -> aiPlatform 'Requests explanations'
+      analytics -> aiPlatform 'Requests analytical assistance'
+    }
+
+
+    core = container 'Core Platform' {
+      description 'NestJS modular monolith implementing the logistics domain.'
+
+      //
+      // Components
+      //
+
+      integrationHub = component 'Integration Hub' {
+        description 'Imports, synchronizes and monitors operational data from external systems.'
+
+        inboundAdapters = subcomponent 'Inbound Adapters' {
+          description 'Inbound adapters for external systems.'
+        }
+
+        synchronization = subcomponent 'Synchronization' {
+          description 'Synchronization logic for external systems.'
+        }
+
+        integrationMonitoring = subcomponent 'Integration Monitoring' {
+          description 'Monitors integration health.'
+        }
+      }
+
+      operationalWorkspace = component 'Operational Workspace' {
+        description 'Owns the operational domain model and transportation execution workflows.'
+
+        operationalWorkspaceApi = subcomponent 'Operational Workspace API' {
+          description 'Public API exposing operational capabilities to other platform modules.'
+        }
+
+        shipmentOperations = subcomponent 'Shipment Operations' {
+          description 'Manages shipments and shipment lifecycle.'
+        }
+
+        resourceManagement = subcomponent 'Resource Management' {
+          description 'Manages operational resources including vehicles, drivers and depots.'
+        }
+
+        routePlanning = subcomponent 'Route Planning' {
+          description 'Manages transportation routes and resource assignments.'
+        }
+
+        liveOperations = subcomponent 'Live Operations' {
+          description 'Provides a live operational view of ongoing transportation execution.'
+        }
+      }
+
+      decisionIntelligence = component 'Decision Intelligence' {
+        description 'Detects operational issues and orchestrates operational decisions.'
+
+        decisionApi = subcomponent 'Decision API' {
+          description 'Public API exposing decision intelligence capabilities.'
+        }
+
+        exceptionManagement = subcomponent 'Exception Management' {
+          description 'Detects and prioritizes operational exceptions.'
+        }
+
+        decisionRecommendationEngine = subcomponent 'Decision & Recommendation Engine' {
+          description 'Generates operational recommendations.'
+        }
+
+        decisionExecution = subcomponent 'Decision Execution' {
+          description 'Tracks execution and outcome of approved decisions.'
+        }
+
+        decisionHistory = subcomponent 'Decision History' {
+          description 'Stores historical operational decisions and outcomes.'
+        }
+      }
+
+      analytics = component 'Analytics' {
+        description 'Provides analytical insights over operational data.'
+
+        operationalAnalytics = subcomponent 'Operational Analytics' {
+          description 'Operational KPIs, SLA and execution performance.'
+        }
+
+        geographicAnalytics = subcomponent 'Geographic Analytics' {
+          description 'Spatial analytics including regions, routes and congestion.'
+        }
+
+        predictiveAnalytics = subcomponent 'Predictive Analytics' {
+          description 'Forecasts operational risks and capacity.'
+        }
+
+        decisionAnalytics = subcomponent 'Decision Analytics' {
+          description 'Measures recommendation quality and business impact.'
+        }
+      }
+
+      developerPlatform = component 'Developer Platform' {
+        description 'Exposes platform capabilities for external consumers.'
+
+        restApi = subcomponent 'REST API' {
+          description ''
+        }
+
+        webhooks = subcomponent 'Webhooks' {
+          description ''
+        }
+
+        mcpServer = subcomponent 'MCP Server' {
+          description ''
+        }
+      }
+
+      administration = component 'Administration' {
+        description 'Platform administration and governance.'
+
+        userManagement = subcomponent 'User Management' {
+          description 'Manages platform users.'
+        }
+
+        accessControl = subcomponent 'Access Control' {
+          description 'RBAC / ABAC authorization.'
+        }
+
+        auditLog = subcomponent 'Audit Log' {
+          description 'Records security and operational audit events.'
+        }
+
+        featureFlags = subcomponent 'Feature Flags' {
+          description 'Controls feature rollout.'
+        }
+
+        systemSettings = subcomponent 'System Settings' {
+          description 'Platform configuration.'
+        }
+      }
+
+      //
+      // Cross-component relationships
+      //
+
+      integrationHub -> operationalWorkspace 'Synchronizes operational data'
+      operationalWorkspace -> decisionIntelligence 'Provides operational context'
+      operationalWorkspace -> analytics 'Provides operational data'
+      decisionIntelligence -> analytics 'Uses analytical insights'
+      decisionIntelligence -> aiPlatform 'Requests AI reasoning'
+    }
+
+    coreMainDB = database 'Core Platform DB' {
+      description 'PostgreSQL database for operational data.'
+    }
+
+    coreCacheDB = database 'Cache & Runtime DB' {
+      description 'Redis for caching, distributed locks and background jobs.'
+    }
+
+    aiPlatform = container 'AI Platform' {
+      description 'Python microservice providing AI-powered operational assistance.'
+
+      //
+      // Components
+      //
+
+      requestOrchestrator = component 'Request Orchestrator' {
+        description 'Coordinates AI request execution and workflow.'
+      }
+
+      contextBuilder = component 'Context Builder' {
+        description 'Collects and prepares operational context for AI reasoning.'
+      }
+
+      ragEngine = component 'Hybrid RAG Engine' {
+        description 'Retrieves relevant knowledge using hybrid semantic and metadata search.'
+      }
+
+      promptEngineering = component 'Prompt Engineering' {
+        description 'Constructs prompts and applies prompt templates.'
+      }
+
+      llmGateway = component 'LLM Gateway' {
+        description 'Provides a unified interface to external LLM providers.'
+      }
+
+      responseProcessor = component 'Response Processor' {
+        description 'Validates, enriches and structures AI responses.'
+      }
+
+      //
+      // Relationships
+      //
+
+      requestOrchestrator -> contextBuilder 'Builds request context'
+      contextBuilder -> ragEngine 'Retrieves relevant knowledge'
+      ragEngine -> promptEngineering 'Provides retrieved context'
+      promptEngineering -> llmGateway 'Invokes LLM'
+      llmGateway -> responseProcessor 'Returns LLM response'
+    }
+
+    aiVectorDB = database 'Vector DB' {
+      description 'Qdrant storing vector embeddings for semantic retrieval.'
+    }
+  }
+
+  //
+  // Top-level relationships
+  //
+
+  dispatcher -> webApp 'Uses'
+  operationsManager -> webApp 'Uses'
+
+  webApp -> core 'REST API'
+
+  core -> coreMainDB 'Reads/Writes'
+  core -> coreCacheDB 'Reads/Writes'
+  core -> aiPlatform 'Decision intelligence (via gRPC)'
+  core -> externalSystems 'Exposes APIs / Webhooks / MCP'
+
+  aiPlatform -> aiVectorDB 'Reads/Writes embeddings'
+  aiPlatform -> llmProviders 'LLM API'
+
+  tms -> core 'Synchronizes operational data'
+  fleet -> core 'Synchronizes fleet data'
+  telematics -> core 'Ingests telemetry'
+}

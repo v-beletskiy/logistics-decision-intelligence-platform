@@ -1,0 +1,8 @@
+views {
+  view level_3_web_application {
+    title 'C4 Level 3 — Web Application'
+
+    include platform.webApp
+    include platform.webApp.*
+  }
+}

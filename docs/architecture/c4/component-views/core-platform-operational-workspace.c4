@@ -1,0 +1,8 @@
+views {
+  view core_platform_operational_workspace {
+    title 'Core Platform — Operational Workspace'
+
+    include platform.core.operationalWorkspace
+    include platform.core.operationalWorkspace.*
+  }
+}

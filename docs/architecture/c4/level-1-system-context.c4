@@ -1,0 +1,16 @@
+views {
+  view level_1_system_context {
+    title 'C4 Level 1 — System Context'
+
+    include dispatcher
+    include operationsManager
+
+    include platform
+
+    include tms
+    include fleet
+    include telematics
+
+    include externalSystems
+  }
+}

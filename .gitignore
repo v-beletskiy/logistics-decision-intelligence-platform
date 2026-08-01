@@ -1,0 +1,12 @@
+# NestJS Build Outputs
+/dist
+/build
+/tmp
+/.temp
+/.likec4
+
+# Dependencies
+/node_modules
+
+# Environment Variables & Secrets
+.env

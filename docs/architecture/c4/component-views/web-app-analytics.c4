@@ -1,0 +1,8 @@
+views {
+  view web_app_analytics {
+    title 'Web App — Analytics'
+
+    include platform.webApp.analytics
+    include platform.webApp.analytics.*
+  }
+}

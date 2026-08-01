@@ -1,0 +1,8 @@
+views {
+  view core_platform_developer_platform {
+    title 'Core Platform — Developer Platform'
+
+    include platform.core.developerPlatform
+    include platform.core.developerPlatform.*
+  }
+}

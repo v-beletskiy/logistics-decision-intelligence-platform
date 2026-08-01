@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams"
+  },
+  "devDependencies": {
+    "likec4": "^1.59.0",
+    "turbo": "^2.10.5"
+  }
+}

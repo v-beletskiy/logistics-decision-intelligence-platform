@@ -1,0 +1,8 @@
+views {
+  view level_3_ai_platform {
+    title 'C4 Level 3 — AI Platform'
+
+    include platform.aiPlatform
+    include platform.aiPlatform.*
+  }
+}

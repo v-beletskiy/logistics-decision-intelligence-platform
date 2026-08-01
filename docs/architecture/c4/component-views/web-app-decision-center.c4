@@ -1,0 +1,8 @@
+views {
+  view web_app_decision_center {
+    title 'Web App — Decision Center'
+
+    include platform.webApp.decisionCenter
+    include platform.webApp.decisionCenter.*
+  }
+}

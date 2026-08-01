@@ -1,0 +1,8 @@
+views {
+  view web_app_ai_platform {
+    title 'Web App — AI Platform'
+
+    include platform.webApp.aiPlatform
+    include platform.webApp.aiPlatform.*
+  }
+}

@@ -1,0 +1,8 @@
+views {
+  view core_platform_decision_intelligence {
+    title 'Core Platform — Decision Intelligence'
+
+    include platform.core.decisionIntelligence
+    include platform.core.decisionIntelligence.*
+  }
+}

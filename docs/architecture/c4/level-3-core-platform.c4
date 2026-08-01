@@ -1,0 +1,8 @@
+views {
+  view level_3_core_platform {
+    title 'C4 Level 3 — Core Platform'
+
+    include platform.core
+    include platform.core.*
+  }
+}

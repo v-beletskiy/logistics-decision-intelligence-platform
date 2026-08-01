@@ -1,0 +1,8 @@
+views {
+  view web_app_operational_workspace {
+    title 'Web App — Operational Workspace'
+
+    include platform.webApp.operationalWorkspace
+    include platform.webApp.operationalWorkspace.*
+  }
+}

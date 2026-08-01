@@ -1,0 +1,8 @@
+views {
+  view web_app_authentication {
+    title 'Web App — Authentication'
+
+    include platform.webApp.authentication
+    include platform.webApp.authentication.*
+  }
+}

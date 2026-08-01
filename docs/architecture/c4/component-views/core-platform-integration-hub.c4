@@ -1,0 +1,8 @@
+views {
+  view core_platform_integration_hub {
+    title 'Core Platform — Integration Hub'
+
+    include platform.core.integrationHub
+    include platform.core.integrationHub.*
+  }
+}

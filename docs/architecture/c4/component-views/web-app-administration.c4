@@ -1,0 +1,8 @@
+views {
+  view web_app_administration {
+    title 'Web App — Administration'
+
+    include platform.webApp.administration
+    include platform.webApp.administration.*
+  }
+}

@@ -1,0 +1,8 @@
+views {
+  view core_platform_administration {
+    title 'Core Platform — Administration'
+
+    include platform.core.administration
+    include platform.core.administration.*
+  }
+}

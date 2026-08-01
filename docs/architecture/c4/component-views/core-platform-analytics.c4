@@ -1,0 +1,8 @@
+views {
+  view core_platform_analytics {
+    title 'Core Platform — Analytics'
+
+    include platform.core.analytics
+    include platform.core.analytics.*
+  }
+}
