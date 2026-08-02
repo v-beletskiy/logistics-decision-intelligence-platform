@@ -4,7 +4,11 @@
     "node": ">=24.0.0 <25.0.0"
   },
   "scripts": {
-    "dev:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform dev",
+    "dev": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml up --build --watch",
+    "dev:down": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml down",
+    "dev:migrate": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm core-platform-migrations",
+    "dev:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform dev:watch",
+    "docker:build:core-platform": "docker build --target production --tag logistics-decision-intelligence/core-platform:local --file apps/core-platform/Dockerfile .",
     "start:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform start",
     "build": "turbo run build",
     "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams",

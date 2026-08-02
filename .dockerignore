@@ -1,0 +1,13 @@
+.git
+.agents
+.codex
+.turbo
+**/.turbo
+**/.DS_Store
+**/node_modules
+**/dist
+**/build
+**/*.tsbuildinfo
+**/.env
+docs
+infrastructure
