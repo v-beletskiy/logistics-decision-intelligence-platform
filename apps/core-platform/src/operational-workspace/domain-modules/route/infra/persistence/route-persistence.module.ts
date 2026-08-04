@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-import { RouteRepository } from '../../domain/route.repository';
-import { PgRouteRepository } from './route.pg-repository';
+import { RouteRepository } from "../../domain/route.repository";
+import { PgRouteRepository } from "./route.pg-repository";
 
 @Module({
   providers: [

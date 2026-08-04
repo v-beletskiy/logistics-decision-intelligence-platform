@@ -234,8 +234,11 @@ Rejected because synchronous computational interactions requiring an immediate r
 
 - The Core Platform owns all operational data.
 - The AI Platform accesses operational data exclusively through gRPC APIs.
+- The internal RabbitMQ integration topology is a version-controlled, code-owned contract (`IntegrationTopology`).
+- RabbitMQ connection management is independent of topology declaration. Publishers and long-lived consumers own separate channels on a shared process connection.
+- Shared exchanges are declared by the topology provisioner. Each consumer owns its queue, bindings, retry queue, and dead-letter route.
 - Services never share domain models. Only generated Protocol Buffer contracts are shared between services.
-- Protocol Buffer definitions are stored in `packages/contracts`.
+- Protocol Buffer definitions are stored in `packages/grpc-contracts`.
 - Each service maps published contracts into its own domain model.
 - The Application Event Bus is an abstraction. Both implementations expose the same programming interface to application use cases.
   - `InMemoryApplicationEventBus` is used for communication between Bounded Contexts inside the modular monolith.

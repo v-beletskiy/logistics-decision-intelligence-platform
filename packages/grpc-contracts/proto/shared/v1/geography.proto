@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package shared.v1;
+
+// A geographic point expressed in WGS 84 decimal degrees.
+//
+// This is a transport-level value object intended for reuse only where a
+// latitude/longitude coordinate has the same meaning across contracts.
+message GeoPoint {
+  double latitude = 1;
+  double longitude = 2;
+}

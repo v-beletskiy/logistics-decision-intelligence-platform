@@ -4,7 +4,10 @@
 
 Validation ensures that data entering the system is complete, well-formed, and consistent before business behavior is executed.
 
-Validation is performed at multiple architectural layers, with each layer responsible only for the rules within its boundary.
+Validation is performed at multiple architectural layers. Each layer owns its
+response to invalid data at its boundary, while the same input may be checked
+again when it crosses a different boundary or is needed to protect a Domain
+invariant.
 
 ---
 
@@ -24,8 +27,14 @@ Examples:
 - enum values.
 
 Transport validation prevents malformed requests from reaching the Application Layer.
+It is a fail-fast user experience concern, not the sole protection of the
+Domain.
 
 Business rules must never be implemented here.
+
+For example, an HTTP DTO may reject malformed email syntax before a command is
+created. It must not decide whether a business-restricted email domain is
+allowed.
 
 ---
 
@@ -52,8 +61,29 @@ Examples:
 - Route must contain at least one Stop.
 - Recommendation can only be accepted while Pending.
 - Vehicle capacity cannot become negative.
+- A domain object cannot hold an unsupported status or classification.
 
 Business rules are always enforced by the Domain, regardless of the caller.
+
+Value Objects and aggregate construction validate the state they own. This may
+intentionally overlap with transport validation: the transport layer fails
+fast for a malformed email, while an Email Value Object applies the Domain's
+complete semantics, such as canonicalization and permitted-domain policy.
+
+#### Infrastructure Validation
+
+Infrastructure validates technical constraints at integration boundaries and
+protects persistence and external-system integrity.
+
+Examples:
+
+- database constraints, foreign keys, and uniqueness enforcement;
+- serialization compatibility;
+- external provider payload limits, authentication requirements, and protocol constraints.
+
+Infrastructure validation never decides a business policy and never converts a
+technical failure into a Domain Exception. It returns or translates failures as
+technical/infrastructure errors.
 
 ---
 
@@ -72,18 +102,11 @@ Application Validation
 Domain Validation
         │
         ▼
-Business Behavior
+Business Behavior and Persistence / External Calls
+        │
+        ▼
+Infrastructure Validation
 ```
-
----
-
-### Validation Rules
-
-- Validation is performed as early as possible.
-- Every layer validates only rules belonging to its responsibility.
-- Business invariants are enforced exclusively by the Domain.
-- Application Layer never duplicates Domain validation.
-- Transport adapters never implement business rules.
 
 ---
 
@@ -91,11 +114,12 @@ Business Behavior
 
 Each validation layer returns errors appropriate to its responsibility.
 
-| Layer       | Error Type                          |
-| ----------- | ----------------------------------- |
-| Transport   | Invalid request / malformed payload |
-| Application | Use case precondition failed        |
-| Domain      | Business rule violation             |
+| Layer          | Error Type                          |
+| -------------- | ----------------------------------- |
+| Transport      | Invalid request / malformed payload |
+| Application    | Use case precondition failed        |
+| Domain         | Business rule violation             |
+| Infrastructure | Technical / integration failure     |
 
 ---
 
@@ -110,5 +134,9 @@ Each validation layer returns errors appropriate to its responsibility.
 
 ### Trade-offs
 
-- Some validation logic exists at multiple layers, but each layer validates different concerns.
+- Some checks intentionally occur at multiple layers, but each occurrence has a distinct boundary responsibility.
 - Proper boundary discipline is required to prevent business rules from leaking outside the Domain.
+
+## Reference
+
+- [Domain-Driven Design: A Comprehensive Guide to Validation Across Layers](https://medium.com/@serhatalftkn/domain-driven-design-a-comprehensive-guide-to-validation-across-layers-8955d6854e7d)

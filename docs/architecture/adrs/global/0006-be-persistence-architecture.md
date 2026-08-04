@@ -74,6 +74,25 @@ Domain Aggregate
 
 Repositories always return Domain Aggregates.
 
+### Aggregate Persistence
+
+Aggregates with child entities are persisted with **domain-owned change tracking**
+(dirty marking): the aggregate classifies its children since load — created,
+modified, removed — through a shared `ChildCollection`/`ChildChanges` tracker and
+exposes `getPersistencePlan()` (`{ isNew, children: { inserts, updates,
+removedIds } }`). No snapshots, no repository-side diffing.
+
+Mappers are explicit in both directions: 
+- `toDomain(persistence)` reconstructs the
+aggregate (business rules validated by domain constructors);
+- `toPersistence(aggregate)` derives write rows from the plan, typed against the generated pgTyped parameter types.
+
+Persistence is batched and atomic: `persistRoot` (INSERT/UPDATE by `isNew`) plus
+`persistChildChanges` (batched INSERT/UPDATE/DELETE), all inside one
+TransactionManager transaction. Aggregates are loaded in a single round trip via
+JSON aggregation (`jsonb_agg` + `COALESCE`). IDs are application-generated UUIDs,
+so the graph is fully known before any row is written.
+
 ### Queries
 
 Read models can bypass repositories to avoid unnecessary overhead with multiple queries.
@@ -185,7 +204,9 @@ Migrations are executed automatically by the CI/CD pipeline before deployment.
 
 ### Generated Types
 
-pgTyped generates strongly typed query bindings during build.
+pgTyped generates strongly typed query bindings during development whenever
+query SQL changes. Generated bindings are committed so builds and migration
+jobs do not require a database connection to compile.
 
 ```
 .sql
@@ -200,7 +221,8 @@ Generated TypeScript Queries
 Repositories
 ```
 
-Generated files are not edited manually.
+Generated files are not edited manually; they are committed with their source
+`.sql` files.
 
 ## Consequences
 
@@ -232,5 +254,10 @@ Rejected because it provides no type-safety.
 ## Implementation Notes
 
 - Each Repository owns persistence for exactly one Aggregate.
+- Mappers expose `toDomain`/`toPersistence` and extend a shared
+  `AggregatePersistenceMapper` base; validation lives in domain constructors, not
+  class-validator.
+- Corrupted persisted data raises `MalformedPersistenceDataException` (infra);
+  Domain Exceptions are never thrown from infrastructure.
 - Transactional Outbox records participate in the same database transaction as aggregate persistence.
 - Generated pgTyped artifacts are treated as build outputs and must never be modified manually.

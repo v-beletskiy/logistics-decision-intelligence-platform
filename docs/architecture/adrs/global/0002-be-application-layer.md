@@ -102,7 +102,7 @@ Outbox is required only for distributed, cross-service events.
 
 - Aggregate persistence and Transactional Outbox persistence for Integration Events belong to the same transaction.
 - Domain Events are dispatched only after successful persistence.
-- Outbox processing and message publication occur asynchronously via cron job worker after the transaction commits successfully.
+- Outbox processing and message publication occur asynchronously via a polling worker after the transaction commits successfully. The worker claims and drains bounded batches so it can catch up under load without running indefinitely.
 
 ---
 

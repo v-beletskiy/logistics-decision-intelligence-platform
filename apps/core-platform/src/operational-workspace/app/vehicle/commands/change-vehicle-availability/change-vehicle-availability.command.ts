@@ -1,2 +1,9 @@
-/** Application command shell for the ChangeVehicleAvailability use case. */
-export class ChangeVehicleAvailabilityCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class ChangeVehicleAvailabilityCommand {
+  constructor(
+    readonly vehicleId: string,
+    readonly available: boolean,
+    readonly identity: Identity,
+  ) {}
+}

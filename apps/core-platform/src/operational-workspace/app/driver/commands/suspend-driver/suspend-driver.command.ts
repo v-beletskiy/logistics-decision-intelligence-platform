@@ -1,2 +1,8 @@
-/** Application command shell for the SuspendDriver use case. */
-export class SuspendDriverCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class SuspendDriverCommand {
+  constructor(
+    readonly driverId: string,
+    readonly identity: Identity,
+  ) {}
+}

@@ -1,2 +1,9 @@
-/** Application command shell for the RegisterVehicle use case. */
-export class RegisterVehicleCommand {}
+import type { RegisterVehicleDetails } from "../../../../domain-modules/vehicle/domain/vehicle.aggregate";
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class RegisterVehicleCommand {
+  constructor(
+    readonly details: RegisterVehicleDetails,
+    readonly identity: Identity,
+  ) {}
+}

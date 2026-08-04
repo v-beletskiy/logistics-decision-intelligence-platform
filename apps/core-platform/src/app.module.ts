@@ -7,13 +7,16 @@ import { DeveloperPlatformModule } from './developer-platform/developer-platform
 import { IntegrationHubModule } from './integration-hub/integration-hub.module';
 import { OperationalWorkspaceModule } from './operational-workspace/operational-workspace.module';
 import { AccessControlModule } from './shared/access-control/access-control.module';
-import { ConfigModule } from './shared/infra/config/config.module';
+import {
+  AppConfigModule,
+  appConfig,
+} from './shared/infra/config/app-config.module';
 import { InfraModule } from './shared/infra/infra.module';
 
 @Module({
   imports: [
-    ConfigModule,
-    InfraModule,
+    AppConfigModule,
+    InfraModule.register(appConfig.processRoles),
     AccessControlModule,
     IntegrationHubModule,
     OperationalWorkspaceModule,

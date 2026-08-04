@@ -5,11 +5,15 @@ A transportation asset used to execute Assignments.
 ## Invariants
 
 - A Vehicle always has exactly one VehicleStatus.
+- A Vehicle must always retain at least one Compartment.
 
 ## Commands
 
 - RegisterVehicleCommand
 - UpdateVehicleDetailsCommand
+- AddVehicleCompartmentCommand
+- UpdateVehicleCompartmentCommand
+- RemoveVehicleCompartmentCommand
 - MarkVehicleAvailableCommand
 - MarkVehicleUnavailableCommand
 - SendVehicleToMaintenanceCommand
@@ -20,6 +24,9 @@ A transportation asset used to execute Assignments.
 
 - VehicleRegisteredDomainEvent
 - VehicleDetailsUpdatedDomainEvent
+- VehicleCompartmentAddedDomainEvent
+- VehicleCompartmentUpdatedDomainEvent
+- VehicleCompartmentRemovedDomainEvent
 - VehicleMarkedAvailableDomainEvent
 - VehicleMarkedUnavailableDomainEvent
 - VehicleSentToMaintenanceDomainEvent
@@ -45,7 +52,7 @@ A transportation asset used to execute Assignments.
     - maxItemDimensions: Dimensions (shared kernel VO) - largest single cargo item that can physically fit.
     - maxVolume: Volume (shared kernel VO)
   - Invariants:
-    - maxWeight, maxItemDimensions, and maxVolume must all be non-empty and greater than or equal to zero.
+    - maxWeight, maxItemDimensions, and maxVolume must all be specified.
 - **Dimensions** (shared kernel VO) — physical dimensions of the cargo compartment(s).
 - **Volume** (shared kernel VO) — total volume capacity of the Vehicle.
 

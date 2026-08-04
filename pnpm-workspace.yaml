@@ -1,5 +1,10 @@
 packages:
   - apps/*
   - packages/*
+  - packages/*/*
+injectWorkspacePackages: true
 allowBuilds:
+  "@bufbuild/buf": true
+  "@scarf/scarf": false
   esbuild: true
+  protobufjs: false

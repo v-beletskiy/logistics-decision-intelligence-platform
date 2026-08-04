@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { AccessManager } from "../authorization/access-manager";
-import { AuthorizationException } from "../authorization/authorization.exception";
+import { AuthorizationException } from "../authorization/authorization.exceptions";
 import type { Identity } from "../identity/identity";
 import { Permission } from "../permissions/permission.enum";
 

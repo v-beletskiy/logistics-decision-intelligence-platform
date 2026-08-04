@@ -2,25 +2,47 @@
   "name": "@logistics-decision-intelligence/core-platform",
   "version": "0.0.0",
   "private": true,
+  "files": [
+    "db",
+    "dist"
+  ],
   "scripts": {
-    "build": "nest build",
-    "lint": "tsc --noEmit",
+    "grpc:generate": "buf generate ../../packages/grpc-contracts --template buf.gen.yaml",
+    "build": "pnpm --filter @logistics-decision-intelligence/validation build && nest build",
+    "db:migrate": "node dist/cli/database-migrations.js",
+    "db:migrate:dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && pnpm db:migrate",
+    "db:codegen": "pgtyped -c pgtyped.config.json",
+    "lint": "eslint src --max-warnings 0",
     "start": "node dist/main",
-    "dev": "nest start --watch",
-    "typecheck": "tsc --noEmit"
+    "test": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && node --test 'dist/**/*.spec.js'",
+    "dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm --filter @logistics-decision-intelligence/validation build && nest start",
+    "typecheck": "pnpm --filter @logistics-decision-intelligence/validation build && tsc --noEmit"
   },
   "dependencies": {
-    "@nestjs/common": "11.1.28",
-    "@nestjs/core": "11.1.28",
-    "@nestjs/platform-fastify": "11.1.28",
-    "reflect-metadata": "0.2.2",
-    "rxjs": "7.8.2"
+    "@bufbuild/protobuf": "^2.13.0",
+    "@grpc/grpc-js": "^1.14.4",
+    "@logistics-decision-intelligence/background-processing": "workspace:*",
+    "@logistics-decision-intelligence/validation": "workspace:*",
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/core": "^11.1.28",
+    "@nestjs/event-emitter": "^3.1.0",
+    "@nestjs/platform-fastify": "^11.1.28",
+    "@pgtyped/runtime": "2.4.2",
+    "amqplib": "^2.0.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "pg": "^8.22.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "11.0.24",
-    "@nestjs/schematics": "11.1.0",
-    "@nestjs/testing": "11.1.28",
-    "@types/node": "24.13.3",
-    "typescript": "5.9.3"
+    "@bufbuild/buf": "1.72.0",
+    "@logistics-decision-intelligence/grpc-contracts": "workspace:*",
+    "@nestjs/cli": "^11.0.24",
+    "@pgtyped/cli": "2.4.3",
+    "@types/amqplib": "^0.10.8",
+    "@types/node": "^24.13.3",
+    "@types/pg": "^8.20.0",
+    "typescript": "^5.9.3"
   }
 }

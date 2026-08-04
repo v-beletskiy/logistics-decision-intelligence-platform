@@ -224,7 +224,7 @@ shared/
     ├── identity/
     ├── authorization/
     │   ├── access-manager.ts
-    │   └── authorization.exception.ts
+    │   └── authorization.exceptions.ts
     │
     ├── roles/
     ├── permissions/

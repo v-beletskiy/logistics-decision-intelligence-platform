@@ -4,6 +4,35 @@ Reusable Value Objects and domain primitives shared across bounded contexts.
 
 This module contains only generic concepts that have the same meaning throughout the system and do not belong to a specific bounded context.
 
+## Core - Domain Primitives
+
+The shared kernel `/core` provides framework-free base classes for common domain mechanics:
+
+- `ValueObject` centralizes equality. Concrete value objects keep their own
+  `create` factory, validation, and immutable state, and expose only the
+  components that define equality.
+- `UuidIdentifier` specializes `ValueObject` for UUID-backed identities. It
+  owns UUID validation, immutability, equality, and string representation;
+  concrete identifiers keep their typed `generate` and `from` factories.
+- `Entity` centralizes identity-based equality. Concrete entities retain their
+  `create` and `reconstitute` factories because identity generation and
+  restoration are domain-specific.
+- `Aggregate` extends `Entity` and centrally buffers domain events through
+  `recordDomainEvent` and `pullDomainEvents`. Each aggregate creates its own
+  typed event payloads, which preserves its ubiquitous language.
+
+Static factories are deliberately not inherited: a shared static factory would
+either bypass domain validation or require a persistence-shaped constructor.
+
+## Validation Helpers
+
+The Core Platform Shared Kernel may contain Domain Exception-aware validation
+helpers whose semantics are identical across bounded contexts. These helpers
+compose non-throwing primitives from `@logistics-decision-intelligence/validation`
+and must not contain bounded-context business rules. Helpers are grouped by
+value category, such as `validation/string/` and `validation/uuid/`, with one
+exported function per source file.
+
 ## Value Objects
 
 ### Location

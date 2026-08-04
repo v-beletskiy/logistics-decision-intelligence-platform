@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-import { DriverRepository } from '../../domain/driver.repository';
-import { PgDriverRepository } from './driver.pg-repository';
+import { DriverRepository } from "../../domain/driver.repository";
+import { PgDriverRepository } from "./driver.pg-repository";
 
 @Module({
   providers: [

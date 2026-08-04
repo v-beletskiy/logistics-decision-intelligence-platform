@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package operational_workspace.v1;
+
+import "google/protobuf/timestamp.proto";
+import "shared/v1/geography.proto";
+
+message RouteAnalysisContext {
+  string route_id = 1;
+  uint64 route_version = 2;
+  repeated RouteStop stops = 3;
+}
+
+message RouteStop {
+  string shipment_id = 1;
+  shared.v1.GeoPoint location = 2;
+  google.protobuf.Timestamp planned_arrival_at = 3;
+  google.protobuf.Timestamp planned_departure_at = 4;
+}

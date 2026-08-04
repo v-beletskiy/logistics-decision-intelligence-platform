@@ -1,2 +1,8 @@
-/** Application command shell for the StartRoute use case. */
-export class StartRouteCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class StartRouteCommand {
+  constructor(
+    readonly routeId: string,
+    readonly identity: Identity,
+  ) {}
+}

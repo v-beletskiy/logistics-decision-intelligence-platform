@@ -1,2 +1,8 @@
-/** Application command shell for the CompleteRoute use case. */
-export class CompleteRouteCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class CompleteRouteCommand {
+  constructor(
+    readonly routeId: string,
+    readonly identity: Identity,
+  ) {}
+}
