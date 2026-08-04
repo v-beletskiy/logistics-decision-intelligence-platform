@@ -1,22 +1,25 @@
 {
-  "packageManager": "pnpm@11.15.1",
+  "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": ">=24.0.0 <25.0.0"
   },
   "scripts": {
-    "dev": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml up --build --watch",
-    "dev:down": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml down",
-    "dev:migrate": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm core-platform-migrations",
-    "dev:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform dev:watch",
+    "grpc:generate": "pnpm --filter @logistics-decision-intelligence/core-platform grpc:generate",
+    "docker:up": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml up --build --watch",
+    "docker:down": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml down",
+    "docker:db:migrate": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm --build core-platform-migrations",
     "docker:build:core-platform": "docker build --target production --tag logistics-decision-intelligence/core-platform:local --file apps/core-platform/Dockerfile .",
-    "start:core-platform": "pnpm --filter @logistics-decision-intelligence/core-platform start",
     "build": "turbo run build",
     "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "likec4": "1.59.0",
-    "turbo": "2.10.5"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.0",
+    "likec4": "^1.59.0",
+    "turbo": "^2.10.5",
+    "typescript-eslint": "^8.65.0"
   }
 }

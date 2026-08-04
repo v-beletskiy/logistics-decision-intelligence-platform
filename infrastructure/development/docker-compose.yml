@@ -1,5 +1,65 @@
 name: logistics-platform
 
+x-core-platform-development: &core-platform-development
+  build:
+    context: ../..
+    dockerfile: apps/core-platform/Dockerfile
+    target: development
+  env_file:
+    - ../../apps/core-platform/.env
+  depends_on:
+    core-platform-migrations:
+      condition: service_completed_successfully
+    postgres:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+  init: true
+  stop_grace_period: 10s
+  develop:
+    watch:
+      - action: sync+restart
+        path: ../../apps/core-platform
+        target: /workspace/apps/core-platform
+        ignore:
+          - .env
+          - Dockerfile
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
+      - action: sync+restart
+        path: ../../packages/background-processing/typescript
+        target: /workspace/packages/background-processing/typescript
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
+      - action: sync+restart
+        path: ../../packages/grpc-contracts
+        target: /workspace/packages/grpc-contracts
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+      - action: rebuild
+        path: ../../apps/core-platform/package.json
+      - action: rebuild
+        path: ../../apps/core-platform/Dockerfile
+      - action: rebuild
+        path: ../../packages/background-processing/typescript/package.json
+      - action: rebuild
+        path: ../../packages/grpc-contracts/package.json
+      - action: rebuild
+        path: ../../package.json
+      - action: rebuild
+        path: ../../pnpm-lock.yaml
+      - action: rebuild
+        path: ../../pnpm-workspace.yaml
+      - action: rebuild
+        path: ../../.dockerignore
+
 services:
   core-platform-migrations:
     build:
@@ -19,24 +79,12 @@ services:
     init: true
     restart: "no"
 
-  core-platform:
-    build:
-      context: ../..
-      dockerfile: apps/core-platform/Dockerfile
-      target: development
-    env_file:
-      - ../../apps/core-platform/.env
+  core-platform-api:
+    <<: *core-platform-development
+    environment:
+      PROCESS_ROLES: api
     ports:
       - "127.0.0.1:${PORT}:3000"
-    depends_on:
-      core-platform-migrations:
-        condition: service_completed_successfully
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    init: true
-    stop_grace_period: 10s
     healthcheck:
       test:
         - CMD
@@ -47,39 +95,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    develop:
-      watch:
-        - action: sync+restart
-          path: ../../apps/core-platform
-          target: /workspace/apps/core-platform
-          ignore:
-            - .env
-            - Dockerfile
-            - package.json
-            - node_modules/
-            - dist/
-            - "*.tsbuildinfo"
-        - action: sync+restart
-          path: ../../packages/contracts
-          target: /workspace/packages/contracts
-          ignore:
-            - package.json
-            - node_modules/
-            - dist/
-        - action: rebuild
-          path: ../../apps/core-platform/package.json
-        - action: rebuild
-          path: ../../apps/core-platform/Dockerfile
-        - action: rebuild
-          path: ../../packages/contracts/package.json
-        - action: rebuild
-          path: ../../package.json
-        - action: rebuild
-          path: ../../pnpm-lock.yaml
-        - action: rebuild
-          path: ../../pnpm-workspace.yaml
-        - action: rebuild
-          path: ../../.dockerignore
+
+  # Add future background responsibilities, such as cron jobs, to this worker deployment.
+  core-platform-background-processing:
+    <<: *core-platform-development
+    environment:
+      PROCESS_ROLES: outbox-publisher
 
   postgres:
     image: postgres:18

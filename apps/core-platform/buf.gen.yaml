@@ -1,0 +1,7 @@
+version: v2
+plugins:
+  - remote: buf.build/community/stephenh-ts-proto:v2.12.0
+    out: src/shared/infra/grpc/generated
+    opt:
+      - env=node
+      - outputServices=grpc-js

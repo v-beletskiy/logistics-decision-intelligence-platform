@@ -13,6 +13,7 @@
     "outDir": "./dist",
     "types": ["node"],
     "incremental": true,
+    "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true

@@ -1,10 +1,11 @@
-# NestJS Build Outputs
-/dist
-/build
+# Build Outputs
+**/dist/
+**/build/
+**/*.tsbuildinfo
 /tmp
 /.temp
 /.likec4
-/.turbo
+**/.turbo/
 
 # Dependencies
 **/node_modules
@@ -12,3 +13,9 @@
 
 # Environment Variables & Secrets
 .env
+
+# Generated pgTyped query bindings
+apps/core-platform/src/**/*.queries.ts
+
+# Generated gRPC client and server stubs
+apps/core-platform/src/shared/infra/grpc/generated/

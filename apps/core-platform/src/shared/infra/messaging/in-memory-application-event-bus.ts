@@ -1,11 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
-import { ApplicationEventBus } from "./application-event-bus";
-import type { IntegrationEvent } from "./integration-event";
+import { InternalApplicationEventBus } from './application-event-bus';
+import type { IntegrationEvent } from './integration-event';
 
 @Injectable()
-export class InMemoryApplicationEventBus extends ApplicationEventBus {
-  async publish(_event: IntegrationEvent): Promise<void> {
-    // Event delivery is intentionally deferred until bounded-context contracts exist.
+export class InMemoryApplicationEventBus extends InternalApplicationEventBus {
+  constructor(private readonly eventEmitter: EventEmitter2) {
+    super();
+  }
+
+  async publish(event: IntegrationEvent): Promise<void> {
+    await this.eventEmitter.emitAsync(event.eventType, event);
   }
 }

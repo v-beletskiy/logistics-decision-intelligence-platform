@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package operational_workspace.v1;
+
+import "operational_workspace/v1/route_analysis_types.proto";
+
+// Contract source of truth for the AI Platform route-analysis read contract.
+// Operational Workspace owns this service and maps its model at the boundary.
+service RouteAnalysisService {
+  rpc GetRouteAnalysisContext(GetRouteAnalysisContextRequest) returns (GetRouteAnalysisContextResponse);
+}
+
+message GetRouteAnalysisContextRequest {
+  string route_id = 1;
+  string tenant_id = 2;
+}
+
+message GetRouteAnalysisContextResponse {
+  RouteAnalysisContext context = 1;
+}

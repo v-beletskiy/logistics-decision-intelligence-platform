@@ -19,7 +19,8 @@ FROM base AS dependencies
 COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 COPY --chown=node:node apps/core-platform/package.json apps/core-platform/package.json
-COPY --chown=node:node packages/contracts/package.json packages/contracts/package.json
+COPY --chown=node:node packages/background-processing/typescript/package.json packages/background-processing/typescript/package.json
+COPY --chown=node:node packages/grpc-contracts/package.json packages/grpc-contracts/package.json
 
 USER node
 
@@ -61,8 +62,5 @@ COPY --from=build --chown=node:node /workspace/deploy/core-platform ./
 USER node
 
 EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD ["node", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT ?? '3000') + '/health/ready').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
 
 CMD ["node", "dist/main.js"]

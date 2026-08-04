@@ -1,0 +1,20 @@
+{
+  "name": "@logistics-decision-intelligence/grpc-contracts",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "format": "buf format -w",
+    "format:check": "buf format --diff --exit-code",
+    "lint": "buf lint",
+    "check": "pnpm format:check && pnpm lint",
+    "build": "pnpm check"
+  },
+  "files": [
+    "proto",
+    "buf.yaml",
+    "README.md"
+  ],
+  "devDependencies": {
+    "@bufbuild/buf": "1.72.0"
+  }
+}
