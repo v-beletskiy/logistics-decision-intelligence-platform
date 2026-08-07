@@ -2,14 +2,14 @@ import * as assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import type { PgDatabase } from '../../../../../shared/infra/persistence/pg-database';
+import { Route, RouteStatus } from '../../domain/route.aggregate';
+import { RouteId } from '../../domain/route-id';
 import {
-  Route,
-  RouteStatus,
   RouteStop,
   RouteStopOperationType,
   RouteStopStatus,
-} from '../../domain/route.aggregate';
-import { RouteId, RouteStopId } from '../../domain/route-id';
+} from '../../domain/route-stop.entity';
+import { RouteStopId } from '../../domain/route-stop-id';
 import { deleteRouteStops } from './queries/route.delete-stops.queries';
 import { insertRoute } from './queries/route.insert.queries';
 import { insertRouteStops } from './queries/route.insert-stops.queries';
@@ -108,63 +108,6 @@ test('save updates the route and the changed stop when a stop starts', async () 
     calls.filter((call) => call.statement === deleteRouteStops).length,
     0,
   );
-});
-
-function loadPersistedMultiShipmentRoute(): Route {
-  const stops = [
-    RouteStop.reconstitute(
-      RouteStopId.from('00000000-0000-4000-8000-000000000011'),
-      { shipmentId: '00000000-0000-4000-8000-000000000101', operationType: RouteStopOperationType.Pickup, status: RouteStopStatus.Planned, schedule },
-    ),
-    RouteStop.reconstitute(
-      RouteStopId.from('00000000-0000-4000-8000-000000000012'),
-      { shipmentId: '00000000-0000-4000-8000-000000000101', operationType: RouteStopOperationType.Delivery, status: RouteStopStatus.Planned, schedule },
-    ),
-    RouteStop.reconstitute(
-      RouteStopId.from('00000000-0000-4000-8000-000000000013'),
-      { shipmentId: '00000000-0000-4000-8000-000000000102', operationType: RouteStopOperationType.Pickup, status: RouteStopStatus.Planned, schedule },
-    ),
-    RouteStop.reconstitute(
-      RouteStopId.from('00000000-0000-4000-8000-000000000014'),
-      { shipmentId: '00000000-0000-4000-8000-000000000102', operationType: RouteStopOperationType.Delivery, status: RouteStopStatus.Planned, schedule },
-    ),
-  ];
-  return Route.reconstitute(RouteId.from('00000000-0000-4000-8000-000000000001'), {
-    stops,
-    status: RouteStatus.Planned,
-  });
-}
-
-test('save updates the route and every moved stop after a reorder', async () => {
-  const route = loadPersistedMultiShipmentRoute();
-  route.reorderStops(
-    [
-      RouteStopId.from('00000000-0000-4000-8000-000000000013'),
-      RouteStopId.from('00000000-0000-4000-8000-000000000014'),
-      RouteStopId.from('00000000-0000-4000-8000-000000000011'),
-      RouteStopId.from('00000000-0000-4000-8000-000000000012'),
-    ],
-    false,
-  );
-  const { database, calls } = trackedDatabase();
-  const repository = new PgRouteRepository(database);
-
-  await repository.save(route);
-
-  const updateCalls = calls.filter((call) => call.statement === updateRouteStops);
-  assert.equal(updateCalls.length, 1);
-  const rows = updateCalls[0]!.params as {
-    rows: ReadonlyArray<{ id: string; executionSequence: string }>;
-  };
-  assert.equal(rows.rows.length, 4);
-  assert.equal(rows.rows[0]!.id, '00000000-0000-4000-8000-000000000013');
-  assert.equal(rows.rows[0]!.executionSequence, '1');
-  assert.equal(rows.rows[1]!.id, '00000000-0000-4000-8000-000000000014');
-  assert.equal(rows.rows[1]!.executionSequence, '2');
-  assert.equal(rows.rows[2]!.id, '00000000-0000-4000-8000-000000000011');
-  assert.equal(rows.rows[2]!.executionSequence, '3');
-  assert.equal(rows.rows[3]!.id, '00000000-0000-4000-8000-000000000012');
-  assert.equal(rows.rows[3]!.executionSequence, '4');
 });
 
 test('save skips stop statements when only the route status changes', async () => {

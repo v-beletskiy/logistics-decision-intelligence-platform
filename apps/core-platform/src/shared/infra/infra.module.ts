@@ -86,6 +86,7 @@ export class InfraModule {
         InternalApplicationEventBus,
         DomainEventBus,
         DistributedApplicationEventBus,
+        IntegrationEventMetadataFactory,
         TransactionManager,
         PgDatabase,
         OutboxStore,
