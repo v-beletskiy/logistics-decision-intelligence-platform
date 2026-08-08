@@ -1,11 +1,12 @@
-/**
- * Domain-owned repository token for the Assignment aggregate.
- */
+import type { Assignment } from "./assignment.aggregate";
+import type { AssignmentId } from "./assignment-id";
+
 export abstract class AssignmentRepository {
-  abstract findById(id: string): Promise<unknown | null>;
-  abstract findRunningByRouteId(routeId: string): Promise<unknown | null>;
-  abstract findActiveByVehicleId(vehicleId: string): Promise<unknown | null>;
-  abstract findActiveByDriverId(driverId: string): Promise<unknown | null>;
-  abstract save(assignment: unknown): Promise<void>;
-  abstract delete(id: string): Promise<void>;
+  abstract findById(id: AssignmentId): Promise<Assignment | null>;
+  abstract findByIds(ids: readonly string[]): Promise<readonly Assignment[]>;
+  abstract findActiveByRouteId(routeId: string): Promise<Assignment | null>;
+  abstract findActiveByVehicleId(vehicleId: string): Promise<Assignment | null>;
+  abstract findActiveByDriverId(driverId: string): Promise<Assignment | null>;
+  abstract save(assignment: Assignment): Promise<void>;
+  abstract delete(id: AssignmentId): Promise<void>;
 }

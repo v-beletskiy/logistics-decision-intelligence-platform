@@ -9,7 +9,9 @@ Represents the allocation of operational resources required to execute a Route.
 - An Assignment has exactly one Driver.
 - A started Assignment cannot change its assigned Route, Vehicle, or Driver.
 - A completed Assignment cannot be modified.
-- A cancelled Assignment cannot be started.
+- Only a created Assignment can be started.
+- An Assignment is active while in the `Created` or `InProgress` state.
+- A Vehicle, Driver, or Route participates in at most one active Assignment.
 
 ## Commands
 
@@ -32,7 +34,7 @@ Represents the allocation of operational resources required to execute a Route.
 ## Enums
 
 - AssignmentStatus
-  - Planned
+  - Created
   - InProgress
   - Completed
   - Cancelled
@@ -41,7 +43,7 @@ Represents the allocation of operational resources required to execute a Route.
 
 - AssignmentRepository
   - findById(id: AssignmentId)
-  - findRunningByRouteId(routeId: RouteId)
+  - findActiveByRouteId(routeId: RouteId)
   - findActiveByVehicleId(vehicleId: VehicleId)
   - findActiveByDriverId(driverId: DriverId)
   - save(assignment: Assignment)

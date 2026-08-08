@@ -1,2 +1,11 @@
-/** Application command shell for the ReassignVehicle use case. */
-export class ReassignVehicleCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class ReassignVehicleCommand {
+  constructor(
+    readonly assignmentId: string,
+    readonly vehicleId: string,
+    readonly tenantId: string,
+    readonly identity: Identity,
+    readonly initiatedByUserId?: string,
+  ) {}
+}

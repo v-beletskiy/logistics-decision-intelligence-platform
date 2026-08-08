@@ -1,0 +1,16 @@
+/* @name UpdateDepot */
+UPDATE operational_workspace.depots
+SET name = :name!,
+    country = :country!,
+    state_or_region = :stateOrRegion,
+    city = :city!,
+    street = :street!,
+    building_number = :buildingNumber!,
+    postal_code = :postalCode!,
+    status = :status!,
+    vehicle_capacity = :vehicleCapacity!,
+    driver_capacity = :driverCapacity!,
+    vehicle_count = :vehicleCount!,
+    driver_count = :driverCount!,
+    updated_at = now()
+WHERE id = :id!;

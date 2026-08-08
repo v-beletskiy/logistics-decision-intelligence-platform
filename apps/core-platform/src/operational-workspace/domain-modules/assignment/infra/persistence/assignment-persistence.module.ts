@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-import { AssignmentRepository } from '../../domain/assignment.repository';
-import { PgAssignmentRepository } from './assignment.pg-repository';
+import { AssignmentRepository } from "../../domain/assignment.repository";
+import { PgAssignmentRepository } from "./assignment.pg-repository";
 
 @Module({
   providers: [

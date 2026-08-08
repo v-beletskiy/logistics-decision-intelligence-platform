@@ -1,2 +1,8 @@
-/** Application command shell for the CompleteDelivery use case. */
-export class CompleteDeliveryCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class CompleteDeliveryCommand {
+  constructor(
+    readonly shipmentId: string,
+    readonly identity: Identity,
+  ) {}
+}

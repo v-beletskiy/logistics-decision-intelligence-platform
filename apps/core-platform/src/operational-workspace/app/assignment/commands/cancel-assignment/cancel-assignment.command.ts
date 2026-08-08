@@ -1,2 +1,8 @@
-/** Application command shell for the CancelAssignment use case. */
-export class CancelAssignmentCommand {}
+import type { Identity } from "../../../../../shared/access-control/identity/identity";
+
+export class CancelAssignmentCommand {
+  constructor(
+    readonly assignmentId: string,
+    readonly identity: Identity,
+  ) {}
+}

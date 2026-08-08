@@ -1,10 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from "@nestjs/common";
 
-import { CompletePickupCommand } from './complete-pickup.command';
+import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
+import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
+import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
+import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
+import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
+import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
+import { ShipmentId } from "../../../../domain-modules/shipment/domain/shipment-id";
+import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
+import { CompletePickupCommand } from "./complete-pickup.command";
 
 @Injectable()
-export class CompletePickupHandler {
-  async execute(_command: CompletePickupCommand): Promise<void> {
-    // Orchestration is intentionally deferred.
+export class CompletePickupHandler extends CommandHandler {
+  constructor(
+    @Inject(ShipmentRepository) private readonly shipments: ShipmentRepository,
+    trxManager: TransactionManager,
+    domainEventBus: DomainEventBus,
+  ) {
+    super(trxManager, domainEventBus);
+  }
+
+  @Authorized(Permission.ShipmentManage)
+  async exec(command: CompletePickupCommand): Promise<void> {
+    const shipment = await this.shipments.findById(
+      ShipmentId.from(command.shipmentId),
+    );
+    if (!shipment) throw new AggregateNotFoundException("Shipment");
+
+    shipment.completePickup();
+    await this.execTrxWithDomainEvents(async () => {
+      await this.shipments.save(shipment);
+    }, shipment);
   }
 }

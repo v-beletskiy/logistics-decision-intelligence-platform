@@ -6,7 +6,14 @@ export enum Permission {
   RouteUpdate = "route.update",
 
   VehicleManage = "vehicle.manage",
+
   DriverManage = "driver.manage",
+
+  DepotManage = "depot.manage",
+
+  ShipmentManage = "shipment.manage",
+
+  AssignmentManage = "assignment.manage",
 
   OptimizationExecute = "optimization.execute",
 }

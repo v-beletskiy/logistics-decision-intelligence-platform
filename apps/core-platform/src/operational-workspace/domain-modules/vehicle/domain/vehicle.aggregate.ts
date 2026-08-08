@@ -70,13 +70,12 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
     this._depotId = validatedDetails.depotId;
 
     const compartments = copyAndValidateCompartments(props.compartments);
-    const status = requireVehicleStatus(props.status);
-
     this._compartments = new ChildCollection(
       (compartment) => compartment.id.value,
       compartments,
       isNew,
     );
+    const status = requireVehicleStatus(props.status);
     this._status = status;
   }
 

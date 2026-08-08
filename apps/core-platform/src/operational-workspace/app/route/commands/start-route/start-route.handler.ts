@@ -28,11 +28,11 @@ export class StartRouteHandler extends CommandHandler {
     const route = await this.routes.findById(RouteId.from(command.routeId));
     if (!route) throw new AggregateNotFoundException("Route");
 
-    const routeAssignment = await this.assignments.findRunningByRouteId(
+    const activeAssignment = await this.assignments.findActiveByRouteId(
       route.id.value,
     );
-    const hasRunningAssignment = routeAssignment !== null;
-    route.start(hasRunningAssignment);
+    const hasActiveAssignment = activeAssignment !== null;
+    route.start(hasActiveAssignment);
 
     await this.execTrxWithDomainEvents(async () => {
       await this.routes.save(route);

@@ -6,13 +6,16 @@ Represents a physical operational location where Vehicles and Drivers are based.
 
 - A Depot has a non-empty name.
 - A Depot has exactly one Address.
-- An Active Depot cannot receive new Vehicles or Drivers if it is full.
+- An Active Depot cannot receive new Vehicles if its Vehicle capacity is reached.
+- An Active Depot cannot receive new Drivers if its Driver capacity is reached.
 - An Inactive/Closed Depot cannot receive new Vehicles or Drivers.
 
 ## Commands
 
 - CreateDepotCommand
 - UpdateDepotDetailsCommand
+- UpdateDepotVehicleCapacityCommand
+- UpdateDepotDriverCapacityCommand
 - ActivateDepotCommand
 - InactivateDepotCommand
 - CloseDepotCommand
@@ -21,6 +24,8 @@ Represents a physical operational location where Vehicles and Drivers are based.
 
 - DepotCreatedDomainEvent
 - DepotDetailsUpdatedDomainEvent
+- DepotVehicleCapacityUpdatedDomainEvent
+- DepotDriverCapacityUpdatedDomainEvent
 - DepotActivatedDomainEvent
 - DepotInactivatedDomainEvent
 - DepotClosedDomainEvent
