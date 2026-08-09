@@ -1,5 +1,3 @@
-import { Injectable } from "@nestjs/common";
-
 import type { DomainEvent } from "../../domain/shared-kernel/events/domain-event";
 import { DomainEventBus } from "../messaging/domain-event-bus";
 import { TransactionManager } from "../../infra/persistence/transaction-manager";
@@ -8,7 +6,6 @@ export interface DomainEventsSource {
   pullDomainEvents(): readonly DomainEvent[];
 }
 
-@Injectable()
 export abstract class CommandHandler {
   protected constructor(
     protected readonly trxManager: TransactionManager,

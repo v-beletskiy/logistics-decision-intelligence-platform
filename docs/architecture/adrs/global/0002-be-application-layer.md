@@ -15,7 +15,7 @@ The Application Layer owns the execution of business use cases but never owns bu
 The Application Layer may:
 
 - validate application-level input;
-- load and persist Aggregates through Repository interfaces;
+- load and persist Aggregates through Repository ports;
 - invoke Domain Services;
 - invoke Shared Domain services and algorithms;
 - coordinate Infrastructure through abstractions (e.g. gRPC clients, Event Bus, Transaction Manager);
@@ -81,7 +81,7 @@ Outbox is required only for distributed, cross-service events.
 - One Handler executes exactly one use case.
 - Command Handlers are orchestration layers.
 - Business rules belong exclusively to the Domain.
-- Aggregates are loaded through Repository interfaces.
+- Aggregates are loaded through Repository ports.
 - Command Handlers may invoke Domain Services.
 - Command Handlers may coordinate Infrastructure through abstractions only.
 - Commands typically return no result. Creation commands may return an identifier.
@@ -91,7 +91,7 @@ Outbox is required only for distributed, cross-service events.
 ## Query Handler Rules
 
 - Query Handlers never load Aggregates.
-- Query Handlers retrieve data through Repository interfaces or dedicated read models.
+- Query Handlers retrieve data through Repository ports or dedicated read models.
 - Query Handlers return DTOs.
 - Query Handlers never modify state.
 - Query Handlers contain no business logic.
@@ -115,7 +115,7 @@ Repositories may only be accessed from:
 
 Aggregates never access repositories.
 
-The Application Layer depends only on Repository interfaces defined by the Domain.
+The Application Layer depends only on Repository ports defined by the Domain.
 
 ---
 

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -13,7 +13,7 @@ import { ReinstateDriverCommand } from "./reinstate-driver.command";
 @Injectable()
 export class ReinstateDriverHandler extends CommandHandler {
   constructor(
-    @Inject(DriverRepository) private readonly drivers: DriverRepository,
+    private readonly drivers: DriverRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {

@@ -7,8 +7,9 @@
     "dist"
   ],
   "scripts": {
+    "clean": "node scripts/clean-dist.js",
     "grpc:generate": "buf generate ../../packages/grpc-contracts --template buf.gen.yaml",
-    "build": "pnpm --filter @logistics-decision-intelligence/integration-events build && nest build",
+    "build": "pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm clean && nest build",
     "db:migrate": "node dist/cli/database-migrations.js",
     "db:migrate:dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && pnpm db:migrate",
     "db:codegen": "pgtyped -c pgtyped.config.json",

@@ -20,7 +20,7 @@
     "@logistics-decision-intelligence/validation": "workspace:*"
   },
   "scripts": {
-    "build": "pnpm --filter @logistics-decision-intelligence/integration-contracts build && tsc -p tsconfig.json",
+    "build": "pnpm --filter @logistics-decision-intelligence/integration-contracts build && pnpm --filter @logistics-decision-intelligence/validation build && tsc -p tsconfig.json",
     "lint": "tsc --noEmit",
     "test": "pnpm build && node --test 'dist/**/*.spec.js'",
     "typecheck": "tsc --noEmit"

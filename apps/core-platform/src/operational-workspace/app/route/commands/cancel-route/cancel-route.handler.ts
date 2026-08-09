@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -13,7 +13,7 @@ import { CancelRouteCommand } from "./cancel-route.command";
 @Injectable()
 export class CancelRouteHandler extends CommandHandler {
   constructor(
-    @Inject(RouteRepository) private readonly routes: RouteRepository,
+    private readonly routes: RouteRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {

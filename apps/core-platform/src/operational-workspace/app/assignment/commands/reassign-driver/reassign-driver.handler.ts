@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
@@ -15,9 +15,8 @@ import { ReassignDriverCommand } from "./reassign-driver.command";
 @Injectable()
 export class ReassignDriverHandler extends CommandHandler {
   constructor(
-    @Inject(AssignmentRepository)
     private readonly assignments: AssignmentRepository,
-    @Inject(DriverRepository) private readonly drivers: DriverRepository,
+    private readonly drivers: DriverRepository,
     private readonly assignmentPlanning: AssignmentPlanningPolicy,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,

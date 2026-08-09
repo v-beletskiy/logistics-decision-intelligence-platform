@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -13,7 +13,6 @@ import { StartAssignmentCommand } from "./start-assignment.command";
 @Injectable()
 export class StartAssignmentHandler extends CommandHandler {
   constructor(
-    @Inject(AssignmentRepository)
     private readonly assignments: AssignmentRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,

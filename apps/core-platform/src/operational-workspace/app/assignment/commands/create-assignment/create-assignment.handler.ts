@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
@@ -22,11 +22,10 @@ import { CreateAssignmentCommand } from "./create-assignment.command";
 @Injectable()
 export class CreateAssignmentHandler extends CommandHandler {
   constructor(
-    @Inject(RouteRepository) private readonly routes: RouteRepository,
-    @Inject(VehicleRepository) private readonly vehicles: VehicleRepository,
-    @Inject(DriverRepository) private readonly drivers: DriverRepository,
-    @Inject(ShipmentRepository) private readonly shipments: ShipmentRepository,
-    @Inject(AssignmentRepository)
+    private readonly routes: RouteRepository,
+    private readonly vehicles: VehicleRepository,
+    private readonly drivers: DriverRepository,
+    private readonly shipments: ShipmentRepository,
     private readonly assignments: AssignmentRepository,
     private readonly assignmentPlanning: AssignmentPlanningPolicy,
     trxManager: TransactionManager,

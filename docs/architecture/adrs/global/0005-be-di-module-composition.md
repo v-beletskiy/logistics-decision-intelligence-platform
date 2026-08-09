@@ -4,7 +4,7 @@
 
 The platform follows DDD.
 
-The Domain defines abstractions such as Repository interfaces and Domain Service interfaces, while Infrastructure provides concrete implementations.
+The Domain defines abstractions such as Repository ports and Domain Service contracts, while Infrastructure provides concrete implementations.
 
 A consistent dependency injection strategy is required to:
 
@@ -72,8 +72,8 @@ PgOptimizationRepository
 
 Application code always depends on:
 
-- Repository interfaces;
-- Domain Service interfaces;
+- Repository ports;
+- Domain Service contracts;
 - Infrastructure abstractions.
 
 It never depends on concrete implementations.
@@ -98,6 +98,21 @@ providers: [
 ```
 
 The provider registration location is the only place where implementation details are selected.
+
+### Injection Tokens
+
+Use the constructor parameter type as the injection token whenever that type exists at runtime:
+
+| Dependency contract | Injection convention |
+| --- | --- |
+| Concrete class | Constructor type only |
+| Abstract-class port | Constructor type only |
+| Interface with a `Symbol` or string token | `@Inject(TOKEN)` is required |
+| Deliberately aliased token | `@Inject(TOKEN)` is required |
+
+Repository ports in this codebase are abstract classes. They are intentionally framework-independent runtime contracts and may be used directly as provider tokens. Do not add `@Inject(RepositoryPort)` when it duplicates the constructor parameter type.
+
+`@Inject()` is reserved for a token that cannot be inferred from the parameter type, such as configuration represented by a TypeScript interface and registered under a `Symbol`.
 
 ---
 
@@ -235,7 +250,7 @@ They never inject services directly from another Bounded Context.
 
 - Strict Dependency Inversion.
 - Infrastructure remains replaceable.
-- Business code is framework-independent.
+- Domain code is framework-independent. Application code may use NestJS metadata decorators solely for composition and authorization; it must not depend on transport or infrastructure implementations.
 - Testing through provider replacement is straightforward.
 - Clear separation between architecture and implementation.
 

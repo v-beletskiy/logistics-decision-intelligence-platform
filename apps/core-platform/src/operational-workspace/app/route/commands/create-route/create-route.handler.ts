@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
@@ -14,8 +14,8 @@ import { CreateRouteCommand } from "./create-route.command";
 @Injectable()
 export class CreateRouteHandler extends CommandHandler {
   constructor(
-    @Inject(RouteRepository) private readonly routes: RouteRepository,
-    @Inject(ShipmentRepository) private readonly shipments: ShipmentRepository,
+    private readonly routes: RouteRepository,
+    private readonly shipments: ShipmentRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {

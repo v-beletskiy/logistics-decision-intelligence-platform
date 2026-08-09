@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -14,8 +14,7 @@ import { StartRouteCommand } from "./start-route.command";
 @Injectable()
 export class StartRouteHandler extends CommandHandler {
   constructor(
-    @Inject(RouteRepository) private readonly routes: RouteRepository,
-    @Inject(AssignmentRepository)
+    private readonly routes: RouteRepository,
     private readonly assignments: AssignmentRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -12,7 +12,7 @@ import { RegisterVehicleCommand } from "./register-vehicle.command";
 @Injectable()
 export class RegisterVehicleHandler extends CommandHandler {
   constructor(
-    @Inject(VehicleRepository) private readonly vehicles: VehicleRepository,
+    private readonly vehicles: VehicleRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {

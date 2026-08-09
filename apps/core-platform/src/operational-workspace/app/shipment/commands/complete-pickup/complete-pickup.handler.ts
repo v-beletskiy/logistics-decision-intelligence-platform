@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
@@ -13,7 +13,7 @@ import { CompletePickupCommand } from "./complete-pickup.command";
 @Injectable()
 export class CompletePickupHandler extends CommandHandler {
   constructor(
-    @Inject(ShipmentRepository) private readonly shipments: ShipmentRepository,
+    private readonly shipments: ShipmentRepository,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {

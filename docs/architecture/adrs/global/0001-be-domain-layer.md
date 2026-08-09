@@ -18,8 +18,8 @@ The Domain Layer may:
 - enforce business invariants;
 - raise Domain Events;
 - implement business decisions;
-- define Repository interfaces;
-- define Domain Service interfaces;
+- define Repository ports;
+- define Domain Service contracts;
 - define business exceptions;
 - define domain policies.
 
@@ -151,9 +151,9 @@ Events remain authoritative.
 
 ---
 
-## Repository Interfaces
+## Repository Ports
 
-Repository interfaces belong to the Domain Layer. They define Aggregate persistence contracts.
+Repository ports belong to the Domain Layer. They define Aggregate persistence contracts.
 
 Repository implementations belong to Infrastructure.
 
