@@ -42,6 +42,25 @@ import {
 
 const policy = new AssignmentPlanningPolicy();
 
+function createShipmentLoad(
+  weight: number,
+  weightUnit: WeightUnit,
+  length: number,
+  width: number,
+  height: number,
+  dimensionUnit: DimensionUnit = DimensionUnit.Centimeter,
+): ShipmentLoad {
+  return {
+    weight: Weight.create({ value: weight, unit: weightUnit }),
+    dimensions: Dimensions.create({
+      length,
+      width,
+      height,
+      unit: dimensionUnit,
+    }),
+  };
+}
+
 const capacity: CapacityProps = {
   maxWeight: { value: 1000, unit: WeightUnit.Kilogram },
   maxItemDimensions: {
@@ -136,22 +155,14 @@ function createRoute(): Route {
 }
 
 const feasibleShipments: readonly ShipmentLoad[] = [
-  {
-    weight: { value: 300, unit: WeightUnit.Kilogram },
-    dimensions: {
-      length: 120,
-      width: 100,
-      height: 140,
-      unit: DimensionUnit.Centimeter,
-    },
-  },
+  createShipmentLoad(300, WeightUnit.Kilogram, 120, 100, 140),
 ];
 
 function emptyContext(): AssignmentPlanningContext {
   return {
-    activeAssignmentByVehicle: null,
-    activeAssignmentByDriver: null,
-    activeAssignmentByRoute: null,
+    vehicleHasActiveAssignment: false,
+    driverHasActiveAssignment: false,
+    routeHasActiveAssignment: false,
   };
 }
 
@@ -203,9 +214,9 @@ function assignmentWithShipment(
   });
 }
 
-test("planAssignment accepts a feasible allocation", () => {
+test("assertCanCreateAssignment accepts a feasible allocation", () => {
   assert.doesNotThrow(() =>
-    policy.planAssignment(
+    policy.assertCanCreateAssignment(
       createRoute(),
       createVehicle(),
       createDriver(),
@@ -215,10 +226,10 @@ test("planAssignment accepts a feasible allocation", () => {
   );
 });
 
-test("planAssignment rejects an unavailable vehicle", () => {
+test("assertCanCreateAssignment rejects an unavailable vehicle", () => {
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(VehicleStatus.Maintenance),
         createDriver(),
@@ -229,10 +240,10 @@ test("planAssignment rejects an unavailable vehicle", () => {
   );
 });
 
-test("planAssignment rejects a suspended driver", () => {
+test("assertCanCreateAssignment rejects a suspended driver", () => {
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(DriverStatus.Suspended),
@@ -243,73 +254,57 @@ test("planAssignment rejects a suspended driver", () => {
   );
 });
 
-test("planAssignment rejects a vehicle already in an active assignment", () => {
+test("assertCanCreateAssignment rejects a vehicle already in an active assignment", () => {
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
         feasibleShipments,
-        { ...emptyContext(), activeAssignmentByVehicle: createdAssignment() },
+        { ...emptyContext(), vehicleHasActiveAssignment: true },
       ),
     /multiple active assignments/,
   );
 });
 
-test("planAssignment rejects a driver already in an active assignment", () => {
+test("assertCanCreateAssignment rejects a driver already in an active assignment", () => {
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
         feasibleShipments,
-        { ...emptyContext(), activeAssignmentByDriver: createdAssignment() },
+        { ...emptyContext(), driverHasActiveAssignment: true },
       ),
     /multiple active assignments/,
   );
 });
 
-test("planAssignment rejects a route with an active assignment", () => {
+test("assertCanCreateAssignment rejects a route with an active assignment", () => {
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
         feasibleShipments,
-        { ...emptyContext(), activeAssignmentByRoute: createdAssignment() },
+        { ...emptyContext(), routeHasActiveAssignment: true },
       ),
     /more than one active assignment/,
   );
 });
 
-test("planAssignment rejects shipments exceeding the vehicle weight capacity", () => {
+test("assertCanCreateAssignment rejects shipments exceeding the vehicle weight capacity", () => {
   const heavyShipments: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 800, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 120,
-        width: 100,
-        height: 140,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
-    {
-      weight: { value: 400, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 120,
-        width: 100,
-        height: 140,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(800, WeightUnit.Kilogram, 120, 100, 140),
+    createShipmentLoad(400, WeightUnit.Kilogram, 120, 100, 140),
   ];
 
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
@@ -320,40 +315,16 @@ test("planAssignment rejects shipments exceeding the vehicle weight capacity", (
   );
 });
 
-test("planAssignment rejects shipments exceeding the vehicle volume capacity", () => {
+test("assertCanCreateAssignment rejects shipments exceeding the vehicle volume capacity", () => {
   const bulkyShipments: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 200,
-        width: 150,
-        height: 180,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 200,
-        width: 150,
-        height: 180,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 200,
-        width: 150,
-        height: 180,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(100, WeightUnit.Kilogram, 200, 150, 180),
+    createShipmentLoad(100, WeightUnit.Kilogram, 200, 150, 180),
+    createShipmentLoad(100, WeightUnit.Kilogram, 200, 150, 180),
   ];
 
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
@@ -364,22 +335,14 @@ test("planAssignment rejects shipments exceeding the vehicle volume capacity", (
   );
 });
 
-test("planAssignment rejects a shipment that does not fit the vehicle dimensions", () => {
+test("assertCanCreateAssignment rejects a shipment that does not fit the vehicle dimensions", () => {
   const oversizedShipments: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 250,
-        width: 100,
-        height: 100,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(100, WeightUnit.Kilogram, 250, 100, 100),
   ];
 
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
@@ -390,21 +353,13 @@ test("planAssignment rejects a shipment that does not fit the vehicle dimensions
   );
 });
 
-test("planAssignment accepts a shipment that fits a smaller compartment", () => {
+test("assertCanCreateAssignment accepts a shipment that fits a smaller compartment", () => {
   const shipment: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 150,
-        width: 40,
-        height: 40,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(100, WeightUnit.Kilogram, 150, 40, 40),
   ];
 
   assert.doesNotThrow(() =>
-    policy.planAssignment(
+    policy.assertCanCreateAssignment(
       createRoute(),
       createMultiCompartmentVehicle(),
       createDriver(),
@@ -414,22 +369,14 @@ test("planAssignment accepts a shipment that fits a smaller compartment", () => 
   );
 });
 
-test("planAssignment rejects a shipment that fits no compartment", () => {
+test("assertCanCreateAssignment rejects a shipment that fits no compartment", () => {
   const shipment: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 100, unit: WeightUnit.Kilogram },
-      dimensions: {
-        length: 220,
-        width: 40,
-        height: 40,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(100, WeightUnit.Kilogram, 220, 40, 40),
   ];
 
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createMultiCompartmentVehicle(),
         createDriver(),
@@ -440,22 +387,14 @@ test("planAssignment rejects a shipment that fits no compartment", () => {
   );
 });
 
-test("planAssignment converts measurement units before comparing", () => {
+test("assertCanCreateAssignment compares loads across measurement units", () => {
   const imperialShipments: readonly ShipmentLoad[] = [
-    {
-      weight: { value: 3000, unit: WeightUnit.Pound },
-      dimensions: {
-        length: 100,
-        width: 100,
-        height: 100,
-        unit: DimensionUnit.Centimeter,
-      },
-    },
+    createShipmentLoad(3000, WeightUnit.Pound, 100, 100, 100),
   ];
 
   assert.throws(
     () =>
-      policy.planAssignment(
+      policy.assertCanCreateAssignment(
         createRoute(),
         createVehicle(),
         createDriver(),
@@ -466,90 +405,85 @@ test("planAssignment converts measurement units before comparing", () => {
   );
 });
 
-test("reassignVehicle rejects an unavailable vehicle", () => {
+test("assertVehicleCanBeAssigned rejects an unavailable vehicle", () => {
   assert.throws(
     () =>
-      policy.reassignVehicle(
-        createdAssignment(),
+      policy.assertVehicleCanBeAssigned(
         createVehicle(VehicleStatus.Unavailable),
-        null,
+        createdAssignment().shipments,
+        false,
       ),
     /unavailable vehicle/,
   );
 });
 
-test("reassignVehicle rejects double-booking", () => {
+test("assertVehicleCanBeAssigned rejects double-booking", () => {
   assert.throws(
     () =>
-      policy.reassignVehicle(
-        createdAssignment(),
+      policy.assertVehicleCanBeAssigned(
         createVehicle(),
-        createdAssignment(),
+        createdAssignment().shipments,
+        true,
       ),
     /multiple active assignments/,
   );
 });
 
-test("reassignVehicle rejects a vehicle that cannot fit the assigned load", () => {
+test("assertVehicleCanBeAssigned rejects a vehicle that cannot fit the assigned load", () => {
   const oversized = assignmentWithShipment(
     { length: 250, width: 100, height: 100 },
     100,
   );
 
   assert.throws(
-    () => policy.reassignVehicle(oversized, createVehicle(), null),
+    () =>
+      policy.assertVehicleCanBeAssigned(
+        createVehicle(),
+        oversized.shipments,
+        false,
+      ),
     /does not fit within the assigned vehicle capacity/,
   );
 });
 
-test("reassignVehicle reassigns a feasible vehicle", () => {
+test("assertVehicleCanBeAssigned is side-effect free", () => {
   const assignment = createdAssignment();
   assignment.pullDomainEvents();
+  const originalVehicleId = assignment.vehicleId;
   const newVehicle = createVehicle();
 
-  policy.reassignVehicle(assignment, newVehicle, null);
+  policy.assertVehicleCanBeAssigned(newVehicle, assignment.shipments, false);
 
-  assert.equal(assignment.vehicleId.equals(newVehicle.id), true);
-  assert.deepEqual(
-    assignment.pullDomainEvents().map((event) => event.type),
-    ["VehicleReassignedDomainEvent"],
-  );
+  assert.equal(assignment.vehicleId.equals(originalVehicleId), true);
+  assert.deepEqual(assignment.pullDomainEvents(), []);
 });
 
-test("reassignDriver rejects a suspended driver", () => {
+test("assertDriverCanBeAssigned rejects a suspended driver", () => {
   assert.throws(
     () =>
-      policy.reassignDriver(
-        createdAssignment(),
+      policy.assertDriverCanBeAssigned(
         createDriver(DriverStatus.Suspended),
-        null,
+        false,
       ),
     /suspended driver/,
   );
 });
 
-test("reassignDriver rejects double-booking", () => {
+test("assertDriverCanBeAssigned rejects double-booking", () => {
   assert.throws(
-    () =>
-      policy.reassignDriver(
-        createdAssignment(),
-        createDriver(),
-        createdAssignment(),
-      ),
+    () => policy.assertDriverCanBeAssigned(createDriver(), true),
     /multiple active assignments/,
   );
 });
 
-test("reassignDriver reassigns an available driver", () => {
+test("assertDriverCanBeAssigned is side-effect free", () => {
   const assignment = createdAssignment();
   assignment.pullDomainEvents();
+  const originalDriverId = assignment.driverId;
   const newDriver = createDriver();
 
-  policy.reassignDriver(assignment, newDriver, null);
+  policy.assertDriverCanBeAssigned(newDriver, false);
 
-  assert.equal(assignment.driverId.equals(newDriver.id), true);
-  assert.deepEqual(
-    assignment.pullDomainEvents().map((event) => event.type),
-    ["DriverReassignedDomainEvent"],
-  );
+  assert.equal(assignment.driverId.equals(originalDriverId), true);
+  assert.deepEqual(assignment.pullDomainEvents(), []);
 });

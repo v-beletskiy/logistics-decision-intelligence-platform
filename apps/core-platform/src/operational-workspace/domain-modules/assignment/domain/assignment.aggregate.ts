@@ -157,17 +157,25 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
 
   assignVehicle(vehicleId: VehicleId): void {
     this.assertNotStarted();
-    this._vehicleId = requireAssignmentReference(
+    const nextVehicleId = requireAssignmentReference(
       vehicleId,
       VehicleId,
       "vehicle",
     );
+    if (this._vehicleId.equals(nextVehicleId)) return;
+    this._vehicleId = nextVehicleId;
     this.raiseDomainEvent("VehicleReassignedDomainEvent");
   }
 
   assignDriver(driverId: DriverId): void {
     this.assertNotStarted();
-    this._driverId = requireAssignmentReference(driverId, DriverId, "driver");
+    const nextDriverId = requireAssignmentReference(
+      driverId,
+      DriverId,
+      "driver",
+    );
+    if (this._driverId.equals(nextDriverId)) return;
+    this._driverId = nextDriverId;
     this.raiseDomainEvent("DriverReassignedDomainEvent");
   }
 

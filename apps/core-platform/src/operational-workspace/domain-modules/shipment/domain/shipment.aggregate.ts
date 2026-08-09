@@ -56,8 +56,6 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
   private constructor(id: ShipmentId, props: ShipmentProps, isNew: boolean) {
     super(id, isNew);
 
-    this.assertPickupPrecedesDelivery();
-
     const validatedDetails = Shipment.validateDetails(props);
     this._pickup = validatedDetails.pickup;
     this._delivery = validatedDetails.delivery;
@@ -70,6 +68,7 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
     this._pickupCompleted = props.pickupCompleted;
     this._deliveryCompleted = props.deliveryCompleted;
     this._status = requireShipmentStatus(props.status);
+    this.assertPickupPrecedesDelivery();
   }
 
   get pickup(): ShipmentEndpoint {

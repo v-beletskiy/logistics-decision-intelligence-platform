@@ -11,11 +11,13 @@ import {
 } from '../../domain/route-stop.entity';
 import { RouteStopId } from '../../domain/route-stop-id';
 import { deleteRouteStops } from './queries/route.delete-stops.queries';
+import { findRoutesByShipmentId } from './queries/route.find-by-shipment-id.queries';
 import { insertRoute } from './queries/route.insert.queries';
 import { insertRouteStops } from './queries/route.insert-stops.queries';
 import { updateRoute } from './queries/route.update.queries';
 import { updateRouteStops } from './queries/route.update-stops.queries';
 import { PgRouteRepository } from './route.pg-repository';
+import { ShipmentId } from '../../../shipment/domain/shipment-id';
 
 const schedule = {
   arrivalTime: new Date('2026-08-06T08:00:00.000Z'),
@@ -133,4 +135,20 @@ test('save skips stop statements when only the route status changes', async () =
     0,
   );
   assert.equal(route.status, RouteStatus.InProgress);
+});
+
+test('findByShipmentId unwraps the shipment identifier only at the persistence boundary', async () => {
+  const { database, calls } = trackedDatabase();
+  const repository = new PgRouteRepository(database);
+  const shipmentId = ShipmentId.from('00000000-0000-4000-8000-000000000101');
+
+  const routes = await repository.findByShipmentId(shipmentId);
+
+  assert.deepEqual(routes, []);
+  assert.deepEqual(calls, [
+    {
+      statement: findRoutesByShipmentId,
+      params: { shipmentId: shipmentId.value },
+    },
+  ]);
 });

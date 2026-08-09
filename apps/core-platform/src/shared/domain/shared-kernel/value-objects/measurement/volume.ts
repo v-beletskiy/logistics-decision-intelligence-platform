@@ -33,10 +33,25 @@ export class Volume extends ValueObject<Volume> {
     return new Volume(props);
   }
 
+  /** Returns this volume expressed in the requested unit. */
+  valueIn(unit: VolumeUnit): number {
+    const targetUnit = requireVolumeUnit(unit);
+    return (
+      (this.value * CUBIC_METERS_PER_UNIT[this.unit]) /
+      CUBIC_METERS_PER_UNIT[targetUnit]
+    );
+  }
+
   protected equalityComponents(): readonly unknown[] {
     return [this.value, this.unit];
   }
 }
+
+const CUBIC_METERS_PER_UNIT: Readonly<Record<VolumeUnit, number>> = {
+  [VolumeUnit.CubicMeter]: 1,
+  [VolumeUnit.CubicFoot]: 0.028_316_846_592,
+  [VolumeUnit.Liter]: 0.001,
+};
 
 function requireVolumeUnit(value: unknown): VolumeUnit {
   if (!isEnumValue(VolumeUnit, value)) {

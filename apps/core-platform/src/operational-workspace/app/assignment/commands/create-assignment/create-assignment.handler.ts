@@ -1,12 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
-import { DistributedApplicationEventBus } from "../../../../../shared/infra/messaging/application-event-bus";
-import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
-import { IntegrationEventMetadataFactory } from "../../../../../shared/infra/messaging/integration-event.factory";
+import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Assignment } from "../../../../domain-modules/assignment/domain/assignment.aggregate";
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
@@ -15,10 +12,11 @@ import { DriverId } from "../../../../domain-modules/driver/domain/driver-id";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";
 import { RouteId } from "../../../../domain-modules/route/domain/route-id";
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
+import { ShipmentId } from "../../../../domain-modules/shipment/domain/shipment-id";
 import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
 import { VehicleId } from "../../../../domain-modules/vehicle/domain/vehicle-id";
 import { VehicleRepository } from "../../../../domain-modules/vehicle/domain/vehicle.repository";
-import { AssignmentPlanningPolicy } from "../../../../shared-domain/services/assignment-planning.policy";
+import { AssignmentPlanningPolicy } from "../../../../shared-domain/policies/assignment-planning.policy";
 import { CreateAssignmentCommand } from "./create-assignment.command";
 
 @Injectable()
@@ -31,8 +29,6 @@ export class CreateAssignmentHandler extends CommandHandler {
     @Inject(AssignmentRepository)
     private readonly assignments: AssignmentRepository,
     private readonly assignmentPlanning: AssignmentPlanningPolicy,
-    private readonly outbox: DistributedApplicationEventBus,
-    private readonly integrationEventFactory: IntegrationEventMetadataFactory,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
@@ -54,7 +50,7 @@ export class CreateAssignmentHandler extends CommandHandler {
 
     const shipmentIds = [
       ...new Set(route.stops.map((stop) => stop.shipmentId)),
-    ];
+    ].map((shipmentId) => ShipmentId.from(shipmentId));
     const routeShipments = await this.shipments.findByIds(shipmentIds);
     if (routeShipments.length !== shipmentIds.length) {
       throw new AggregateNotFoundException(
@@ -63,24 +59,24 @@ export class CreateAssignmentHandler extends CommandHandler {
     }
 
     const [
-      activeAssignmentByVehicle,
-      activeAssignmentByDriver,
-      activeAssignmentByRoute,
+      vehicleHasActiveAssignment,
+      driverHasActiveAssignment,
+      routeHasActiveAssignment,
     ] = await Promise.all([
-      this.assignments.findActiveByVehicleId(vehicle.id.value),
-      this.assignments.findActiveByDriverId(driver.id.value),
-      this.assignments.findActiveByRouteId(route.id.value),
+      this.assignments.existsActiveForVehicle(vehicle.id),
+      this.assignments.existsActiveForDriver(driver.id),
+      this.assignments.existsActiveForRoute(route.id),
     ]);
 
-    this.assignmentPlanning.planAssignment(
+    this.assignmentPlanning.assertCanCreateAssignment(
       route,
       vehicle,
       driver,
       routeShipments,
       {
-        activeAssignmentByVehicle,
-        activeAssignmentByDriver,
-        activeAssignmentByRoute,
+        vehicleHasActiveAssignment,
+        driverHasActiveAssignment,
+        routeHasActiveAssignment,
       },
     );
 
@@ -99,18 +95,6 @@ export class CreateAssignmentHandler extends CommandHandler {
 
     await this.execTrxWithDomainEvents(async () => {
       await this.assignments.save(assignment);
-      await this.outbox.publish(
-        this.integrationEventFactory.create({
-          eventType: "operational-workspace.route.assignment-changed",
-          eventVersion: 1,
-          tenantId: command.tenantId,
-          initiatedByUserId: command.initiatedByUserId,
-          payload: {
-            routeId: route.id.value,
-            assignmentId: assignment.id.value,
-          },
-        }),
-      );
     }, assignment);
 
     return assignment.id.value;

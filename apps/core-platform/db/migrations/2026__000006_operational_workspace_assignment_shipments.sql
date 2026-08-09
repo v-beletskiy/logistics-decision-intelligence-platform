@@ -15,3 +15,5 @@ CREATE TABLE
   );
 
 CREATE INDEX IF NOT EXISTS assignment_shipments_assignment_id_idx ON operational_workspace.assignment_shipments (assignment_id);
+
+CREATE INDEX IF NOT EXISTS assignment_shipments_shipment_id_idx ON operational_workspace.assignment_shipments (shipment_id);

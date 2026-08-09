@@ -8,13 +8,17 @@ import { PgDatabase } from "../../../../../shared/infra/persistence/pg-database"
 import { Assignment } from "../../domain/assignment.aggregate";
 import { AssignmentId } from "../../domain/assignment-id";
 import { AssignmentRepository } from "../../domain/assignment.repository";
+import type { DriverId } from "../../../driver/domain/driver-id";
+import type { RouteId } from "../../../route/domain/route-id";
+import type { VehicleId } from "../../../vehicle/domain/vehicle-id";
 import { deleteAssignment } from "./queries/assignment.delete.queries";
 import { deleteAssignmentShipments } from "./queries/assignment.delete-shipments.queries";
 import { findAssignmentById } from "./queries/assignment.find-by-id.queries";
 import { findAssignmentsByIds } from "./queries/assignment.find-by-ids.queries";
-import { findActiveAssignmentByRouteId } from "./queries/assignment.find-active-by-route-id.queries";
-import { findActiveAssignmentByVehicleId } from "./queries/assignment.find-active-by-vehicle-id.queries";
-import { findActiveAssignmentByDriverId } from "./queries/assignment.find-active-by-driver-id.queries";
+import { existsActiveAssignmentForRoute } from "./queries/assignment.exists-active-for-route.queries";
+import { existsActiveAssignmentForVehicle } from "./queries/assignment.exists-active-for-vehicle.queries";
+import { existsActiveAssignmentForDriver } from "./queries/assignment.exists-active-for-driver.queries";
+import { existsRunningAssignmentForRoute } from "./queries/assignment.exists-running-for-route.queries";
 import { insertAssignment } from "./queries/assignment.insert.queries";
 import { insertAssignmentShipments } from "./queries/assignment.insert-shipments.queries";
 import { updateAssignment } from "./queries/assignment.update.queries";
@@ -36,41 +40,44 @@ export class PgAssignmentRepository extends AssignmentRepository {
       : null;
   }
 
-  async findByIds(ids: readonly string[]): Promise<readonly Assignment[]> {
+  async findByIds(
+    ids: readonly AssignmentId[],
+  ): Promise<readonly Assignment[]> {
     if (ids.length === 0) return [];
     const rows = await this.database.exec(findAssignmentsByIds, {
-      ids: [...ids],
+      ids: ids.map((id) => id.value),
     });
     return rows.map((row) =>
       AssignmentMapper.toDomain(row as unknown as AssignmentEntity),
     );
   }
 
-  async findActiveByRouteId(routeId: string): Promise<Assignment | null> {
-    const [row] = await this.database.exec(findActiveAssignmentByRouteId, {
-      routeId,
+  async existsActiveForRoute(routeId: RouteId): Promise<boolean> {
+    const [result] = await this.database.exec(existsActiveAssignmentForRoute, {
+      routeId: routeId.value,
     });
-    return row
-      ? AssignmentMapper.toDomain(row as unknown as AssignmentEntity)
-      : null;
+    return result.exists;
   }
 
-  async findActiveByVehicleId(vehicleId: string): Promise<Assignment | null> {
-    const [row] = await this.database.exec(findActiveAssignmentByVehicleId, {
-      vehicleId,
+  async existsRunningForRoute(routeId: RouteId): Promise<boolean> {
+    const [result] = await this.database.exec(existsRunningAssignmentForRoute, {
+      routeId: routeId.value,
     });
-    return row
-      ? AssignmentMapper.toDomain(row as unknown as AssignmentEntity)
-      : null;
+    return result.exists;
   }
 
-  async findActiveByDriverId(driverId: string): Promise<Assignment | null> {
-    const [row] = await this.database.exec(findActiveAssignmentByDriverId, {
-      driverId,
+  async existsActiveForVehicle(vehicleId: VehicleId): Promise<boolean> {
+    const [result] = await this.database.exec(existsActiveAssignmentForVehicle, {
+      vehicleId: vehicleId.value,
     });
-    return row
-      ? AssignmentMapper.toDomain(row as unknown as AssignmentEntity)
-      : null;
+    return result.exists;
+  }
+
+  async existsActiveForDriver(driverId: DriverId): Promise<boolean> {
+    const [result] = await this.database.exec(existsActiveAssignmentForDriver, {
+      driverId: driverId.value,
+    });
+    return result.exists;
   }
 
   async save(assignment: Assignment): Promise<void> {

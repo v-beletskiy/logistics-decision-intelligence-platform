@@ -62,7 +62,7 @@ A transportation request throughout its lifecycle representing the movement of g
 
 - ShipmentRepository
   - findById(id: ShipmentId)
-  - findByRouteId(routeId: RouteId)
+  - findByIds(ids: readonly ShipmentId[])
   - save(shipment: Shipment)
   - delete(id: ShipmentId)
 

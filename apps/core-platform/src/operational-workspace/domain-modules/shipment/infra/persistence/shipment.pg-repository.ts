@@ -26,10 +26,10 @@ export class PgShipmentRepository extends ShipmentRepository {
       : null;
   }
 
-  async findByIds(ids: readonly string[]): Promise<readonly Shipment[]> {
+  async findByIds(ids: readonly ShipmentId[]): Promise<readonly Shipment[]> {
     if (ids.length === 0) return [];
     const rows = await this.database.exec(findShipmentsByIds, {
-      ids: [...ids],
+      ids: ids.map((id) => id.value),
     });
     return rows.map((row) =>
       ShipmentMapper.toDomain(row as unknown as ShipmentEntity),

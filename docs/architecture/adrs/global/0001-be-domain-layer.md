@@ -130,11 +130,6 @@ Domain Services:
 - never perform persistence;
 - never coordinate infrastructure.
 
-Domain policies express decisions or eligibility rules and should be
-side-effect free. When a policy approves a state transition, the Aggregate
-still owns and performs that transition so its local invariants and Domain
-Events remain authoritative.
-
 The project distinguishes two kinds of Domain Services.
 
 ### Domain-Local
@@ -144,6 +139,15 @@ Support a single Aggregate.
 ### Cross-Domain
 
 Encapsulate business decisions spanning multiple Aggregates within the same Bounded Context.
+
+---
+
+## Domain Policies
+
+Domain policies express decisions or eligibility rules and should be
+side-effect free. When a policy approves a state transition, the Aggregate
+still owns and performs that transition so its local invariants and Domain
+Events remain authoritative.
 
 ---
 

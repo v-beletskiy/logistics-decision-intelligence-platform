@@ -229,8 +229,8 @@ Start execution of an assigned Route.
 #### Flow
 
 1. Load Route via RouteRepository.findById().
-2. Load Assignment via AssignmentRepository.findRunningByRouteId().
-3. Execute Route.start().
+2. Check for a running Assignment via AssignmentRepository.existsRunningForRoute().
+3. Execute Route.start(hasRunningAssignment).
 4. Persist Route via RouteRepository.save().
 5. Publish RouteStartedDomainEvent event.
 

@@ -1,5 +1,5 @@
-import * as assert from 'node:assert/strict';
-import { test } from 'node:test';
+import * as assert from "node:assert/strict";
+import { test } from "node:test";
 
 import {
   Dimensions,
@@ -10,12 +10,14 @@ import {
   VolumeUnit,
   Weight,
   WeightUnit,
-} from '.';
+} from ".";
 
-test('Weight validates its value and unit and compares by value', () => {
+test("Weight validates its value and unit and compares by value", () => {
   const weight = Weight.create({ value: 0, unit: WeightUnit.Kilogram });
 
-  assert.ok(weight.equals(Weight.create({ value: 0, unit: WeightUnit.Kilogram })));
+  assert.ok(
+    weight.equals(Weight.create({ value: 0, unit: WeightUnit.Kilogram })),
+  );
   assert.ok(!weight.equals(Weight.create({ value: 0, unit: WeightUnit.Gram })));
   assert.ok(Object.isFrozen(weight));
   assert.throws(
@@ -23,44 +25,88 @@ test('Weight validates its value and unit and compares by value', () => {
     /cannot be negative/,
   );
   assert.throws(
-    () => Weight.create({ value: 1, unit: 'UNKNOWN' as WeightUnit }),
+    () => Weight.create({ value: 1, unit: "UNKNOWN" as WeightUnit }),
     /Weight unit is invalid/,
   );
 });
 
-test('Volume validates its value and unit and compares by value', () => {
+test("Weight converts between supported units", () => {
+  const weight = Weight.create({ value: 2.2046226218, unit: WeightUnit.Pound });
+
+  assert.ok(Math.abs(weight.valueIn(WeightUnit.Kilogram) - 1) < 1e-10);
+  assert.ok(Math.abs(weight.valueIn(WeightUnit.Gram) - 1_000) < 1e-7);
+});
+
+test("Volume validates its value and unit and compares by value", () => {
   const volume = Volume.create({ value: 0, unit: VolumeUnit.CubicMeter });
 
-  assert.ok(volume.equals(Volume.create({ value: 0, unit: VolumeUnit.CubicMeter })));
-  assert.ok(!volume.equals(Volume.create({ value: 1, unit: VolumeUnit.CubicMeter })));
+  assert.ok(
+    volume.equals(Volume.create({ value: 0, unit: VolumeUnit.CubicMeter })),
+  );
+  assert.ok(
+    !volume.equals(Volume.create({ value: 1, unit: VolumeUnit.CubicMeter })),
+  );
   assert.ok(Object.isFrozen(volume));
   assert.throws(
-    () => Volume.create({ value: Number.POSITIVE_INFINITY, unit: VolumeUnit.Liter }),
+    () =>
+      Volume.create({
+        value: Number.POSITIVE_INFINITY,
+        unit: VolumeUnit.Liter,
+      }),
     /must be a finite number/,
   );
   assert.throws(
-    () => Volume.create({ value: 1, unit: 'UNKNOWN' as VolumeUnit }),
+    () => Volume.create({ value: 1, unit: "UNKNOWN" as VolumeUnit }),
     /Volume unit is invalid/,
   );
 });
 
-test('Distance validates its value and unit and compares by value', () => {
+test("Volume converts between supported units", () => {
+  const volume = Volume.create({ value: 1, unit: VolumeUnit.CubicMeter });
+
+  assert.equal(volume.valueIn(VolumeUnit.Liter), 1_000);
+  assert.ok(
+    Math.abs(volume.valueIn(VolumeUnit.CubicFoot) - 35.3146667215) < 1e-9,
+  );
+});
+
+test("Distance validates its value and unit and compares by value", () => {
   const distance = Distance.create({ value: 0, unit: DistanceUnit.Kilometer });
 
-  assert.ok(distance.equals(Distance.create({ value: 0, unit: DistanceUnit.Kilometer })));
-  assert.ok(!distance.equals(Distance.create({ value: 0, unit: DistanceUnit.Mile })));
+  assert.ok(
+    distance.equals(
+      Distance.create({ value: 0, unit: DistanceUnit.Kilometer }),
+    ),
+  );
+  assert.ok(
+    !distance.equals(Distance.create({ value: 0, unit: DistanceUnit.Mile })),
+  );
   assert.ok(Object.isFrozen(distance));
   assert.throws(
     () => Distance.create({ value: -1, unit: DistanceUnit.Kilometer }),
     /cannot be negative/,
   );
   assert.throws(
-    () => Distance.create({ value: 1, unit: 'UNKNOWN' as DistanceUnit }),
+    () => Distance.create({ value: 1, unit: "UNKNOWN" as DistanceUnit }),
     /Distance unit is invalid/,
   );
 });
 
-test('Dimensions requires positive finite measurements and a valid unit', () => {
+test("Distance converts between supported units", () => {
+  const distance = Distance.create({ value: 1, unit: DistanceUnit.Mile });
+
+  assert.equal(distance.valueIn(DistanceUnit.Kilometer), 1.609344);
+  assert.ok(
+    Math.abs(
+      Distance.create({
+        value: 1,
+        unit: DistanceUnit.Kilometer,
+      }).valueIn(DistanceUnit.Mile) - 0.6213711922,
+    ) < 1e-10,
+  );
+});
+
+test("Dimensions requires positive finite measurements and a valid unit", () => {
   const dimensions = Dimensions.create({
     length: 100,
     width: 50,
@@ -68,38 +114,74 @@ test('Dimensions requires positive finite measurements and a valid unit', () => 
     unit: DimensionUnit.Centimeter,
   });
 
-  assert.ok(dimensions.equals(Dimensions.create({
-    length: 100,
-    width: 50,
-    height: 25,
-    unit: DimensionUnit.Centimeter,
-  })));
+  assert.ok(
+    dimensions.equals(
+      Dimensions.create({
+        length: 100,
+        width: 50,
+        height: 25,
+        unit: DimensionUnit.Centimeter,
+      }),
+    ),
+  );
   assert.ok(Object.isFrozen(dimensions));
   assert.throws(
-    () => Dimensions.create({
-      length: 0,
-      width: 50,
-      height: 25,
-      unit: DimensionUnit.Centimeter,
-    }),
+    () =>
+      Dimensions.create({
+        length: 0,
+        width: 50,
+        height: 25,
+        unit: DimensionUnit.Centimeter,
+      }),
     /Dimension length must be greater than zero/,
   );
   assert.throws(
-    () => Dimensions.create({
-      length: 100,
-      width: Number.NaN,
-      height: 25,
-      unit: DimensionUnit.Centimeter,
-    }),
+    () =>
+      Dimensions.create({
+        length: 100,
+        width: Number.NaN,
+        height: 25,
+        unit: DimensionUnit.Centimeter,
+      }),
     /Dimension width must be a finite number/,
   );
   assert.throws(
-    () => Dimensions.create({
-      length: 100,
-      width: 50,
-      height: 25,
-      unit: 'UNKNOWN' as DimensionUnit,
-    }),
+    () =>
+      Dimensions.create({
+        length: 100,
+        width: 50,
+        height: 25,
+        unit: "UNKNOWN" as DimensionUnit,
+      }),
     /Dimension unit is invalid/,
+  );
+});
+
+test("Dimensions returns its volume and compares envelopes across units", () => {
+  const item = Dimensions.create({
+    length: 10,
+    width: 20,
+    height: 30,
+    unit: DimensionUnit.Centimeter,
+  });
+  const envelope = Dimensions.create({
+    length: 100,
+    width: 200,
+    height: 300,
+    unit: DimensionUnit.Millimeter,
+  });
+
+  const volume = item.volume();
+  assert.equal(volume.unit, VolumeUnit.CubicMeter);
+  assert.ok(Math.abs(volume.valueIn(VolumeUnit.Liter) - 6) < 1e-12);
+  assert.equal(item.isWithinEnvelope(envelope), true);
+  assert.equal(
+    Dimensions.create({
+      length: 4,
+      width: 8,
+      height: 12,
+      unit: DimensionUnit.Inch,
+    }).isWithinEnvelope(envelope),
+    false,
   );
 });

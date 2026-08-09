@@ -32,10 +32,24 @@ export class Distance extends ValueObject<Distance> {
     return new Distance(props);
   }
 
+  /** Returns this distance expressed in the requested unit. */
+  valueIn(unit: DistanceUnit): number {
+    const targetUnit = requireDistanceUnit(unit);
+    return (
+      (this.value * KILOMETERS_PER_UNIT[this.unit]) /
+      KILOMETERS_PER_UNIT[targetUnit]
+    );
+  }
+
   protected equalityComponents(): readonly unknown[] {
     return [this.value, this.unit];
   }
 }
+
+const KILOMETERS_PER_UNIT: Readonly<Record<DistanceUnit, number>> = {
+  [DistanceUnit.Kilometer]: 1,
+  [DistanceUnit.Mile]: 1.609_344,
+};
 
 function requireDistanceUnit(value: unknown): DistanceUnit {
   if (!isEnumValue(DistanceUnit, value)) {

@@ -21,6 +21,10 @@ import { VehicleId } from "../../../vehicle/domain/vehicle-id";
 import { insertAssignment } from "./queries/assignment.insert.queries";
 import { insertAssignmentShipments } from "./queries/assignment.insert-shipments.queries";
 import { updateAssignment } from "./queries/assignment.update.queries";
+import { existsActiveAssignmentForDriver } from "./queries/assignment.exists-active-for-driver.queries";
+import { existsActiveAssignmentForRoute } from "./queries/assignment.exists-active-for-route.queries";
+import { existsActiveAssignmentForVehicle } from "./queries/assignment.exists-active-for-vehicle.queries";
+import { existsRunningAssignmentForRoute } from "./queries/assignment.exists-running-for-route.queries";
 import { PgAssignmentRepository } from "./assignment.pg-repository";
 
 const shipmentId = ShipmentId.from("550e8400-e29b-41d4-a716-446655440001");
@@ -151,4 +155,38 @@ test("save updates the assignment row after completion", async () => {
   const params = update!.params as { status: string; completedAt: Date | null };
   assert.equal(params.status, AssignmentStatus.Completed);
   assert.ok(params.completedAt instanceof Date);
+});
+
+test("assignment existence checks use scoped queries without hydrating aggregates", async () => {
+  const calls: Array<{ statement: unknown; params: unknown }> = [];
+  const database = {
+    exec: async (statement: unknown, params: unknown) => {
+      calls.push({ statement, params });
+      return [{ exists: statement !== existsActiveAssignmentForRoute }];
+    },
+  } as unknown as PgDatabase;
+  const repository = new PgAssignmentRepository(database);
+
+  assert.equal(await repository.existsActiveForVehicle(vehicleId), true);
+  assert.equal(await repository.existsActiveForDriver(driverId), true);
+  assert.equal(await repository.existsActiveForRoute(routeId), false);
+  assert.equal(await repository.existsRunningForRoute(routeId), true);
+  assert.deepEqual(calls, [
+    {
+      statement: existsActiveAssignmentForVehicle,
+      params: { vehicleId: vehicleId.value },
+    },
+    {
+      statement: existsActiveAssignmentForDriver,
+      params: { driverId: driverId.value },
+    },
+    {
+      statement: existsActiveAssignmentForRoute,
+      params: { routeId: routeId.value },
+    },
+    {
+      statement: existsRunningAssignmentForRoute,
+      params: { routeId: routeId.value },
+    },
+  ]);
 });

@@ -1,18 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
-
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
-import { DistributedApplicationEventBus } from "../../../../../shared/infra/messaging/application-event-bus";
-import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
-import { IntegrationEventMetadataFactory } from "../../../../../shared/infra/messaging/integration-event.factory";
+import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { AssignmentId } from "../../../../domain-modules/assignment/domain/assignment-id";
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
 import { VehicleId } from "../../../../domain-modules/vehicle/domain/vehicle-id";
 import { VehicleRepository } from "../../../../domain-modules/vehicle/domain/vehicle.repository";
-import { AssignmentPlanningPolicy } from "../../../../shared-domain/services/assignment-planning.policy";
+import { AssignmentPlanningPolicy } from "../../../../shared-domain/policies/assignment-planning.policy";
 import { ReassignVehicleCommand } from "./reassign-vehicle.command";
 
 @Injectable()
@@ -22,8 +19,6 @@ export class ReassignVehicleHandler extends CommandHandler {
     private readonly assignments: AssignmentRepository,
     @Inject(VehicleRepository) private readonly vehicles: VehicleRepository,
     private readonly assignmentPlanning: AssignmentPlanningPolicy,
-    private readonly outbox: DistributedApplicationEventBus,
-    private readonly integrationEventFactory: IntegrationEventMetadataFactory,
     trxManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
@@ -42,29 +37,24 @@ export class ReassignVehicleHandler extends CommandHandler {
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
-    const activeAssignmentByVehicle =
-      await this.assignments.findActiveByVehicleId(vehicle.id.value);
+    const keepsCurrentVehicle = assignment.vehicleId.equals(vehicle.id);
+    if (keepsCurrentVehicle) {
+      assignment.assignVehicle(vehicle.id);
+      return;
+    }
 
-    this.assignmentPlanning.reassignVehicle(
-      assignment,
+    const vehicleHasActiveAssignment =
+      await this.assignments.existsActiveForVehicle(vehicle.id);
+
+    this.assignmentPlanning.assertVehicleCanBeAssigned(
       vehicle,
-      activeAssignmentByVehicle,
+      assignment.shipments,
+      vehicleHasActiveAssignment,
     );
+    assignment.assignVehicle(vehicle.id);
 
     await this.execTrxWithDomainEvents(async () => {
       await this.assignments.save(assignment);
-      await this.outbox.publish(
-        this.integrationEventFactory.create({
-          eventType: "operational-workspace.route.assignment-changed",
-          eventVersion: 1,
-          tenantId: command.tenantId,
-          initiatedByUserId: command.initiatedByUserId,
-          payload: {
-            routeId: assignment.routeId.value,
-            assignmentId: assignment.id.value,
-          },
-        }),
-      );
     }, assignment);
   }
 }

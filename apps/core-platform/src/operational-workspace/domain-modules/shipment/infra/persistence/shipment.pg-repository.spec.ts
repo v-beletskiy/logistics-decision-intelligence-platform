@@ -21,6 +21,7 @@ import {
   Weight,
 } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
 import { insertShipment } from "./queries/shipment.insert.queries";
+import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries";
 import { updateShipment } from "./queries/shipment.update.queries";
 import { PgShipmentRepository } from "./shipment.pg-repository";
 
@@ -172,4 +173,23 @@ test("save updates the shipment row after delivery completion", async () => {
   };
   assert.equal(params.deliveryCompleted, true);
   assert.equal(params.status, ShipmentStatus.Completed);
+});
+
+test("findByIds unwraps shipment identifiers only at the persistence boundary", async () => {
+  const { database, calls } = trackedDatabase();
+  const repository = new PgShipmentRepository(database);
+  const shipmentIds = [
+    ShipmentId.from("00000000-0000-4000-8000-000000000002"),
+    ShipmentId.from("00000000-0000-4000-8000-000000000003"),
+  ];
+
+  const shipments = await repository.findByIds(shipmentIds);
+
+  assert.deepEqual(shipments, []);
+  assert.deepEqual(calls, [
+    {
+      statement: findShipmentsByIds,
+      params: { ids: shipmentIds.map((id) => id.value) },
+    },
+  ]);
 });

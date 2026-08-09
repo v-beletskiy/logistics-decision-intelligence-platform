@@ -8,6 +8,7 @@ import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregat
 import type { DriverEvent } from "./events/driver.domain-events";
 import { DriverId } from "./driver-id";
 import { validatePersonFirstName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-first-name";
+import { validatePersonLastName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-last-name";
 
 export enum DriverStatus {
   Available = "AVAILABLE",
@@ -94,7 +95,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
         details.firstName,
         "Driver first name",
       ),
-      lastName: validatePersonFirstName(details.lastName, "Driver last name"),
+      lastName: validatePersonLastName(details.lastName, "Driver last name"),
       licenseNumber: requireNonBlankString(
         details.licenseNumber,
         "Driver license number",

@@ -8,6 +8,7 @@ import { PgDatabase } from "../../../../../shared/infra/persistence/pg-database"
 import { Route } from "../../domain/route.aggregate";
 import { RouteId } from "../../domain/route-id";
 import { RouteRepository } from "../../domain/route.repository";
+import type { ShipmentId } from "../../../shipment/domain/shipment-id";
 import { deleteRoute } from "./queries/route.delete.queries";
 import { deleteRouteStops } from "./queries/route.delete-stops.queries";
 import { findRouteById } from "./queries/route.find-by-id.queries";
@@ -31,9 +32,9 @@ export class PgRouteRepository extends RouteRepository {
     return RouteMapper.toDomain(route as unknown as RouteEntity);
   }
 
-  async findByShipmentId(shipmentId: string): Promise<readonly Route[]> {
+  async findByShipmentId(shipmentId: ShipmentId): Promise<readonly Route[]> {
     const routes = await this.database.exec(findRoutesByShipmentId, {
-      shipmentId,
+      shipmentId: shipmentId.value,
     });
     return routes.map((route) =>
       RouteMapper.toDomain(route as unknown as RouteEntity),

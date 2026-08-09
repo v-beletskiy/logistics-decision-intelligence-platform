@@ -33,10 +33,25 @@ export class Weight extends ValueObject<Weight> {
     return new Weight(props);
   }
 
+  /** Returns this weight expressed in the requested unit. */
+  valueIn(unit: WeightUnit): number {
+    const targetUnit = requireWeightUnit(unit);
+    return (
+      (this.value * KILOGRAMS_PER_UNIT[this.unit]) /
+      KILOGRAMS_PER_UNIT[targetUnit]
+    );
+  }
+
   protected equalityComponents(): readonly unknown[] {
     return [this.value, this.unit];
   }
 }
+
+const KILOGRAMS_PER_UNIT: Readonly<Record<WeightUnit, number>> = {
+  [WeightUnit.Kilogram]: 1,
+  [WeightUnit.Gram]: 0.001,
+  [WeightUnit.Pound]: 0.453_592_37,
+};
 
 function requireWeightUnit(value: unknown): WeightUnit {
   if (!isEnumValue(WeightUnit, value)) {

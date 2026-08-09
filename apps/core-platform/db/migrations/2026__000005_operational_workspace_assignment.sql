@@ -20,8 +20,6 @@ CREATE TABLE
     updated_at timestamptz NOT NULL DEFAULT now ()
   );
 
-CREATE INDEX IF NOT EXISTS assignments_shipment_id_idx ON operational_workspace.assignments (shipment_id);
-
 CREATE INDEX IF NOT EXISTS assignments_status_idx ON operational_workspace.assignments (status);
 
 CREATE UNIQUE INDEX IF NOT EXISTS assignments_active_vehicle_unique ON operational_workspace.assignments (vehicle_id)

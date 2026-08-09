@@ -4,7 +4,7 @@ import { Authorized } from "../../../../../shared/access-control/authorization/a
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
+import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
@@ -28,11 +28,10 @@ export class StartRouteHandler extends CommandHandler {
     const route = await this.routes.findById(RouteId.from(command.routeId));
     if (!route) throw new AggregateNotFoundException("Route");
 
-    const activeAssignment = await this.assignments.findActiveByRouteId(
-      route.id.value,
+    const hasRunningAssignment = await this.assignments.existsRunningForRoute(
+      route.id,
     );
-    const hasActiveAssignment = activeAssignment !== null;
-    route.start(hasActiveAssignment);
+    route.start(hasRunningAssignment);
 
     await this.execTrxWithDomainEvents(async () => {
       await this.routes.save(route);

@@ -128,6 +128,10 @@ Invariants:
 
 - Value must be greater than or equal to zero.
 
+Behavior:
+
+- Converts its numeric value to any supported Weight unit through `valueIn(...)`.
+
 ---
 
 #### Volume
@@ -141,6 +145,10 @@ Invariants:
 
 - Value must be greater than or equal to zero.
 
+Behavior:
+
+- Converts its numeric value to any supported Volume unit through `valueIn(...)`.
+
 ---
 
 #### Dimensions
@@ -150,11 +158,16 @@ Fields:
 - length: int
 - width: int
 - height: int
-- unit: enum (cm / mm / in)
+- unit: enum (m / cm / mm / in)
 
 Invariants:
 
 - Length, Width and Height must be greater than zero.
+
+Behavior:
+
+- Returns its rectangular `Volume` in cubic meters through `volume()`.
+- Compares an axis-aligned item against another dimension envelope through `isWithinEnvelope(...)`.
 
 ---
 
@@ -168,6 +181,10 @@ Fields:
 Invariants:
 
 - Value must be greater than or equal to zero.
+
+Behavior:
+
+- Converts its numeric value to any supported Distance unit through `valueIn(...)`.
 
 ---
 
