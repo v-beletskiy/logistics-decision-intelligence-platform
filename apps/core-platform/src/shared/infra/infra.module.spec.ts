@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RabbitMqOutboxPublisher } from "./inbox-outbox/rabbitmq-outbox-publisher";
+import { RabbitMqOutboxPublisher } from "./messaging/integration/outbound/outbox/rabbitmq-outbox-publisher";
 import { InfraModule } from "./infra.module";
 import { HealthController } from "./http/health.controller";
 import { HttpExceptionFilter } from "./http/http-exception.filter";

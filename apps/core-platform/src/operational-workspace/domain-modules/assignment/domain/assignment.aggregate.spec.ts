@@ -146,6 +146,16 @@ test("Assignment reassigns vehicle and driver while created", () => {
   );
 });
 
+test("Assignment treats reassigning the same resources as a no-op", () => {
+  const assignment = Assignment.create(props);
+  assignment.pullDomainEvents();
+
+  assignment.assignVehicle(assignment.vehicleId);
+  assignment.assignDriver(assignment.driverId);
+
+  assert.deepEqual(assignment.pullDomainEvents(), []);
+});
+
 test("Assignment rejects reassigning with the wrong identifier type", () => {
   const assignment = Assignment.create(props);
   assert.throws(

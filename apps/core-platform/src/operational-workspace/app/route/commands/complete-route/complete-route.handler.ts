@@ -4,7 +4,7 @@ import { Authorized } from "../../../../../shared/access-control/authorization/a
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
+import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
 import { RouteId } from "../../../../domain-modules/route/domain/route-id";

@@ -102,14 +102,16 @@ This approach enables reliable, eventually consistent communication between inde
 
 ## Inter-Bounded Context Communication
 
-Bounded Contexts communicate exclusively through **Integration Events** delivered via an **Application Event Bus**.
+Bounded Contexts communicate through application events. An event crossing a
+deployment boundary is an **Integration Event**; one staying inside the modular
+monolith is an internal application event.
 
 Direct dependencies between Bounded Contexts are prohibited.
 
 ```
 Operational Workspace
         │
-        │ RouteCreatedIntegrationEvent
+        │ RouteOptimizationInputChangedApplicationEvent
         ▼
 Application Event Bus
         │
@@ -123,7 +125,8 @@ Version 1 provides:
 
 - an **InMemoryApplicationEventBus** implementation for write communication between Bounded Contexts inside the modular monolith;
 - a **read-contract** for read communication between Bounded Contexts inside the modular monolith;
-- a **DistributedApplicationEventBus** implementation for communication between independently deployed services through the Distributed Message Broker.
+- an **IntegrationEventPublisher** output port implemented through the
+  transactional outbox for communication between independently deployed services.
 
 This provides a consistent programming model regardless of deployment topology.
 
@@ -189,6 +192,21 @@ Application Use Case
 
 This separation allows the internal domain model to evolve independently from published integration contracts.
 
+#### Integration Event Contract Rules
+
+- Integration Events use structured CloudEvents JSON (`application/cloudevents+json`).
+  The shared envelope is a technical interoperability contract, not a Domain model.
+- Every payload schema is owned by its producing Bounded Context. Consumers may depend on an immutable published version but never modify it.
+- Routing keys and event types include the contract version, for example
+  `decision-intelligence.recommendation-analysis-requested.v1`. This permits v1 and v2 consumers to coexist without receiving each other's messages.
+- Every wire-shape change, including an optional field, creates a new immutable schema and event version. This preserves closed schemas and avoids silent consumer drift.
+- The CloudEvents profile requires `id`, `source`, `type`, `subject`, `time`,
+  `dataschema`, `tenantid`, and JSON `data`. `dataschema` makes the payload
+  contract explicit; trace context belongs in transport headers. None of this
+  metadata is authorization proof.
+- Contracts are embedded and compiled at process startup. Consumers never fetch
+  schemas from a remote registry during message processing.
+
 ---
 
 ## Consequences
@@ -237,9 +255,21 @@ Rejected because synchronous computational interactions requiring an immediate r
 - The internal RabbitMQ integration topology is a version-controlled, code-owned contract (`IntegrationTopology`).
 - RabbitMQ connection management is independent of topology declaration. Publishers and long-lived consumers own separate channels on a shared process connection.
 - Shared exchanges are declared by the topology provisioner. Each consumer owns its queue, bindings, retry queue, and dead-letter route.
-- Services never share domain models. Only generated Protocol Buffer contracts are shared between services.
+- Services never share domain models. Protocol Buffers are shared for synchronous
+  gRPC APIs; language-neutral JSON Schema contracts are shared for asynchronous
+  Integration Events.
 - Protocol Buffer definitions are stored in `packages/grpc-contracts`.
+  Integration Event schemas are stored in `packages/integration-contracts`.
+- JSON Schema is the language-neutral source of truth. Language-specific
+  contract payload types are generated from those schemas rather than maintained
+  as parallel handwritten definitions.
+- Each subscription declares the exact immutable contract versions it accepts;
+  typed runtimes derive the handler's discriminated event union from that list.
+- Inbox idempotency is scoped by a stable, version-controlled logical consumer
+  identifier plus the event ID. The logical consumer identifier is independent
+  of broker queue names, which may change during topology or deployment changes.
 - Each service maps published contracts into its own domain model.
-- The Application Event Bus is an abstraction. Both implementations expose the same programming interface to application use cases.
-  - `InMemoryApplicationEventBus` is used for communication between Bounded Contexts inside the modular monolith.
-  - `DistributedApplicationEventBus` is used for communication between independently deployed services.
+- `InMemoryApplicationEventBus` carries trusted, typed application events between
+  Bounded Contexts inside the modular monolith. `IntegrationEventPublisher`
+  carries validated CloudEvents toward independently deployed services; they
+  intentionally have different message types.

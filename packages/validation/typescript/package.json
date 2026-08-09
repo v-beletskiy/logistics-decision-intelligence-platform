@@ -2,20 +2,27 @@
   "name": "@logistics-decision-intelligence/validation",
   "version": "0.0.0",
   "private": true,
-  "description": "Framework-free validation primitives.",
+  "description": "Shared JSON Schema validation utilities.",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./json-schema": {
+      "types": "./dist/json-schema/index.d.ts",
+      "default": "./dist/json-schema/index.js"
     }
   },
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "tsc --noEmit",

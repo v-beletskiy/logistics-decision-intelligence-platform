@@ -1,0 +1,32 @@
+{
+  "name": "@logistics-decision-intelligence/integration-events",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Transport-neutral integration event creation, serialization, and validation.",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@logistics-decision-intelligence/integration-contracts": "workspace:*",
+    "@logistics-decision-intelligence/validation": "workspace:*"
+  },
+  "scripts": {
+    "build": "pnpm --filter @logistics-decision-intelligence/integration-contracts build && tsc -p tsconfig.json",
+    "lint": "tsc --noEmit",
+    "test": "pnpm build && node --test 'dist/**/*.spec.js'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "^5.9.3"
+  }
+}

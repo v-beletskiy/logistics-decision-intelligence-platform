@@ -174,7 +174,8 @@ Create an operational Route containing ordered execution stops for one or more S
 3. Create RouteStop entities for shipment Pickup and Delivery operations.
 4. Persist Route via RouteRepository.save().
 5. Publish RouteCreatedDomainEvent.
-6. Publish RouteCreatedIntegrationEvent.
+6. Publish `RouteOptimizationInputChangedApplicationEvent` for the in-process
+   Decision Intelligence context.
 
 ---
 
@@ -202,7 +203,8 @@ Change the execution order of RouteStops before Route execution starts.
 2. Execute Route.reorderStops(...).
 3. Persist Route via RouteRepository.save().
 4. Publish RouteStopsReorderedDomainEvent event.
-5. Publish RouteStructureChangedIntegrationEvent event.
+5. Publish `RouteOptimizationInputChangedApplicationEvent` for the in-process
+   Decision Intelligence context.
 
 ---
 
@@ -287,14 +289,13 @@ Allocate a Vehicle and Driver to execute a Route.
 
 #### Flow
 
-1. Load Route via RouteRepository.findById().
-2. Load Vehicle via VehicleRepository.findById().
-3. Load Driver via DriverRepository.findById().
-4. Load Shipments executed by the Route via ShipmentRepository.findByRouteId().
-5. Execute AssignmentPlanningService.plan(route, vehicle, driver, shipments).
-6. Persist Assignment via AssignmentRepository.save().
-7. Publish AssignmentCreatedDomainEvent event.
-8. Publish RouteStructureChangedIntegrationEvent.
+1. Load Route, Vehicle, and Driver through their repositories.
+2. Load the unique Shipments referenced by the Route stops.
+3. In parallel, check whether the Vehicle, Driver, or Route already participates in an active Assignment.
+4. Execute `AssignmentPlanningPolicy.assertCanCreateAssignment(...)`.
+5. Create the Assignment, including immutable Shipment load snapshots.
+6. In one transaction, persist the Assignment.
+7. Dispatch `AssignmentCreatedDomainEvent` after successful persistence.
 
 ---
 
@@ -318,13 +319,12 @@ Replace the Vehicle assigned to a Route execution.
 
 #### Flow
 
-1. Load Assignment via AssignmentRepository.findById().
-2. Load Vehicle via VehicleRepository.findById().
-3. Execute AssignmentPlanningService.validateVehicle(...).
-4. Execute Assignment.reassignVehicle(...).
-5. Persist Assignment via AssignmentRepository.save().
-6. Publish VehicleReassignedDomainEvent event.
-7. Publish RouteStructureChangedIntegrationEvent.
+1. Load the Assignment and candidate Vehicle through their repositories.
+2. If the Vehicle is unchanged, execute `Assignment.assignVehicle(...)` to enforce lifecycle invariants and complete as an idempotent no-op.
+3. Otherwise, check whether the candidate Vehicle participates in an active Assignment.
+4. Execute `AssignmentPlanningPolicy.assertVehicleCanBeAssigned(...)` using the Assignment load snapshot, then `Assignment.assignVehicle(...)`.
+5. In one transaction, persist the Assignment.
+6. Dispatch `VehicleReassignedDomainEvent` after successful persistence.
 
 ---
 
@@ -348,13 +348,12 @@ Replace the Driver assigned to a Route execution.
 
 #### Flow
 
-1. Load Assignment via AssignmentRepository.findById().
-2. Load Driver via DriverRepository.findById().
-3. Execute AssignmentPlanningService.validateDriver(...).
-4. Execute Assignment.reassignDriver(...).
-5. Persist Assignment via AssignmentRepository.save().
-6. Publish DriverReassignedDomainEvent event.
-7. Publish RouteStructureChangedIntegrationEvent.
+1. Load the Assignment and candidate Driver through their repositories.
+2. If the Driver is unchanged, execute `Assignment.assignDriver(...)` to enforce lifecycle invariants and complete as an idempotent no-op.
+3. Otherwise, check whether the candidate Driver participates in an active Assignment.
+4. Execute `AssignmentPlanningPolicy.assertDriverCanBeAssigned(...)`, then `Assignment.assignDriver(...)`.
+5. In one transaction, persist the Assignment.
+6. Dispatch `DriverReassignedDomainEvent` after successful persistence.
 
 ---
 
@@ -436,7 +435,8 @@ Cancel an Assignment that will no longer be executed.
 2. Execute Assignment.cancel().
 3. Persist Assignment via AssignmentRepository.save().
 4. Publish AssignmentCancelledDomainEvent event.
-5. Publish RouteStructureChangedIntegrationEvent.
+5. Publish `RouteOptimizationInputChangedApplicationEvent` for the in-process
+   Decision Intelligence context.
 
 ---
 

@@ -1,0 +1,41 @@
+import { Inject, Injectable } from "@nestjs/common";
+import {
+  IntegrationEventDecoder,
+  type CloudEvent,
+} from "@logistics-decision-intelligence/integration-events";
+
+import { IntegrationEventPublisher } from "../../../../../app/messaging/integration-event-publisher";
+import { APP_CONFIG, type AppConfig } from "../../../../config/app-config";
+import { corePlatformOutboundContracts } from "../core-platform-outbound-contracts";
+import { OutboxStore } from "./outbox-store";
+
+/**
+ * Distributed event delivery starts by persisting an event in the transaction
+ * that changed the business state. RabbitMQ publication is performed later.
+ */
+@Injectable()
+export class TransactionalOutboxIntegrationEventPublisher extends IntegrationEventPublisher {
+  private readonly decoder = new IntegrationEventDecoder(
+    corePlatformOutboundContracts,
+  );
+
+  constructor(
+    private readonly outboxStore: OutboxStore,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
+  ) {
+    super();
+  }
+
+  async publish(event: CloudEvent): Promise<void> {
+    this.decoder.assert(event);
+    if (
+      Buffer.byteLength(JSON.stringify(event)) >
+      this.config.messaging.maxOutgoingMessageBytes
+    ) {
+      throw new Error(
+        "Integration event exceeds the configured outgoing message size limit.",
+      );
+    }
+    await this.outboxStore.enqueue(event);
+  }
+}

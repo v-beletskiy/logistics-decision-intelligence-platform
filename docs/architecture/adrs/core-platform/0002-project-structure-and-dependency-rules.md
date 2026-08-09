@@ -37,9 +37,17 @@ src/
 │   │       ├── exceptions/
 │   │       └── policies/
 │   │
+│   ├── app/
+│   │   └── messaging/       # application-owned input/output ports
+│   │
 │   ├── infra/
 │   │   ├── http/
 │   │   ├── messaging/
+│   │   │   ├── internal/
+│   │   │   └── integration/
+│   │   │       ├── inbound/
+│   │   │       ├── outbound/
+│   │   │       └── rabbitmq/
 │   │   ├── persistence/
 │   │   └── ...
 │   │
@@ -57,6 +65,7 @@ The project intentionally separates three categories of shared code:
 | Module | Purpose |
 |--------|---------|
 | **Shared Domain (Shared Kernel)** | Reusable business concepts with identical meaning across bounded contexts (Value Objects, generic domain enums, generic domain exceptions, domain policies). |
+| **Shared Application** | Application-owned ports and orchestration primitives reused by bounded-context use cases. It contains no transport or persistence implementations. |
 | **Shared Infrastructure** | Reusable technical components (database connection, transaction manager, migration manager, HTTP utilities, messaging utilities, etc.). Contains **no business logic**. |
 | **Shared library-like modules, e.g. Access Control** | These modules are organized by capability rather than architectural layer because they represent complete cross-cutting subsystems shared by all bounded contexts. |                            |
 
@@ -202,10 +211,14 @@ Rules:
 
 - Domain modules must not depend on other domain modules.
 - Application use cases depend on one or multiple domain modules.
+- Application use cases depend on application-owned ports and never import
+  adapters from shared infrastructure.
 - Cross-aggregate domain services may depend on multiple domain modules.
 - Domain module infrastructure depends on the application layer.
 - Domain module depends only on the shared domain (shared kernel outside of the bounded context).
 - Shared infrastructure contains no business logic and may be reused by multiple bounded contexts.
+- Shared infrastructure implements application ports; dependency direction
+  never points from the application layer toward infrastructure.
 - Shared domain and shared infrastructure are independent of bounded contexts.
 
 ### Domain Services
@@ -238,15 +251,18 @@ Application Use Case
             │
             ▼
 
-AssignmentPlanningService.plan(
+AssignmentPlanningPolicy.assertCanCreateAssignment(
     route,
     vehicle,
     driver,
-    shipments
+    shipments,
+    conflicts
 )
 ```
 
 This keeps Domain Services deterministic, reusable and free from infrastructure concerns.
+The policy evaluates eligibility only; the application use case subsequently
+invokes the Assignment aggregate to perform any approved state transition.
 
 ### Naming Conventions
 

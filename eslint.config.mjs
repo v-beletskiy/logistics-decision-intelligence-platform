@@ -22,4 +22,21 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
     },
   },
+  {
+    files: ["apps/core-platform/src/**/app/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/shared/infra/messaging/**"],
+              message:
+                "Application code must depend on messaging ports under shared/app, not infrastructure adapters.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

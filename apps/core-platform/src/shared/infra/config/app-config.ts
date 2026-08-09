@@ -18,6 +18,8 @@ export interface AppConfig {
     readonly reconnectDelayMs: number;
     readonly retryBaseDelayMs: number;
     readonly maxDeliveryAttempts: number;
+    readonly maxIncomingMessageBytes: number;
+    readonly maxOutgoingMessageBytes: number;
     readonly outboxPollIntervalMs: number;
     readonly outboxBatchSize: number;
     readonly outboxMaxBatchesPerDrain: number;
@@ -93,6 +95,14 @@ export function createAppConfig(): AppConfig {
       reconnectDelayMs: readPositiveInt("RABBITMQ_RECONNECT_DELAY_MS", 1_000),
       retryBaseDelayMs: readPositiveInt("RABBITMQ_RETRY_BASE_DELAY_MS", 1_000),
       maxDeliveryAttempts: readPositiveInt("RABBITMQ_MAX_DELIVERY_ATTEMPTS", 5),
+      maxIncomingMessageBytes: readPositiveInt(
+        "RABBITMQ_MAX_INCOMING_MESSAGE_BYTES",
+        1 * 1024 * 1024, // 1MB
+      ),
+      maxOutgoingMessageBytes: readPositiveInt(
+        "RABBITMQ_MAX_OUTGOING_MESSAGE_BYTES",
+        1 * 1024 * 1024, // 1MB
+      ),
       outboxPollIntervalMs: readPositiveInt("OUTBOX_POLL_INTERVAL_MS", 5_000),
       outboxBatchSize: readPositiveInt("OUTBOX_BATCH_SIZE", 50),
       outboxMaxBatchesPerDrain: readPositiveInt(

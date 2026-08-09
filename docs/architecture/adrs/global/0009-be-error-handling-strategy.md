@@ -194,6 +194,10 @@ Log
 Acknowledge Message
 ```
 
+Malformed, schema-invalid, or unsupported integration events are also
+deterministic, but are dead-lettered before Inbox processing so operators can
+inspect the rejected producer message. They are never retried.
+
 Business errors are deterministic and must not be retried.
 
 Infrastructure failures:

@@ -6,28 +6,25 @@ import {
 } from "@nestjs/common";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 
+import { DomainEventBus } from "../app/messaging/domain-event-bus";
+import { IntegrationEventPublisher } from "../app/messaging/integration-event-publisher";
+import { InternalApplicationEventBus } from "../app/messaging/internal-application-event-bus";
 import type { ProcessRole } from "./config/app-config";
 import { GrpcClientFactory } from "./grpc/grpc-client.factory";
 import { HealthController } from "./http/health.controller";
 import { HttpExceptionFilter } from "./http/http-exception.filter";
-import {
-  DistributedApplicationEventBus,
-  InternalApplicationEventBus,
-} from "./messaging/application-event-bus";
-import { InMemoryApplicationEventBus } from "./messaging/in-memory-application-event-bus";
-import { DomainEventBus } from "./messaging/domain-event-bus";
-import { InMemoryDomainEventBus } from "./messaging/in-memory-domain-event-bus";
-import { IntegrationEventMetadataFactory } from "./messaging/integration-event.factory";
-import { RabbitMqConnection } from "./messaging/rabbitmq-connection";
-import { RabbitMqIntegrationEventConsumer } from "./messaging/rabbitmq-integration-event-consumer";
-import { RabbitMqTopologyProvisioner } from "./messaging/rabbitmq-topology-provisioner";
-import { InboxProcessor } from "./inbox-outbox/inbox-processor";
-import { InboxStore } from "./inbox-outbox/inbox-store";
-import { OutboxStore } from "./inbox-outbox/outbox-store";
-import { PgInboxStore } from "./inbox-outbox/pg-inbox-store";
-import { PgOutboxStore } from "./inbox-outbox/pg-outbox-store";
-import { RabbitMqOutboxPublisher } from "./inbox-outbox/rabbitmq-outbox-publisher";
-import { TransactionalOutboxApplicationEventBus } from "./inbox-outbox/transactional-outbox-application-event-bus";
+import { InboxProcessor } from "./messaging/integration/inbound/inbox/inbox-processor";
+import { InboxStore } from "./messaging/integration/inbound/inbox/inbox-store";
+import { PgInboxStore } from "./messaging/integration/inbound/inbox/pg-inbox-store";
+import { RabbitMqIntegrationEventConsumer } from "./messaging/integration/inbound/rabbitmq-integration-event-consumer";
+import { OutboxStore } from "./messaging/integration/outbound/outbox/outbox-store";
+import { PgOutboxStore } from "./messaging/integration/outbound/outbox/pg-outbox-store";
+import { RabbitMqOutboxPublisher } from "./messaging/integration/outbound/outbox/rabbitmq-outbox-publisher";
+import { TransactionalOutboxIntegrationEventPublisher } from "./messaging/integration/outbound/outbox/transactional-outbox-integration-event-publisher";
+import { RabbitMqConnection } from "./messaging/integration/rabbitmq/connection";
+import { RabbitMqTopologyProvisioner } from "./messaging/integration/rabbitmq/topology-provisioner";
+import { InMemoryApplicationEventBus } from "./messaging/internal/in-memory-application-event-bus";
+import { InMemoryDomainEventBus } from "./messaging/internal/in-memory-domain-event-bus";
 import { PgDatabase } from "./persistence/pg-database";
 import { PgTransactionManager } from "./persistence/pg-transaction-manager";
 import { TransactionManager } from "./persistence/transaction-manager";
@@ -51,11 +48,10 @@ export class InfraModule {
         provide: InternalApplicationEventBus,
         useExisting: InMemoryApplicationEventBus,
       },
-      IntegrationEventMetadataFactory,
-      TransactionalOutboxApplicationEventBus,
+      TransactionalOutboxIntegrationEventPublisher,
       {
-        provide: DistributedApplicationEventBus,
-        useExisting: TransactionalOutboxApplicationEventBus,
+        provide: IntegrationEventPublisher,
+        useExisting: TransactionalOutboxIntegrationEventPublisher,
       },
       {
         provide: TransactionManager,
@@ -85,8 +81,7 @@ export class InfraModule {
       exports: [
         InternalApplicationEventBus,
         DomainEventBus,
-        DistributedApplicationEventBus,
-        IntegrationEventMetadataFactory,
+        IntegrationEventPublisher,
         TransactionManager,
         PgDatabase,
         OutboxStore,

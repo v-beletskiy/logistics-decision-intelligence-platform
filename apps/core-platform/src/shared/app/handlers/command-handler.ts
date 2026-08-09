@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import type { DomainEvent } from "../../domain/shared-kernel/events/domain-event";
-import { DomainEventBus } from "../../infra/messaging/domain-event-bus";
+import { DomainEventBus } from "../messaging/domain-event-bus";
 import { TransactionManager } from "../../infra/persistence/transaction-manager";
 
 export interface DomainEventsSource {

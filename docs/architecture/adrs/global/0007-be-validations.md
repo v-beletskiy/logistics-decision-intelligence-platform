@@ -36,6 +36,15 @@ For example, an HTTP DTO may reject malformed email syntax before a command is
 created. It must not decide whether a business-restricted email domain is
 allowed.
 
+JSON transport boundaries use trusted, application-owned JSON Schemas compiled
+once through the `@logistics-decision-intelligence/validation/json-schema`
+package entry point. This entry point is technical infrastructure - Domain and
+Application layers never depend on it.
+
+Validators reject unknown properties and do not implicitly coerce types, insert
+defaults, or remove fields. Any normalization must be explicit in the adapter
+or in a Domain Value Object with business meaning.
+
 ---
 
 #### Application Validation
@@ -84,6 +93,11 @@ Examples:
 Infrastructure validation never decides a business policy and never converts a
 technical failure into a Domain Exception. It returns or translates failures as
 technical/infrastructure errors.
+
+Inbound integration events validate a shared CloudEvents envelope and the
+producer-owned payload schema selected by its versioned event type before inbox
+processing. Invalid or unsupported messages are deterministic failures and must
+not enter retry processing.
 
 ---
 
@@ -136,6 +150,9 @@ Each validation layer returns errors appropriate to its responsibility.
 
 - Some checks intentionally occur at multiple layers, but each occurrence has a distinct boundary responsibility.
 - Proper boundary discipline is required to prevent business rules from leaking outside the Domain.
+- A JSON Schema may be reused only when the same versioned external contract is
+  consumed at multiple boundaries. Transport schemas are not reused as Domain
+  validation rules.
 
 ## Reference
 

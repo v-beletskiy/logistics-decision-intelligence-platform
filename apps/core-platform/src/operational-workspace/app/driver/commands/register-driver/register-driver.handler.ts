@@ -3,7 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../shared/infra/messaging/domain-event-bus";
+import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Driver } from "../../../../domain-modules/driver/domain/driver.aggregate";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";

@@ -13,8 +13,7 @@ Operational Workspace
 
 Route
  │
- │ RouteCreatedIntegrationEvent
- │ RouteStructureChangedIntegrationEvent
+ │ RouteOptimizationInputChangedApplicationEvent
  ▼
 Application Event Bus
  │
@@ -39,7 +38,7 @@ Decision Intelligence
 
 Recommendation
  │
- │ RecommendationAcceptedIntegrationEvent
+ │ ApplyRecommendationCommand
  ▼
 Application Event Bus
  │

@@ -142,8 +142,7 @@ Application Layer
       │
       ├── Persist Aggregate
       ├── Dispatch RecommendationAcceptedDomainEvent
-      ├── Map to RecommendationAcceptedIntegrationEvent
-      └── Persist Integration Event to Outbox
+      └── Send ApplyRecommendationCommand to Operational Workspace
 ```
 
 ---

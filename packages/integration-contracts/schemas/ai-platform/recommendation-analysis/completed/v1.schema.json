@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v1",
+  "title": "RecommendationAnalysisCompletedV1Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recommendationId", "requestEventId", "analysis"],
+  "properties": {
+    "recommendationId": { "type": "string", "format": "uuid" },
+    "requestEventId": { "type": "string", "format": "uuid" },
+    "analysis": { "type": "string", "minLength": 1 }
+  }
+}

@@ -22,8 +22,7 @@ Queue a new Optimization when Route changes require a new optimization execution
 
 #### Triggers
 
-- RouteCreatedIntegrationEvent
-- RouteStructureChangedIntegrationEvent
+- RouteOptimizationInputChangedApplicationEvent
 
 #### Flow
 
@@ -134,7 +133,7 @@ Accept a Recommendation and apply it to the operational plan.
 3. Execute Recommendation.accept().
 4. Persist Recommendation via RecommendationRepository.save().
 5. Publish RecommendationAcceptedDomainEvent.
-6. Publish RecommendationAcceptedIntegrationEvent. Then Recommendation should be applied to the operational workspace.
+6. Send an in-process `ApplyRecommendationCommand` to Operational Workspace.
 
 ---
 
