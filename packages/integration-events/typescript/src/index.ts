@@ -35,40 +35,33 @@ export function integrationEventId(value: string): IntegrationEventId {
 export type CloudEvent<
   TData = unknown,
   TType extends string = string,
+  TSource extends string = string,
 > = Readonly<
-  Omit<IntegrationEventEnvelopeV1, "id" | "type" | "data"> & {
+  Omit<IntegrationEventEnvelopeV1, "id" | "source" | "type" | "data"> & {
     readonly id: IntegrationEventId;
+    readonly source: TSource;
     readonly type: TType;
     readonly data: Readonly<TData>;
   }
 >;
 
-export type IntegrationEventOf<
-  TContract extends IntegrationEventContract,
-> = TContract extends IntegrationEventContract
-  ? CloudEvent<
-      IntegrationEventPayloadOf<TContract>,
-      IntegrationEventTypeOf<TContract>
-    >
-  : never;
+export type IntegrationEventOf<TContract extends IntegrationEventContract> =
+  TContract extends IntegrationEventContract
+    ? CloudEvent<
+        IntegrationEventPayloadOf<TContract>,
+        IntegrationEventTypeOf<TContract>
+      >
+    : never;
 
 export type IntegrationEventsOf<
   TContracts extends readonly IntegrationEventContract[],
 > = IntegrationEventOf<TContracts[number]>;
 
 export interface CreateIntegrationEventInput<TData> {
-  readonly source: string;
   readonly tenantid: string;
   readonly subject: string;
   readonly data: TData;
 }
-
-/** @deprecated Use CloudEvent. CloudEvents are now the canonical event model. */
-export type IntegrationEvent<TData = unknown, TType extends string = string> =
-  CloudEvent<TData, TType>;
-
-/** @deprecated Use CloudEvent. CloudEvents are already in wire format. */
-export type SerializedIntegrationEvent<TData = unknown> = CloudEvent<TData>;
 
 export class IntegrationEventValidationError extends Error {
   constructor(
@@ -80,35 +73,34 @@ export class IntegrationEventValidationError extends Error {
   }
 }
 
-export function createIntegrationEvent<
-  const TType extends string,
-  TData,
->(
-  contract: IntegrationEventContract<TType, TData>,
-  input: CreateIntegrationEventInput<TData>,
-  options: {
-    readonly id?: string;
-    readonly time?: string;
-  } = {},
-): CloudEvent<TData, TType> {
-  return {
-    specversion: "1.0",
-    id: integrationEventId(options.id ?? randomUUID()),
-    source: input.source,
-    type: contract.eventType,
-    subject: input.subject,
-    time: options.time ?? new Date().toISOString(),
-    dataschema: contract.schemaId,
-    tenantid: input.tenantid,
-    data: input.data,
-  };
-}
+/** Creates events for one stable logical producer context. */
+export class IntegrationEventFactory<const TSource extends string = string> {
+  constructor(readonly source: TSource) {
+    if (!URL.canParse(source)) {
+      throw new Error("Integration event source must be an absolute URI.");
+    }
+  }
 
-/** @deprecated CloudEvents are already in wire format; use the event directly. */
-export function serializeIntegrationEvent<TData>(
-  event: CloudEvent<TData>,
-): CloudEvent<TData> {
-  return event;
+  create<const TType extends string, TData>(
+    contract: IntegrationEventContract<TType, TData>,
+    input: CreateIntegrationEventInput<NoInfer<TData>>,
+    options: {
+      readonly id?: string;
+      readonly time?: string;
+    } = {},
+  ): CloudEvent<TData, TType, TSource> {
+    return {
+      specversion: "1.0",
+      id: integrationEventId(options.id ?? randomUUID()),
+      source: this.source,
+      type: contract.eventType,
+      subject: input.subject,
+      time: options.time ?? new Date().toISOString(),
+      dataschema: contract.schemaId,
+      tenantid: input.tenantid,
+      data: input.data,
+    };
+  }
 }
 
 /**
@@ -119,10 +111,7 @@ export class IntegrationEventDecoder<
   const TContracts extends readonly IntegrationEventContract[],
 > {
   private readonly schemas: SchemaRegistry;
-  private readonly contracts = new Map<
-    string,
-    IntegrationEventContract
-  >();
+  private readonly contracts = new Map<string, IntegrationEventContract>();
 
   constructor(contracts: TContracts) {
     if (contracts.length === 0) {
@@ -152,10 +141,9 @@ export class IntegrationEventDecoder<
   parse(value: unknown): IntegrationEventsOf<TContracts> {
     let event: Omit<CloudEvent, "id"> & { readonly id: string };
     try {
-      event = this.schemas.assert<Omit<CloudEvent, "id"> & { readonly id: string }>(
-        integrationEventEnvelopeV1Schema.$id,
-        value,
-      );
+      event = this.schemas.assert<
+        Omit<CloudEvent, "id"> & { readonly id: string }
+      >(integrationEventEnvelopeV1Schema.$id, value);
     } catch (error: unknown) {
       throw validationError(error);
     }
@@ -201,7 +189,8 @@ function toSchemaDefinition(
   id: string,
   schema: Readonly<Record<string, unknown>>,
 ): SchemaDefinition {
-  return { id, schema: schema as SchemaDefinition["schema"] };
+  const { "x-event-type": _eventType, ...validationSchema } = schema;
+  return { id, schema: validationSchema as SchemaDefinition["schema"] };
 }
 
 function validationError(error: unknown): IntegrationEventValidationError {

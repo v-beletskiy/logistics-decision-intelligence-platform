@@ -26,6 +26,7 @@ test("published integration contracts have unique event types and schema identif
     assert.ok(!eventTypes.has(contract.eventType));
     assert.ok(!schemaIds.has(contract.schemaId));
     assert.equal(contract.schemaId, contract.payloadSchema.$id);
+    assert.equal(contract.eventType, contract.payloadSchema["x-event-type"]);
     eventTypes.add(contract.eventType);
     schemaIds.add(contract.schemaId);
   }

@@ -7,7 +7,10 @@ import {
 import type { ConfirmChannel, ConsumeMessage } from "amqplib";
 
 import { APP_CONFIG, type AppConfig } from "../../../config/app-config";
-import type { InboxConsumerId } from "./inbox/inbox-message";
+import {
+  inboxConsumerId,
+  type InboxConsumerId,
+} from "./inbox/inbox-message";
 import { InboxProcessor } from "./inbox/inbox-processor";
 import type {
   CloudEvent,
@@ -23,19 +26,23 @@ import { NonRetryableMessageException } from "../errors";
 import { RabbitMqConnection } from "../rabbitmq/connection";
 import { IntegrationTopology } from "../rabbitmq/topology";
 import { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
+import {
+  rabbitMqQueueName,
+  type RabbitMqQueueName,
+} from "./subscription-identity";
 
 export interface RabbitMqSubscription<
   TContracts extends readonly IntegrationEventContract[] = readonly IntegrationEventContract[],
 > {
   readonly consumerId: InboxConsumerId;
-  readonly queue: string;
+  readonly queue: RabbitMqQueueName;
   readonly eventContracts: TContracts;
   readonly handle: (event: IntegrationEventsOf<TContracts>) => Promise<void>;
 }
 
 interface RuntimeSubscription {
   readonly consumerId: InboxConsumerId;
-  readonly queue: string;
+  readonly queue: RabbitMqQueueName;
   readonly eventContracts: readonly IntegrationEventContract[];
   readonly handle: (event: CloudEvent) => Promise<void>;
 }
@@ -68,6 +75,8 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
   async subscribe<
     const TContracts extends readonly IntegrationEventContract[],
   >(subscription: RabbitMqSubscription<TContracts>): Promise<void> {
+    inboxConsumerId(subscription.consumerId);
+    rabbitMqQueueName(subscription.queue);
     if (this.stopping) {
       throw new Error("RabbitMQ integration-event consumer is shutting down.");
     }
@@ -264,7 +273,12 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
       }
 
       try {
-        await this.scheduleRetry(message, retryCount + 1, channel);
+        await this.scheduleRetry(
+          message,
+          retryCount + 1,
+          state.subscription.queue,
+          channel,
+        );
         channel.ack(message);
       } catch (retryError: unknown) {
         this.logger.error(
@@ -302,13 +316,13 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
   private async scheduleRetry(
     message: ConsumeMessage,
     retryCount: number,
+    queueName: RabbitMqQueueName,
     channel: ConfirmChannel,
   ): Promise<void> {
     const delay =
       this.config.messaging.retryBaseDelayMs * 2 ** (retryCount - 1);
-    const published = channel.publish(
-      IntegrationTopology.exchanges.retry.name,
-      message.fields.routingKey,
+    const published = channel.sendToQueue(
+      IntegrationTopology.retryQueueName(queueName),
       message.content,
       {
         contentType: message.properties.contentType ?? "application/json",

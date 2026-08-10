@@ -63,13 +63,11 @@ function validEvent(): Record<string, unknown> {
   return {
     specversion: "1.0",
     id: "9b9ed546-7999-4c07-a41a-4a75f1cdfb11",
-    source:
-      "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis",
-    type: "recommendation-analysis.completed.v1",
+    source: "urn:logistics-decision-intelligence:recommendation-analysis",
+    type: recommendationAnalysisCompletedV1.eventType,
     subject: "recommendation/1fb2cb00-84f4-43ef-94d0-f5c1cf4ba597",
     time: "2026-08-08T10:30:00.000Z",
-    dataschema:
-      "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v1",
+    dataschema: recommendationAnalysisCompletedV1.schemaId,
     tenantid: "2c2dd26e-dfc6-4d80-9e35-b3111b9d3e1a",
     data: {
       recommendationId: "1fb2cb00-84f4-43ef-94d0-f5c1cf4ba597",

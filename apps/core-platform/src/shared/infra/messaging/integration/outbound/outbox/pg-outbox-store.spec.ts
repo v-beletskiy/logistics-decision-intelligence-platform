@@ -23,7 +23,7 @@ test("claims events with a lease token and uses it for state transitions - happy
                 specversion: "1.0",
                 id: "7fd37f50-7510-41a4-a54c-51b1924530ed",
                 source:
-                  "urn:logistics-decision-intelligence:core-platform:decision-intelligence",
+                  "urn:logistics-decision-intelligence:decision-intelligence",
                 type: "decision-intelligence.recommendation-analysis-requested.v1",
                 subject: "recommendation/9b9ed546-7999-4c07-a41a-4a75f1cdfb11",
                 time: "2026-08-01T00:00:00.000Z",

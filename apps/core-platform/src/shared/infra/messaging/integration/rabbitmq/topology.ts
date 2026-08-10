@@ -6,11 +6,6 @@ export const IntegrationTopology = {
       type: "topic",
       durable: true,
     },
-    retry: {
-      name: "logistics.integration.retry",
-      type: "topic",
-      durable: true,
-    },
     deadLetter: {
       name: "logistics.integration.dlx",
       type: "topic",

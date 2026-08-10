@@ -49,7 +49,10 @@ export class RabbitMqTopologyProvisioner {
     await channel.assertQueue(retryQueueName, {
       durable: true,
       arguments: {
-        "x-dead-letter-exchange": IntegrationTopology.exchanges.integration.name,
+        // The default exchange routes directly to the original subscription
+        // queue. A retry must not be broadcast to every consumer of the event.
+        "x-dead-letter-exchange": "",
+        "x-dead-letter-routing-key": mainQueue.queue,
       },
     });
     await channel.assertQueue(deadLetterQueueName, { durable: true });
@@ -63,11 +66,6 @@ export class RabbitMqTopologyProvisioner {
       await channel.bindQueue(
         mainQueue.queue,
         IntegrationTopology.exchanges.integration.name,
-        eventType,
-      );
-      await channel.bindQueue(
-        retryQueueName,
-        IntegrationTopology.exchanges.retry.name,
         eventType,
       );
     }

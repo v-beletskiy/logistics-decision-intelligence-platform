@@ -204,6 +204,12 @@ This separation allows the internal domain model to evolve independently from pu
   `dataschema`, `tenantid`, and JSON `data`. `dataschema` makes the payload
   contract explicit; trace context belongs in transport headers. None of this
   metadata is authorization proof.
+- `source` identifies the logical producing bounded context using
+  `urn:logistics-decision-intelligence:<bounded-context>`. A producer-scoped
+  event factory injects and validates it; payload schemas and use cases do not
+  own it.
+- Consumers validate `source` as CloudEvents metadata but do not bind it to an
+  event type.
 - Contracts are embedded and compiled at process startup. Consumers never fetch
   schemas from a remote registry during message processing.
 

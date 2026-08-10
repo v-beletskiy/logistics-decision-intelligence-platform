@@ -16,9 +16,12 @@ export abstract class CommandHandler {
     persist: () => Promise<void>,
     aggregate: DomainEventsSource,
   ): Promise<void> {
-    await this.trxManager.run(persist);
-    for (const event of aggregate.pullDomainEvents()) {
-      await this.domainEventBus.publish(event);
-    }
+    const domainEvents = aggregate.pullDomainEvents();
+    await this.trxManager.run(async () => {
+      await persist();
+      for (const event of domainEvents) {
+        await this.domainEventBus.publish(event);
+      }
+    });
   }
 }

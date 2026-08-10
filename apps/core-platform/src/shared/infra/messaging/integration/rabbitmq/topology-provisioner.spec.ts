@@ -22,13 +22,11 @@ test("declares integration exchanges", async () => {
 
   assert.deepEqual(exchanges, [
     [IntegrationTopology.exchanges.integration.name, "topic", true],
-    [IntegrationTopology.exchanges.retry.name, "topic", true],
     [IntegrationTopology.exchanges.deadLetter.name, "topic", true],
   ]);
 });
 
-// subscription’s dead-letter queue receives only its own failed messages
-test("isolates each subscription's dead-letter queue by routing key", async () => {
+test("isolates each subscription's retry and dead-letter queues", async () => {
   const queueArguments = new Map<string, Record<string, unknown> | undefined>();
   const bindings: Array<readonly [string, string, string]> = [];
   const channel = {
@@ -45,26 +43,54 @@ test("isolates each subscription's dead-letter queue by routing key", async () =
       return {};
     },
   } as unknown as Channel;
-  const queueName =
+  const firstQueueName =
     "core-platform.decision-intelligence.recommendation-analysis";
+  const secondQueueName = "core-platform.analytics.recommendation-analysis";
   const eventType = "recommendation-analysis.completed.v1";
 
   await new RabbitMqTopologyProvisioner().assertSubscription(channel, {
-    queueName,
+    queueName: firstQueueName,
+    eventTypes: [eventType],
+  });
+  await new RabbitMqTopologyProvisioner().assertSubscription(channel, {
+    queueName: secondQueueName,
     eventTypes: [eventType],
   });
 
-  assert.deepEqual(queueArguments.get(queueName), {
+  assert.deepEqual(queueArguments.get(firstQueueName), {
     "x-dead-letter-exchange": IntegrationTopology.exchanges.deadLetter.name,
     "x-dead-letter-routing-key":
-      IntegrationTopology.deadLetterRoutingKey(queueName),
+      IntegrationTopology.deadLetterRoutingKey(firstQueueName),
   });
+  assert.deepEqual(
+    queueArguments.get(IntegrationTopology.retryQueueName(firstQueueName)),
+    {
+      "x-dead-letter-exchange": "",
+      "x-dead-letter-routing-key": firstQueueName,
+    },
+  );
+  assert.deepEqual(
+    queueArguments.get(IntegrationTopology.retryQueueName(secondQueueName)),
+    {
+      "x-dead-letter-exchange": "",
+      "x-dead-letter-routing-key": secondQueueName,
+    },
+  );
+  assert.equal(
+    bindings.some(
+      ([queue]) =>
+        queue === IntegrationTopology.retryQueueName(firstQueueName) ||
+        queue === IntegrationTopology.retryQueueName(secondQueueName),
+    ),
+    false,
+  );
   assert.ok(
     bindings.some(
       ([queue, exchange, routingKey]) =>
-        queue === IntegrationTopology.deadLetterQueueName(queueName) &&
+        queue === IntegrationTopology.deadLetterQueueName(firstQueueName) &&
         exchange === IntegrationTopology.exchanges.deadLetter.name &&
-        routingKey === IntegrationTopology.deadLetterRoutingKey(queueName),
+        routingKey ===
+          IntegrationTopology.deadLetterRoutingKey(firstQueueName),
     ),
   );
   assert.equal(

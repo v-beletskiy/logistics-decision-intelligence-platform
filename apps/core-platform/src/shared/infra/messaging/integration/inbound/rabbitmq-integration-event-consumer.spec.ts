@@ -8,8 +8,10 @@ import type { AppConfig } from "../../../config/app-config";
 import { inboxConsumerId } from "./inbox/inbox-message";
 import type { InboxProcessor } from "./inbox/inbox-processor";
 import type { RabbitMqConnection } from "../rabbitmq/connection";
+import { IntegrationTopology } from "../rabbitmq/topology";
 import { RabbitMqIntegrationEventConsumer } from "./rabbitmq-integration-event-consumer";
 import type { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
+import { rabbitMqQueueName } from "./subscription-identity";
 
 test("restores a subscription on a new dedicated channel after channel closure", async () => {
   const channels: ConfirmChannel[] = [];
@@ -32,7 +34,9 @@ test("restores a subscription on a new dedicated channel after channel closure",
     consumerId: inboxConsumerId(
       "core-platform.decision-intelligence.recommendation-analysis-completed.v1",
     ),
-    queue: "core-platform.decision-intelligence.recommendation-analysis",
+    queue: rabbitMqQueueName(
+      "core-platform.decision-intelligence.recommendation-analysis",
+    ),
     eventContracts: [recommendationAnalysisCompletedV1],
     handle: async (event) => {
       const eventType: "recommendation-analysis.completed.v1" = event.type;
@@ -87,7 +91,9 @@ test("dead-letters oversized integration messages without scheduling a retry", a
     consumerId: inboxConsumerId(
       "core-platform.decision-intelligence.recommendation-analysis-completed.v1",
     ),
-    queue: "core-platform.decision-intelligence.recommendation-analysis-completed",
+    queue: rabbitMqQueueName(
+      "core-platform.decision-intelligence.recommendation-analysis-completed",
+    ),
     eventContracts: [recommendationAnalysisCompletedV1],
     handle: async () => undefined,
   });
@@ -103,7 +109,92 @@ test("dead-letters oversized integration messages without scheduling a retry", a
   await consumer.onModuleDestroy();
 });
 
-test("rejects reusing one logical inbox consumer identity for two subscriptions", async () => {
+test("schedules a retry only on the originating subscription's retry queue", async () => {
+  let onMessage: ((message: ConsumeMessage | null) => void) | undefined;
+  const sent: Array<{
+    readonly queue: string;
+    readonly options: {
+      readonly expiration?: string;
+      readonly headers?: Record<string, unknown>;
+    };
+  }> = [];
+  let acknowledgements = 0;
+  let confirms = 0;
+  const emitter = new EventEmitter();
+  const channel = Object.assign(emitter, {
+    prefetch: async () => undefined,
+    consume: async (
+      _queue: string,
+      callback: (message: ConsumeMessage | null) => void,
+    ) => {
+      onMessage = callback;
+      return { consumerTag: "consumer-0" };
+    },
+    sendToQueue: (
+      queue: string,
+      _content: Buffer,
+      options: {
+        expiration?: string;
+        headers?: Record<string, unknown>;
+      },
+    ) => {
+      sent.push({ queue, options });
+      return true;
+    },
+    waitForConfirms: async () => {
+      confirms += 1;
+    },
+    ack: () => {
+      acknowledgements += 1;
+    },
+    nack: () => {
+      throw new Error(
+        "A scheduled retry must acknowledge the original message.",
+      );
+    },
+    cancel: async () => undefined,
+    close: async () => {
+      emitter.emit("close");
+    },
+  }) as unknown as ConfirmChannel;
+  const consumer = new RabbitMqIntegrationEventConsumer(
+    config(),
+    {
+      createConfirmChannel: async () => channel,
+    } as RabbitMqConnection,
+    {
+      process: async () => {
+        throw new Error("database unavailable");
+      },
+    } as unknown as InboxProcessor,
+    topologyProvisioner(),
+  );
+  const queue = rabbitMqQueueName(
+    "core-platform.decision-intelligence.recommendation-analysis-completed",
+  );
+
+  await consumer.subscribe({
+    consumerId: inboxConsumerId(
+      "core-platform.decision-intelligence.recommendation-analysis-completed.v1",
+    ),
+    queue,
+    eventContracts: [recommendationAnalysisCompletedV1],
+    handle: async () => undefined,
+  });
+  if (onMessage === undefined) throw new Error("Consumer was not registered.");
+
+  onMessage(validIntegrationMessage());
+  await waitUntil(() => acknowledgements === 1);
+
+  assert.equal(sent.length, 1);
+  assert.equal(sent[0]?.queue, IntegrationTopology.retryQueueName(queue));
+  assert.equal(sent[0]?.options.expiration, "1000");
+  assert.equal(sent[0]?.options.headers?.["x-retry-count"], 1);
+  assert.equal(confirms, 1);
+  await consumer.onModuleDestroy();
+});
+
+test("rejects duplicate logical consumer and queue identities", async () => {
   const channels: ConfirmChannel[] = [];
   const connection = {
     createConfirmChannel: async () => {
@@ -121,17 +212,33 @@ test("rejects reusing one logical inbox consumer identity for two subscriptions"
   const consumerId = inboxConsumerId(
     "core-platform.decision-intelligence.recommendation-analysis-completed.v1",
   );
+  const primaryQueue = rabbitMqQueueName(
+    "core-platform.decision-intelligence.analysis-primary",
+  );
 
   await consumer.subscribe({
     consumerId,
-    queue: "core-platform.decision-intelligence.analysis-primary",
+    queue: primaryQueue,
     eventContracts: [recommendationAnalysisCompletedV1],
     handle: async () => undefined,
   });
   await assert.rejects(
     consumer.subscribe({
       consumerId,
-      queue: "core-platform.decision-intelligence.analysis-secondary",
+      queue: rabbitMqQueueName(
+        "core-platform.decision-intelligence.analysis-secondary",
+      ),
+      eventContracts: [recommendationAnalysisCompletedV1],
+      handle: async () => undefined,
+    }),
+    /already subscribed/,
+  );
+  await assert.rejects(
+    consumer.subscribe({
+      consumerId: inboxConsumerId(
+        "core-platform.analytics.recommendation-analysis-completed.v1",
+      ),
+      queue: primaryQueue,
       eventContracts: [recommendationAnalysisCompletedV1],
       handle: async () => undefined,
     }),
@@ -163,9 +270,38 @@ function config(maxIncomingMessageBytes = 1 * 1024 * 1024): AppConfig {
   return {
     messaging: {
       reconnectDelayMs: 1,
+      retryBaseDelayMs: 1_000,
+      maxDeliveryAttempts: 5,
       maxIncomingMessageBytes,
     },
   } as unknown as AppConfig;
+}
+
+function validIntegrationMessage(): ConsumeMessage {
+  return {
+    content: Buffer.from(
+      JSON.stringify({
+        specversion: "1.0",
+        id: "7fd37f50-7510-41a4-a54c-51b1924530ed",
+        source: "urn:logistics-decision-intelligence:recommendation-analysis",
+        type: recommendationAnalysisCompletedV1.eventType,
+        subject: "recommendation/9b9ed546-7999-4c07-a41a-4a75f1cdfb11",
+        time: "2026-08-01T00:00:00.000Z",
+        dataschema: recommendationAnalysisCompletedV1.schemaId,
+        tenantid: "e75a6194-423a-4e59-94f1-0876fc583a0b",
+        data: {
+          recommendationId: "9b9ed546-7999-4c07-a41a-4a75f1cdfb11",
+          requestEventId: "8fd37f50-7510-41a4-a54c-51b1924530ed",
+          analysis: "The route is feasible.",
+        },
+      }),
+    ),
+    properties: {
+      contentType: "application/cloudevents+json",
+      headers: {},
+      messageId: "7fd37f50-7510-41a4-a54c-51b1924530ed",
+    },
+  } as ConsumeMessage;
 }
 
 function topologyProvisioner(): RabbitMqTopologyProvisioner {

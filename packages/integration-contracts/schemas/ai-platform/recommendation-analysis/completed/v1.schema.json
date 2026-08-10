@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v1",
+  "x-event-type": "recommendation-analysis.completed.v1",
   "title": "RecommendationAnalysisCompletedV1Payload",
   "type": "object",
   "additionalProperties": false,
