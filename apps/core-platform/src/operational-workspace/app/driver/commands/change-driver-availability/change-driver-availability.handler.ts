@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
+import type { ExecutionRequest } from "../../../../../shared/app/execution/execution-context";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
@@ -21,17 +22,26 @@ export class ChangeDriverAvailabilityHandler extends CommandHandler {
   }
 
   @Authorized(Permission.DriverManage)
-  async exec(command: ChangeDriverAvailabilityCommand): Promise<void> {
-    const driver = await this.drivers.findById(DriverId.from(command.driverId));
-    if (!driver) throw new AggregateNotFoundException("Driver");
+  async exec(
+    request: ExecutionRequest<ChangeDriverAvailabilityCommand>,
+  ): Promise<void> {
+    const { context, input: command } = request;
+    const tenantId = context.tenantId;
+    await this.execUseCaseTrx(async () => {
+      const loadedDriver = await this.drivers.findById(
+        tenantId,
+        DriverId.from(command.driverId),
+      );
+      if (!loadedDriver) throw new AggregateNotFoundException("Driver");
 
-    if (command.available) {
-      driver.markAvailable();
-    } else {
-      driver.markUnavailable();
-    }
-    await this.execTrxWithDomainEvents(async () => {
-      await this.drivers.save(driver);
-    }, driver);
+      if (command.available) {
+        loadedDriver.aggregate.markAvailable();
+      } else {
+        loadedDriver.aggregate.markUnavailable();
+      }
+      await this.drivers.save(tenantId, loadedDriver);
+
+      return { result: undefined, eventsFrom: [loadedDriver.aggregate] };
+    });
   }
 }

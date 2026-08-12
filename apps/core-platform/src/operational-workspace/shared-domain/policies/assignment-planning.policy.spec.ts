@@ -127,6 +127,7 @@ function createDriver(status: DriverStatus = DriverStatus.Available): Driver {
     firstName: "John",
     lastName: "Doe",
     licenseNumber: "LIC-001",
+    certifications: [],
     status,
   });
 }

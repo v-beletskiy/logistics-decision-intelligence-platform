@@ -20,6 +20,18 @@ export interface DriverSuspendedDomainEvent extends DriverDomainEvent {
 export interface DriverReinstatedDomainEvent extends DriverDomainEvent {
   readonly type: "DriverReinstatedDomainEvent";
 }
+export interface DriverCertificationAddedDomainEvent extends DriverDomainEvent {
+  readonly type: "DriverCertificationAddedDomainEvent";
+  readonly certificationId: string;
+}
+export interface DriverCertificationUpdatedDomainEvent extends DriverDomainEvent {
+  readonly type: "DriverCertificationUpdatedDomainEvent";
+  readonly certificationId: string;
+}
+export interface DriverCertificationRemovedDomainEvent extends DriverDomainEvent {
+  readonly type: "DriverCertificationRemovedDomainEvent";
+  readonly certificationId: string;
+}
 
 export type DriverEvent =
   | DriverRegisteredDomainEvent
@@ -27,4 +39,7 @@ export type DriverEvent =
   | DriverMarkedAvailableDomainEvent
   | DriverMarkedUnavailableDomainEvent
   | DriverSuspendedDomainEvent
-  | DriverReinstatedDomainEvent;
+  | DriverReinstatedDomainEvent
+  | DriverCertificationAddedDomainEvent
+  | DriverCertificationUpdatedDomainEvent
+  | DriverCertificationRemovedDomainEvent;

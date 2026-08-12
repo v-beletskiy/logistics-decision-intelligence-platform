@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
+import type { ExecutionRequest } from "../../../../../shared/app/execution/execution-context";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
@@ -35,7 +36,10 @@ export class CreateAssignmentHandler extends CommandHandler {
   }
 
   @Authorized(Permission.AssignmentManage)
-  async exec(command: CreateAssignmentCommand): Promise<string> {
+  async exec(
+    request: ExecutionRequest<CreateAssignmentCommand>,
+  ): Promise<string> {
+    const { context, input: command } = request;
     const route = await this.routes.findById(RouteId.from(command.routeId));
     if (!route) throw new AggregateNotFoundException("Route");
 
@@ -44,8 +48,12 @@ export class CreateAssignmentHandler extends CommandHandler {
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
-    const driver = await this.drivers.findById(DriverId.from(command.driverId));
-    if (!driver) throw new AggregateNotFoundException("Driver");
+    const loadedDriver = await this.drivers.findById(
+      context.tenantId,
+      DriverId.from(command.driverId),
+    );
+    if (!loadedDriver) throw new AggregateNotFoundException("Driver");
+    const driver = loadedDriver.aggregate;
 
     const shipmentIds = [
       ...new Set(route.stops.map((stop) => stop.shipmentId)),

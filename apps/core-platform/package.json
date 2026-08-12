@@ -9,15 +9,15 @@
   "scripts": {
     "clean": "node scripts/clean-dist.js",
     "grpc:generate": "buf generate ../../packages/grpc-contracts --template buf.gen.yaml",
-    "build": "pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm clean && nest build",
+    "build": "pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm --filter @logistics-decision-intelligence/querying build && pnpm clean && nest build",
     "db:migrate": "node dist/cli/database-migrations.js",
     "db:migrate:dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && pnpm db:migrate",
     "db:codegen": "pgtyped -c pgtyped.config.json",
     "lint": "eslint src --max-warnings 0",
     "start": "node dist/main",
     "test": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && node --test 'dist/**/*.spec.js'",
-    "dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm --filter @logistics-decision-intelligence/integration-events build && nest start",
-    "typecheck": "pnpm --filter @logistics-decision-intelligence/integration-events build && tsc --noEmit"
+    "dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm --filter @logistics-decision-intelligence/querying build && nest start",
+    "typecheck": "pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm --filter @logistics-decision-intelligence/querying build && tsc --noEmit"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.13.0",
@@ -25,6 +25,7 @@
     "@logistics-decision-intelligence/background-processing": "workspace:*",
     "@logistics-decision-intelligence/integration-contracts": "workspace:*",
     "@logistics-decision-intelligence/integration-events": "workspace:*",
+    "@logistics-decision-intelligence/querying": "workspace:*",
     "@logistics-decision-intelligence/validation": "workspace:*",
     "@nestjs/common": "^11.1.28",
     "@nestjs/core": "^11.1.28",

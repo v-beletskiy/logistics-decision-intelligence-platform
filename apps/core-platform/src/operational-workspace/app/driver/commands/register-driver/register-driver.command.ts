@@ -1,9 +1,5 @@
-import type { DriverDetails } from "../../../../domain-modules/driver/domain/driver.aggregate";
-import type { Identity } from "../../../../../shared/access-control/identity/identity";
+import type { RegisterDriverDetails } from "../../../../domain-modules/driver/domain/driver.aggregate";
 
 export class RegisterDriverCommand {
-  constructor(
-    readonly details: DriverDetails,
-    readonly identity: Identity,
-  ) {}
+  constructor(readonly details: RegisterDriverDetails) {}
 }

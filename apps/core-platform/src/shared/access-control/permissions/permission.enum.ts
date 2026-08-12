@@ -7,6 +7,7 @@ export enum Permission {
 
   VehicleManage = "vehicle.manage",
 
+  DriverRead = "driver.read",
   DriverManage = "driver.manage",
 
   DepotManage = "depot.manage",

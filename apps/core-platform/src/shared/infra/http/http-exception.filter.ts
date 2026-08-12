@@ -6,6 +6,10 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
+import {
+  InvalidPaginationError,
+  InvalidSortError,
+} from "@logistics-decision-intelligence/querying";
 import { DomainException } from "../../domain/shared-kernel/exceptions/domain.exception";
 import { AuthorizationDeniedException } from "../../access-control/authorization/authorization.exceptions";
 import { AggregateNotFoundException } from "../../app/exceptions/aggregate-not-found.exception";
@@ -87,7 +91,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       };
     }
 
-    if (exception instanceof ApplicationException) {
+    if (
+      exception instanceof ApplicationException ||
+      exception instanceof InvalidPaginationError ||
+      exception instanceof InvalidSortError
+    ) {
       return {
         statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         message: exception.message,

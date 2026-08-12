@@ -42,6 +42,9 @@ importers:
       '@logistics-decision-intelligence/integration-events':
         specifier: workspace:*
         version: link:../../packages/integration-events/typescript
+      '@logistics-decision-intelligence/querying':
+        specifier: workspace:*
+        version: link:../../packages/querying/typescript
       '@logistics-decision-intelligence/validation':
         specifier: workspace:*
         version: link:../../packages/validation/typescript
@@ -139,6 +142,15 @@ importers:
       '@logistics-decision-intelligence/validation':
         specifier: workspace:*
         version: link:../../validation/typescript
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/querying/typescript:
     devDependencies:
       '@types/node':
         specifier: ^24.13.3

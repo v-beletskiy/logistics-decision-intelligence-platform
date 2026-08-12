@@ -6,6 +6,11 @@ import { requireNonBlankString } from "../../../../shared/domain/shared-kernel/v
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
 
 import type { DriverEvent } from "./events/driver.domain-events";
+import {
+  DriverCertification,
+  type DriverCertificationProps,
+} from "./driver-certification.entity";
+import { DriverCertificationId } from "./driver-certification-id";
 import { DriverId } from "./driver-id";
 import { validatePersonFirstName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-first-name";
 import { validatePersonLastName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-last-name";
@@ -16,6 +21,8 @@ export enum DriverStatus {
   Suspended = "SUSPENDED",
 }
 
+export const MAX_DRIVER_CERTIFICATIONS = 10;
+
 export interface DriverDetails {
   readonly firstName: string;
   readonly lastName: string;
@@ -24,7 +31,12 @@ export interface DriverDetails {
   readonly phoneNumber?: string;
 }
 
+export interface RegisterDriverDetails extends DriverDetails {
+  readonly certifications?: readonly DriverCertificationProps[];
+}
+
 export interface DriverProps extends DriverDetails {
+  readonly certifications: readonly DriverCertification[];
   readonly status: DriverStatus;
 }
 
@@ -36,9 +48,10 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
   private _depotId?: string;
   private _phoneNumber?: string;
   private _status: DriverStatus;
+  private readonly _certifications: DriverCertification[];
 
-  private constructor(id: DriverId, props: DriverProps, isNew: boolean) {
-    super(id, isNew);
+  private constructor(id: DriverId, props: DriverProps) {
+    super(id);
 
     const validatedDetails = Driver.validateDetails(props);
     this._firstName = validatedDetails.firstName;
@@ -47,10 +60,11 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     this._depotId = validatedDetails.depotId;
     this._phoneNumber = validatedDetails.phoneNumber;
 
-    this._status = props.status;
-    if (!isEnumValue(DriverStatus, this._status)) {
+    if (!isEnumValue(DriverStatus, props.status)) {
       throw new DomainException("A driver status is invalid.");
     }
+    this._status = props.status;
+    this._certifications = copyAndValidateCertifications(props.certifications);
   }
 
   get firstName(): string {
@@ -72,21 +86,24 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     return this._status;
   }
 
-  static register(details: DriverDetails): Driver {
-    const driver = new Driver(
-      DriverId.generate(),
-      {
-        ...details,
-        status: DriverStatus.Available,
-      },
-      true,
-    );
+  get certifications(): readonly DriverCertification[] {
+    return [...this._certifications];
+  }
+
+  static register(details: RegisterDriverDetails): Driver {
+    const driver = new Driver(DriverId.generate(), {
+      ...details,
+      certifications: (details.certifications ?? []).map((certification) =>
+        DriverCertification.create(certification),
+      ),
+      status: DriverStatus.Available,
+    });
     driver.raiseDomainEvent("DriverRegisteredDomainEvent");
     return driver;
   }
 
   static reconstitute(id: DriverId, props: DriverProps): Driver {
-    return new Driver(id, props, false);
+    return new Driver(id, props);
   }
 
   private static validateDetails(details: DriverDetails): DriverDetails {
@@ -149,6 +166,38 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     this.raiseDomainEvent("DriverReinstatedDomainEvent");
   }
 
+  addCertification(details: DriverCertificationProps): DriverCertificationId {
+    assertCertificationCount(this._certifications.length + 1);
+    const certification = DriverCertification.create(details);
+    this.assertCertificationIsUnique(certification);
+    this._certifications.push(certification);
+    this.raiseDomainEvent("DriverCertificationAddedDomainEvent", {
+      certificationId: certification.id.value,
+    });
+    return certification.id;
+  }
+
+  updateCertification(
+    id: DriverCertificationId,
+    details: DriverCertificationProps,
+  ): void {
+    const index = this.certificationIndex(id);
+    const certification = DriverCertification.reconstitute(id, details);
+    this.assertCertificationIsUnique(certification, id);
+    this._certifications[index] = certification;
+    this.raiseDomainEvent("DriverCertificationUpdatedDomainEvent", {
+      certificationId: id.value,
+    });
+  }
+
+  removeCertification(id: DriverCertificationId): void {
+    const index = this.certificationIndex(id);
+    this._certifications.splice(index, 1);
+    this.raiseDomainEvent("DriverCertificationRemovedDomainEvent", {
+      certificationId: id.value,
+    });
+  }
+
   private assertNotSuspended(): void {
     if (this._status === DriverStatus.Suspended) {
       throw new DomainException(
@@ -157,11 +206,88 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     }
   }
 
-  private raiseDomainEvent(type: DriverEvent["type"]): void {
+  private certificationIndex(id: DriverCertificationId): number {
+    const index = this._certifications.findIndex((certification) =>
+      certification.id.equals(id),
+    );
+    if (index === -1) {
+      throw new DomainException(
+        "The certification does not belong to this driver.",
+      );
+    }
+    return index;
+  }
+
+  private assertCertificationIsUnique(
+    candidate: DriverCertification,
+    replacedId?: DriverCertificationId,
+  ): void {
+    const duplicate = this._certifications.some(
+      (certification) =>
+        !certification.id.equals(replacedId ?? candidate.id) &&
+        certification.type === candidate.type &&
+        certification.credentialNumber === candidate.credentialNumber,
+    );
+    if (duplicate) {
+      throw new DomainException(
+        "A driver certification type and credential number must be unique.",
+      );
+    }
+  }
+
+  private raiseDomainEvent(
+    type: DriverEvent["type"],
+    details: Partial<DriverEvent> = {},
+  ): void {
     this.recordDomainEvent({
       aggregateId: this.id.value,
       occurredAt: new Date(),
       type,
+      ...details,
     } as DriverEvent);
+  }
+}
+
+function copyAndValidateCertifications(
+  certifications: readonly DriverCertification[],
+): DriverCertification[] {
+  if (!Array.isArray(certifications)) {
+    throw new DomainException(
+      "Driver certifications must be specified as a list.",
+    );
+  }
+  assertCertificationCount(certifications.length);
+  if (
+    certifications.some(
+      (certification) => !(certification instanceof DriverCertification),
+    )
+  ) {
+    throw new DomainException(
+      "Driver certifications must be valid certification entities.",
+    );
+  }
+  const ids = certifications.map((certification) => certification.id.value);
+  if (new Set(ids).size !== ids.length) {
+    throw new DomainException(
+      "Driver certification identifiers must be unique.",
+    );
+  }
+  const credentials = certifications.map(
+    (certification) =>
+      `${certification.type}\u0000${certification.credentialNumber}`,
+  );
+  if (new Set(credentials).size !== credentials.length) {
+    throw new DomainException(
+      "A driver certification type and credential number must be unique.",
+    );
+  }
+  return [...certifications];
+}
+
+function assertCertificationCount(count: number): void {
+  if (count > MAX_DRIVER_CERTIFICATIONS) {
+    throw new DomainException(
+      `A driver cannot have more than ${MAX_DRIVER_CERTIFICATIONS} certifications.`,
+    );
   }
 }

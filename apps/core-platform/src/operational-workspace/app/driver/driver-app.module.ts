@@ -6,15 +6,24 @@ import { ChangeDriverAvailabilityHandler } from "./commands/change-driver-availa
 import { SuspendDriverHandler } from "./commands/suspend-driver/suspend-driver.handler";
 import { ReinstateDriverHandler } from "./commands/reinstate-driver/reinstate-driver.handler";
 import { DriverPersistenceModule } from "../../domain-modules/driver/infra/persistence/driver-persistence.module";
+import { AddDriverCertificationHandler } from "./commands/add-driver-certification/add-driver-certification.handler";
+import { UpdateDriverCertificationHandler } from "./commands/update-driver-certification/update-driver-certification.handler";
+import { RemoveDriverCertificationHandler } from "./commands/remove-driver-certification/remove-driver-certification.handler";
+import { SearchDriversHandler } from "./queries/search-drivers/search-drivers.handler";
+import { AccessControlModule } from "../../../shared/access-control/access-control.module";
 
 @Module({
-  imports: [DriverPersistenceModule],
+  imports: [AccessControlModule, DriverPersistenceModule],
   providers: [
     RegisterDriverHandler,
     UpdateDriverDetailsHandler,
     ChangeDriverAvailabilityHandler,
     SuspendDriverHandler,
     ReinstateDriverHandler,
+    AddDriverCertificationHandler,
+    UpdateDriverCertificationHandler,
+    RemoveDriverCertificationHandler,
+    SearchDriversHandler,
   ],
   exports: [
     RegisterDriverHandler,
@@ -22,6 +31,10 @@ import { DriverPersistenceModule } from "../../domain-modules/driver/infra/persi
     ChangeDriverAvailabilityHandler,
     SuspendDriverHandler,
     ReinstateDriverHandler,
+    AddDriverCertificationHandler,
+    UpdateDriverCertificationHandler,
+    RemoveDriverCertificationHandler,
+    SearchDriversHandler,
   ],
 })
 export class DriverAppModule {}

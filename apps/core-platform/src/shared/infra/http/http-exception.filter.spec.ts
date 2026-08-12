@@ -2,6 +2,10 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { ArgumentsHost } from "@nestjs/common";
+import {
+  InvalidPaginationError,
+  InvalidSortError,
+} from "@logistics-decision-intelligence/querying";
 
 import { HttpExceptionFilter } from "./http-exception.filter";
 import { AggregateNotFoundException } from "../../app/exceptions/aggregate-not-found.exception";
@@ -88,6 +92,18 @@ test("maps IdempotencyViolationException to 409", () => {
 
 test("maps a bare ApplicationException to 422", () => {
   const result = run(new ApplicationException("Use case precondition failed."));
+
+  assert.equal(result.statusCode, 422);
+});
+
+test("maps InvalidPaginationError to 422", () => {
+  const result = run(new InvalidPaginationError("Cursor is invalid."));
+
+  assert.equal(result.statusCode, 422);
+});
+
+test("maps InvalidSortError to 422", () => {
+  const result = run(new InvalidSortError("Sort is invalid."));
 
   assert.equal(result.statusCode, 422);
 });

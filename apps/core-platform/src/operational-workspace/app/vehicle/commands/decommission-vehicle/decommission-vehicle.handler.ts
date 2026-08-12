@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
+import type { ExecutionRequest } from "../../../../../shared/app/execution/execution-context";
 import { AggregateNotFoundException } from "../../../../../shared/app/exceptions/aggregate-not-found.exception";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
@@ -21,7 +22,10 @@ export class DecommissionVehicleHandler extends CommandHandler {
   }
 
   @Authorized(Permission.VehicleManage)
-  async exec(command: DecommissionVehicleCommand): Promise<void> {
+  async exec(
+    request: ExecutionRequest<DecommissionVehicleCommand>,
+  ): Promise<void> {
+    const { input: command } = request;
     const vehicle = await this.vehicles.findById(
       VehicleId.from(command.vehicleId),
     );

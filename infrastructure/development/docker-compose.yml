@@ -43,6 +43,14 @@ x-core-platform-development: &core-platform-development
           - package.json
           - node_modules/
           - dist/
+      - action: sync+restart
+        path: ../../packages/querying/typescript
+        target: /workspace/packages/querying/typescript
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
       - action: rebuild
         path: ../../apps/core-platform/package.json
       - action: rebuild
@@ -51,6 +59,8 @@ x-core-platform-development: &core-platform-development
         path: ../../packages/background-processing/typescript/package.json
       - action: rebuild
         path: ../../packages/grpc-contracts/package.json
+      - action: rebuild
+        path: ../../packages/querying/typescript/package.json
       - action: rebuild
         path: ../../package.json
       - action: rebuild

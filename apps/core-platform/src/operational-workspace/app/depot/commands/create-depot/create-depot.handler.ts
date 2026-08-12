@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
+import type { ExecutionRequest } from "../../../../../shared/app/execution/execution-context";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
@@ -20,7 +21,10 @@ export class CreateDepotHandler extends CommandHandler {
   }
 
   @Authorized(Permission.DepotManage)
-  async exec(command: CreateDepotCommand): Promise<string> {
+  async exec(
+    request: ExecutionRequest<CreateDepotCommand>,
+  ): Promise<string> {
+    const { input: command } = request;
     const depot = Depot.create(command.details, command.vehicleCapacity, command.driverCapacity);
     await this.execTrxWithDomainEvents(async () => {
       await this.depots.save(depot);

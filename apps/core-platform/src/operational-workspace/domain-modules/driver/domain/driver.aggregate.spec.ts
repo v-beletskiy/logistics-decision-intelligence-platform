@@ -1,7 +1,12 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Driver, DriverStatus } from "./driver.aggregate";
+import {
+  Driver,
+  DriverStatus,
+  MAX_DRIVER_CERTIFICATIONS,
+} from "./driver.aggregate";
+import { DriverCertificationId } from "./driver-certification-id";
 import { DriverId } from "./driver-id";
 
 const details = {
@@ -9,6 +14,15 @@ const details = {
   lastName: "Doe",
   licenseNumber: "UA-DRIVER-001",
 };
+
+function certification(index: number) {
+  return {
+    type: `TYPE-${index}`,
+    credentialNumber: `CREDENTIAL-${index}`,
+    validFrom: new Date("2026-01-01T00:00:00Z"),
+    validUntil: new Date("2027-01-01T00:00:00Z"),
+  };
+}
 
 test("Driver suspension requires explicit reinstatement before availability changes", () => {
   const driver = Driver.register(details);
@@ -35,6 +49,7 @@ test("Driver rejects an unsupported status during reconstitution", () => {
     () =>
       Driver.reconstitute(DriverId.generate(), {
         ...details,
+        certifications: [],
         status: "UNKNOWN" as DriverStatus,
       }),
     /driver status is invalid/,
@@ -52,13 +67,79 @@ test("Driver validates required and optional text values at runtime", () => {
   );
 });
 
-test("Driver persistence plan marks a registration as new and a reconstitution as loaded", () => {
-  assert.equal(Driver.register(details).getPersistencePlan().isNew, true);
-  assert.equal(
-    Driver.reconstitute(DriverId.generate(), {
-      ...details,
-      status: DriverStatus.Available,
-    }).getPersistencePlan().isNew,
-    false,
+test("Driver owns the lifecycle of its certification entities", () => {
+  const driver = Driver.register(details);
+  const certificationId = driver.addCertification({
+    type: "HAZMAT",
+    credentialNumber: "HZ-123",
+    validFrom: new Date("2026-01-01T00:00:00Z"),
+    validUntil: new Date("2027-01-01T00:00:00Z"),
+  });
+
+  driver.updateCertification(certificationId, {
+    type: "HAZMAT",
+    credentialNumber: "HZ-123",
+    validFrom: new Date("2026-01-01T00:00:00Z"),
+    validUntil: new Date("2028-01-01T00:00:00Z"),
+  });
+  assert.equal(driver.certifications[0]?.validUntil.getUTCFullYear(), 2028);
+
+  driver.removeCertification(certificationId);
+  assert.equal(driver.certifications.length, 0);
+  assert.deepEqual(
+    driver.pullDomainEvents().map((event) => event.type),
+    [
+      "DriverRegisteredDomainEvent",
+      "DriverCertificationAddedDomainEvent",
+      "DriverCertificationUpdatedDomainEvent",
+      "DriverCertificationRemovedDomainEvent",
+    ],
+  );
+});
+
+test("Driver rejects duplicate and unknown certifications", () => {
+  const certification = {
+    type: "HAZMAT",
+    credentialNumber: "HZ-123",
+    validFrom: new Date("2026-01-01T00:00:00Z"),
+    validUntil: new Date("2027-01-01T00:00:00Z"),
+  };
+  const driver = Driver.register({
+    ...details,
+    certifications: [certification],
+  });
+
+  assert.throws(() => driver.addCertification(certification), /must be unique/);
+  assert.throws(
+    () =>
+      driver.removeCertification(
+        DriverCertificationId.from("00000000-0000-4000-8000-000000000099"),
+      ),
+    /does not belong/,
+  );
+});
+
+test("Driver limits its certification collection to ten children", () => {
+  const certifications = Array.from(
+    { length: MAX_DRIVER_CERTIFICATIONS },
+    (_, index) => certification(index),
+  );
+  const driver = Driver.register({ ...details, certifications });
+
+  assert.equal(driver.certifications.length, MAX_DRIVER_CERTIFICATIONS);
+  assert.throws(
+    () => driver.addCertification(certification(MAX_DRIVER_CERTIFICATIONS)),
+    /cannot have more than 10 certifications/,
+  );
+  assert.throws(
+    () =>
+      Driver.register({
+        ...details,
+        certifications: [
+          ...certifications,
+          certification(MAX_DRIVER_CERTIFICATIONS),
+        ],
+      }),
+    /cannot have more than 10 certifications/,
   );
 });

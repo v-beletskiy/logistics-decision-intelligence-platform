@@ -6,6 +6,11 @@ export interface DomainEventsSource {
   pullDomainEvents(): readonly DomainEvent[];
 }
 
+export interface TransactionalCommandResult<TResult> {
+  readonly result: TResult;
+  readonly eventsFrom: readonly DomainEventsSource[];
+}
+
 export abstract class CommandHandler {
   protected constructor(
     protected readonly trxManager: TransactionManager,
@@ -22,6 +27,21 @@ export abstract class CommandHandler {
       for (const event of domainEvents) {
         await this.domainEventBus.publish(event);
       }
+    });
+  }
+
+  /** Runs the complete read-decide-write use case in one transaction. */
+  protected async execUseCaseTrx<TResult>(
+    operation: () => Promise<TransactionalCommandResult<TResult>>,
+  ): Promise<TResult> {
+    return this.trxManager.run(async () => {
+      const { result, eventsFrom } = await operation();
+      for (const aggregate of eventsFrom) {
+        for (const event of aggregate.pullDomainEvents()) {
+          await this.domainEventBus.publish(event);
+        }
+      }
+      return result;
     });
   }
 }

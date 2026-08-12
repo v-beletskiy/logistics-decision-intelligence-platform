@@ -1,20 +1,77 @@
-import type { Identity } from "../identity/identity";
-import { Permission } from "../permissions/permission.enum";
-import { AccessManager } from "./access-manager";
+import { Inject } from "@nestjs/common";
 
-export function Authorized(permission: Permission) {
+import { Permission } from "../permissions/permission.enum";
+import type { ExecutionRequest } from "../../app/execution/execution-context";
+import {
+  AccessManager,
+  type AuthorizationContext,
+} from "./access-manager";
+
+const ACCESS_MANAGER_PROPERTY = Symbol("authorizedAccessManager");
+
+interface AuthorizedInstance {
+  readonly [ACCESS_MANAGER_PROPERTY]: AccessManager;
+}
+
+type AuthorizedOperation<TInput, TResult> = (
+  request: ExecutionRequest<TInput>,
+) => Promise<TResult>;
+
+type AuthorizationContextFactory<TInput> = (
+  request: ExecutionRequest<TInput>,
+) => AuthorizationContext | undefined;
+
+function defaultAuthorizationContext(
+  request: ExecutionRequest<unknown>,
+): AuthorizationContext {
+  return { tenantId: request.context.tenantId };
+}
+
+class AuthorizedInvocation<TInput, TResult> {
+  constructor(
+    private readonly access: AccessManager,
+    private readonly permission: Permission,
+    private readonly operation: AuthorizedOperation<TInput, TResult>,
+    private readonly contextFrom: AuthorizationContextFactory<TInput>,
+  ) {}
+
+  async execute(request: ExecutionRequest<TInput>): Promise<TResult> {
+    await this.access.authorize(
+      request.context.identity,
+      this.permission,
+      this.contextFrom(request),
+    );
+    return this.operation(request);
+  }
+}
+
+export function Authorized<TInput = unknown>(
+  permission: Permission,
+  contextFrom?: AuthorizationContextFactory<TInput>,
+): MethodDecorator {
   return (
-    _target: object,
-    _key: string,
+    target: object,
+    _key: string | symbol,
     descriptor: PropertyDescriptor,
   ): PropertyDescriptor => {
-    const original = descriptor.value;
-    descriptor.value = async function (
-      this: { access: AccessManager },
-      command: { identity: Identity },
-    ) {
-      await this.access.authorize(command.identity, permission);
-      return original.call(this, command);
+    Inject(AccessManager)(target, ACCESS_MANAGER_PROPERTY);
+    Object.defineProperty(target, ACCESS_MANAGER_PROPERTY, {
+      configurable: true,
+      writable: true,
+    });
+    const operation = descriptor.value as AuthorizedOperation<unknown, unknown>;
+
+    descriptor.value = function (
+      this: AuthorizedInstance,
+      request: ExecutionRequest<unknown>,
+    ): Promise<unknown> {
+      return new AuthorizedInvocation(
+        this[ACCESS_MANAGER_PROPERTY],
+        permission,
+        operation.bind(this),
+        (contextFrom as AuthorizationContextFactory<unknown>) ??
+          defaultAuthorizationContext,
+      ).execute(request);
     };
     return descriptor;
   };
