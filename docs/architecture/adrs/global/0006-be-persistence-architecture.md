@@ -6,258 +6,203 @@ The platform follows Domain-Driven Design with CQRS and a modular monolith archi
 
 The persistence layer must:
 
-- preserve domain isolation, keeping aggregates persistence-ignorant;
-- support transactional consistency across multiple repositories;
-- provide strong compile-time guarantees;
-- allow complex SQL to remain readable and maintainable;
+- keep aggregates and entities independent of database concerns;
+- preserve transactional consistency across aggregate and outbox writes;
+- provide strong SQL-boundary type safety;
+- support efficient aggregate reconstruction and read projections.
 
 ## Decision
 
 ### Database
 
-Each app owns its own database. **PostgreSQL** is used as the main database.
-
-Version 1 consists of:
-
-- Core Platform → PostgreSQL
-- AI Platform → may own its own persistence if required.
-
-Each bounded context operates in its own schema. This allows future extraction of Bounded Contexts into independent services with less migration effort.
-
-### Persistence Strategy
-
-Repositories use a **SQL-first** approach.
-
-Business queries are written as native SQL and compiled into fully typed TypeScript bindings using **pgTyped**.
-
-SQL remains the single source of truth.
-
-### Repository Structure
-
-Each aggregate owns its repository implementation.
+Each application owns its database. PostgreSQL is the primary database for Core Platform; each bounded context operates in its own schema. SQL migrations are the source of truth for database structure and run before deployment.
 
 ```text
-optimization/
-
-├── domain/
-│   └── optimization.repository.ts
-│
-└── infra/
-    ├── optimization.pg-repository.ts
-    ├── optimization.mapper.ts
-    └── queries/
-        ├── find-by-id.sql
-        ├── find-running-by-route.sql
-        ├── save.sql
-        └── ...
+apps/core-platform/
+├── db/
+│   ├── migrations/
+│   └── seeds/
+└── src/
+    ├── operational-workspace/
+    ├── decision-intelligence/
+    └── shared/
 ```
 
-Repository implementations depend only on:
+Tenant-owned tables include `tenant_id` in their keys, foreign keys, and query predicates. Tenant scope comes from trusted execution context and is passed explicitly to tenant-scoped repository and read-store operations.
 
-- generated pgTyped queries;
-- PostgreSQL client;
-- domain mapper.
+### SQL-first persistence
 
-### Mapping
-
-Domain mapping is explicit.
+Repositories and read stores use native SQL compiled into TypeScript bindings with **pgtyped**. SQL is the source of truth for each statement.
 
 ```text
-Database Row
-       ▲
-       │
-Domain Mapper
+.sql
+      │
+      ▼
+pgtyped
+      │
+      ▼
+Generated query function and parameter/result types
+      │
+      ▼
+Repository or read store
+```
+
+Generated artifacts are committed with their `.sql` files and are never edited manually. pgtyped types apply only to the statement that generated them: parameter types model that statement's inputs and result types model that statement's projection.
+
+### Repository structure
+
+Each aggregate owns a repository port in its domain module and one PostgreSQL implementation in module-owned infrastructure.
+
+```text
+driver/
+├── domain/
+│   └── driver.repository.ts
+└── infra/
+    └── persistence/
+        ├── repository/
+        │   ├── driver.pg-repository.ts
+        │   ├── mappers/driver.mapper.ts
+        │   └── queries/
+        │       ├── driver.find-by-id.sql
+        │       ├── driver.find-by-id-for-update.sql
+        │       ├── driver.insert.sql
+        │       ├── driver.update.sql
+        │       └── driver.reconcile-certifications.sql
+        └── read-store/
+            ├── driver.pg-read-store.ts
+            ├── mappers/driver-search.mapper.ts
+            └── queries/driver.search.sql
+```
+
+Repositories are responsible for aggregate persistence. Read stores are responsible for query projections. Both depend on the PostgreSQL client, generated query bindings, and their own mapper; neither exposes persistence rows outside infrastructure.
+
+### Mapping and reconstitution
+
+Mappers translate between a statement-specific database projection and the domain model.
+
+```text
+pgtyped result row
        │
        ▼
-Domain Aggregate
+Infrastructure mapper
+       │
+       ▼
+Aggregate / child-entity reconstitution
 ```
 
-Repositories always return Domain Aggregates.
+- `toDomain(row)` reconstitutes the complete aggregate from its loader result.
+- `toPersistence(tenantId, aggregate)` creates write-statement parameters from current aggregate state.
+- The aggregate and child entities perform their normal invariant validation during reconstitution.
+- Infrastructure performs only technical conversion required by stored values, such as timestamps, and wraps malformed persistence data as an infrastructure failure.
 
-### Aggregate Persistence
+This keeps pgtyped row types, SQL aliases, and JSON payload shapes outside the domain model.
 
-Aggregates with child entities are persisted with **domain-owned change tracking**
-(dirty marking): the aggregate classifies its children since load — created,
-modified, removed — through a shared `ChildCollection`/`ChildChanges` tracker and
-exposes `getPersistencePlan()` (`{ isNew, children: { inserts, updates,
-removedIds } }`). No snapshots, no repository-side diffing.
+### Aggregate persistence
 
-Mappers are explicit in both directions: 
-- `toDomain(persistence)` reconstructs the
-aggregate (business rules validated by domain constructors);
-- `toPersistence(aggregate)` derives write rows from the plan, typed against the generated pgTyped parameter types.
+Repositories expose `add` for a newly created aggregate and `save` for an aggregate loaded from the repository. Application-generated UUIDs identify roots and children before persistence, allowing the complete aggregate graph to be mapped before rows are written.
 
-Persistence is batched and atomic: `persistRoot` (INSERT/UPDATE by `isNew`) plus
-`persistChildChanges` (batched INSERT/UPDATE/DELETE), all inside one
-TransactionManager transaction. Aggregates are loaded in a single round trip via
-JSON aggregation (`jsonb_agg` + `COALESCE`). IDs are application-generated UUIDs,
-so the graph is fully known before any row is written.
+An aggregate owns only a bounded child collection. The aggregate loader returns the root and its owned children in one round trip using `jsonb_agg` and `COALESCE`; the mapper reconstitutes the root and every child entity.
 
-### Queries
+Saving a bounded aggregate maps its complete current state. Child rows are reconciled atomically in SQL:
 
-Read models can bypass repositories to avoid unnecessary overhead with multiple queries.
+1. insert children not yet stored;
+2. update existing children whose persisted values differ;
+3. delete stored children absent from current aggregate state.
 
-Commands:
+`IS DISTINCT FROM` is used for null-safe comparison in conditional updates. This keeps write semantics in the repository and business invariants in the aggregate.
+
+In terms of aggregate children this pattern works for a limited number of children. For cases with considerable number of children reconsider aggregate boundaries and extract into a separate aggregate to avoid performance issues.
+
+### Concurrency
+
+Aggregate roots have a positive revision. Revision columns use `BIGINT` for frequently updated aggregates.
+
+Regular write flows use optimistic concurrency:
 
 ```text
-Application Use Case
+findById() → { aggregate, expectedRevision }
         │
         ▼
-Repository
+aggregate behavior
         │
         ▼
-Domain Aggregate
+save() → UPDATE ... WHERE revision = :expectedRevision
+        │
+        ▼
+new revision or concurrency conflict
 ```
 
-Queries:
+`save` increments in the same transaction and returns the revision. A root update that affects no row is an application-level concurrency conflict.
 
-```text
-Application Query
-        │
-        ▼
-SQL Projection
-        │
-        ▼
-DTO / Read Model
-```
-
-Repositories are responsible only for aggregate persistence.
+Repositories also provide `findByIdForUpdate` for use cases requiring pessimistic coordination. It loads the same complete aggregate projection and locks the root row with `FOR UPDATE`; the use case then saves within the shared transaction.
 
 ### Transactions
 
-Transactions are handled on application use case level. But application use cases do not create or manage database transactions directly. They are coordinated by a shared **TransactionManager**.
+State-changing application use cases execute through the shared transaction boundary. The transaction can include multiple repositories and transactional-outbox persistence.
 
-```
-Application Use Case
+```text
+Application use case
         │
         ▼
-TransactionManager
+Transaction manager
         │
         ▼
-Repositories
+Repositories / Outbox repository
         │
         ▼
 PostgreSQL
 ```
 
-A transaction may include operations across multiple repositories.
+Repositories use the active transaction and do not create, commit, or publish from it. Aggregate changes and integration-event outbox records persist atomically; domain events are dispatched only after successful persistence.
 
-Typical example:
+### Read projections
 
-```
-OptimizationRepository.save()
-RecommendationRepository.saveMany()
-OutboxRepository.save()
-```
+Query handlers use dedicated read stores and return DTO/read projections instead of aggregates.
 
-All persistence operations complete atomically.
-
-Repositories never start or commit transactions themselves.
-
-### SQL Organization
-
-Business queries are stored in dedicated `.sql` files.
-
-Example:
-
-```
-optimization/
-├── infra/
-    └── persistence/
-        ├── optimization.pg-repository.ts
-        ├── optimization.mapper.ts
-        └── queries/
-            ├── optimization.find-by-id.sql
-            ├── optimization.find-running-by-route.sql
-            ├── optimization.save.sql
-            └── optimization.delete.sql
+```text
+Application query
+        │
+        ▼
+Read store
+        │
+        ▼
+SQL projection → read-store mapper → DTO
 ```
 
-This provides:
+### Filtering, pagination, and sorting
 
-- readable SQL;
-- easy query optimization.
+Each read use case defines explicit, typed filter and sort contracts. The shared `packages/querying/typescript/src/pagination` package provides pagination, cursor, and sort primitives; it does not own domain-specific filter fields or sort profiles.
 
----
+Page and cursor pagination use separate static pgtyped statements with identical filtering semantics:
 
-### Migrations
+- Page queries apply `LIMIT` and `OFFSET` and return the page plus exact total count from one statement.
+- Cursor queries use a stable order, return `pageSize + 1` rows (+1 to determine whether another page exists without a separate count query), and create next cursor from the last returned row.
+- A cursor contains every ordered field and the identifier as a deterministic tie-breaker. Its scope binds it to the logical query, filters, and sort.
+- Cursor ordering uses one direction for the complete order, enabling composite tuple predicates and matching indexes.
+- Page ordering may expose independently selected directions for its supported fields.
 
-Database schema is managed through SQL migrations.
+Static SQL remains the default for explicit read use cases. Type-safe query builder (e.g. Kysely) may be introduced for future read cases requiring advanced composable dynamic filtering or sorting. In order to have dynamic queries and avoid performance issues.
 
-```
-apps/
+Allowed fields, operators, and sort expressions remain server-defined and parameterized.
 
-├── backend/
-│   ├── db/
-│   │   ├── migrations/
-│   │   └── seeds/
-│   │
-│   └── src/
-│       ├── operational-workspace/
-│       ├── decision-intelligence/
-│       └── shared/
-```
+### SQL organization and indexes
 
-SQL migrations are the single source of truth for database structure.
+Each logical repository or read-store operation has a dedicated `.sql` file and its generated pgtyped artifact. This keeps SQL reviewable and query optimization local to its use case.
 
-Migrations are executed automatically by the CI/CD pipeline before deployment.
-
-### Generated Types
-
-pgTyped generates strongly typed query bindings during development whenever
-query SQL changes. Generated bindings are committed so builds and migration
-jobs do not require a database connection to compile.
-
-```
-.sql
-      │
-      ▼
-pgTyped
-      │
-      ▼
-Generated TypeScript Queries
-      │
-      ▼
-Repositories
-```
-
-Generated files are not edited manually; they are committed with their source
-`.sql` files.
+Usually indexes support actual tenant-scoped filter and ordering paths. They are selected from supported query shapes, selectivity, write cost, and `EXPLAIN (ANALYZE, BUFFERS)` results. Composite indexes lead with `tenant_id` where queries are tenant-scoped.
 
 ## Consequences
 
 ### Advantages
 
-- SQL remains the source of truth.
-- Strong compile-time validation of SQL queries.
-- Complex SQL remains readable and easy to optimize.
+- Domain models remain persistence-ignorant and own business invariants.
+- SQL projections remain type-checked, explicit, and directly optimizable.
+- Bounded aggregates have predictable load and save costs.
+- Read projections scale independently from aggregate persistence.
+- Optimistic and pessimistic concurrency are available per use case.
 
 ### Trade-offs
 
-- Requires SQL knowledge.
-- Additional build step for pgTyped code generation.
-
-## Alternatives Considered
-
-### ORM (Drizzle, Prisma, TypeORM)
-
-Rejected because ORMs introduce persistence concerns into the domain model, encourage Active Record-style development, and become cumbersome when working with rich aggregates and complex SQL.
-
-### Query Builder (Kysely)
-
-Rejected because SQL should remain the primary source of truth rather than being expressed through TypeScript.
-
-### Raw SQL Without Code Generation
-
-Rejected because it provides no type-safety.
-
-## Implementation Notes
-
-- Each Repository owns persistence for exactly one Aggregate.
-- Mappers expose `toDomain`/`toPersistence` and extend a shared
-  `AggregatePersistenceMapper` base; validation lives in domain constructors, not
-  class-validator.
-- Corrupted persisted data raises `MalformedPersistenceDataException` (infra);
-  Domain Exceptions are never thrown from infrastructure.
-- Transactional Outbox records participate in the same database transaction as aggregate persistence.
-- Generated pgTyped artifacts are treated as build outputs and must never be modified manually.
+- Complex dynamic filtering and sorting results in overly big sql queries and potential performance degradation due to static sql queries nature.
+- pgtyped generation remains part of the development workflow.
+- Full-state child reconciliation is limited to bounded aggregate-owned collections.

@@ -39,7 +39,7 @@ The Application Layer must not:
 Every Command Handler follows the same execution pipeline.
 
 ```text
-Receive Command
+Receive ExecutionRequest<Command>
         │
         ▼
 Load Aggregates
@@ -79,6 +79,7 @@ Outbox is required only for distributed, cross-service events.
 ## Command Handler Rules
 
 - One Handler executes exactly one use case.
+- Handlers receive `ExecutionRequest<T>`, which couples a pure command or query input with trusted execution context.
 - Command Handlers are orchestration layers.
 - Business rules belong exclusively to the Domain.
 - Aggregates are loaded through Repository ports.
@@ -90,6 +91,7 @@ Outbox is required only for distributed, cross-service events.
 
 ## Query Handler Rules
 
+- Query Handlers receive `ExecutionRequest<T>`.
 - Query Handlers never load Aggregates.
 - Query Handlers retrieve data through Repository ports or dedicated read models.
 - Query Handlers return DTOs.
@@ -100,6 +102,7 @@ Outbox is required only for distributed, cross-service events.
 
 ## Transactions
 
+- State-changing use cases execute through the shared transaction boundary.
 - Aggregate persistence and Transactional Outbox persistence for Integration Events belong to the same transaction.
 - Domain Events are dispatched only after successful persistence.
 - Outbox processing and message publication occur asynchronously via a polling worker after the transaction commits successfully. The worker claims and drains bounded batches so it can catch up under load without running indefinitely.

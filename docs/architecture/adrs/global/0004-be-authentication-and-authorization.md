@@ -306,7 +306,7 @@ The platform supports multi-tenancy. Tenant represents a customer company.
 
 Identity contains: `tenantId`
 
-Repositories automatically scope persistence operations to the current Tenant.
+The authenticated transport boundary creates `ExecutionContext` from the Identity. Handlers receive it through `ExecutionRequest<T>` and pass its tenant scope explicitly further (e.g. to tenant-scoped repository).
 
 PostgreSQL Row-Level Security (RLS) is **not used** as duplicate enforcement. The database is responsible only for data integrity. Authorization is enforced in the Application Layer.
 
