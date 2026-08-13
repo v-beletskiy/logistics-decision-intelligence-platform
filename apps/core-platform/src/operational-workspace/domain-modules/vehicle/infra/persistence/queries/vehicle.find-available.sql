@@ -25,7 +25,10 @@ SELECT
     '[]'::jsonb
   ) AS compartments
 FROM operational_workspace.vehicles v
-LEFT JOIN operational_workspace.vehicle_compartments c ON c.vehicle_id = v.id
-WHERE v.status = :status!
+LEFT JOIN operational_workspace.vehicle_compartments c
+  ON c.tenant_id = v.tenant_id
+ AND c.vehicle_id = v.id
+WHERE v.tenant_id = :tenantId!
+  AND v.status = :status!
 GROUP BY v.id
 ORDER BY v.registration_number;

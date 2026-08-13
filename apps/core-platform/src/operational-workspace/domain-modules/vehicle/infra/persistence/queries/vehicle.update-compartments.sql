@@ -15,4 +15,6 @@ SET type = u.type::text,
     max_volume = u.max_volume::double precision,
     max_volume_unit = u.max_volume_unit::text
 FROM updated_compartments AS u
-WHERE c.id = u.id::uuid;
+WHERE c.tenant_id = :tenantId!
+  AND c.vehicle_id = :ownerId!
+  AND c.id = u.id::uuid;

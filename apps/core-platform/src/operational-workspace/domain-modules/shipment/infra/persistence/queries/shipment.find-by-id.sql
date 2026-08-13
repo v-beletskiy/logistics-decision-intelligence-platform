@@ -6,4 +6,5 @@ SELECT id, status, pickup_completed, delivery_completed,
        delivery_start_at, delivery_end_at,
        weight_value, weight_unit, length, width, height, dimension_unit
 FROM operational_workspace.shipments
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

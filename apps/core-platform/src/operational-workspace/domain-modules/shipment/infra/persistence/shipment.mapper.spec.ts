@@ -11,8 +11,12 @@ import {
 
 import { Shipment, ShipmentStatus } from "../../domain/shipment.aggregate";
 import { ShipmentId } from "../../domain/shipment-id";
-import type { ShipmentEntity } from "./entities/shipment.entity";
-import { ShipmentMapper } from "./shipment.mapper";
+import {
+  ShipmentMapper,
+  type ShipmentPersistenceRow,
+} from "./shipment.mapper";
+
+const tenantId = "00000000-0000-4000-8000-000000000099";
 
 const pickupAddress: AddressProps = {
   country: "UA",
@@ -58,7 +62,7 @@ const shipmentDetails = {
   dimensions,
 };
 
-const shipmentEntity: ShipmentEntity = {
+const shipmentEntity: ShipmentPersistenceRow = {
   id: "550e8400-e29b-41d4-a716-446655440000",
   status: "IN_PROGRESS",
   pickup_completed: true,
@@ -122,10 +126,11 @@ test("ShipmentMapper maps absent nullable address columns to undefined", () => {
 test("ShipmentMapper derives a clean write model for a loaded shipment", () => {
   const shipment = ShipmentMapper.toDomain(shipmentEntity);
 
-  const persistence = ShipmentMapper.toPersistence(shipment);
+  const persistence = ShipmentMapper.toPersistence(tenantId, shipment);
 
   assert.equal(persistence.isNew, false);
   assert.deepEqual(persistence.root, {
+    tenantId,
     id: shipmentEntity.id,
     status: ShipmentStatus.InProgress,
     pickupCompleted: true,
@@ -158,7 +163,7 @@ test("ShipmentMapper derives a clean write model for a loaded shipment", () => {
 test("ShipmentMapper marks a registration as an insert", () => {
   const shipment = Shipment.create(shipmentDetails);
 
-  const persistence = ShipmentMapper.toPersistence(shipment);
+  const persistence = ShipmentMapper.toPersistence(tenantId, shipment);
 
   assert.equal(persistence.isNew, true);
   assert.equal(persistence.root.id, shipment.id.value);
@@ -172,8 +177,8 @@ test("ShipmentMapper round-trips a shipment through its persisted shape", () => 
   original.completePickup();
   original.completeDelivery();
 
-  const persistence = ShipmentMapper.toPersistence(original);
-  const entity: ShipmentEntity = {
+  const persistence = ShipmentMapper.toPersistence(tenantId, original);
+  const entity: ShipmentPersistenceRow = {
     id: persistence.root.id,
     status: persistence.root.status,
     pickup_completed: persistence.root.pickupCompleted,

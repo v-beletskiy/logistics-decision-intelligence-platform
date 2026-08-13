@@ -7,8 +7,12 @@ import {
   VehicleStatus,
 } from "../../domain/vehicle.aggregate";
 import { DimensionUnit, VolumeUnit, WeightUnit } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
-import { VehicleMapper } from "./vehicle.mapper";
-import type { VehicleEntity } from "./entities/vehicle.entity";
+import {
+  VehicleMapper,
+  type VehiclePersistenceRow,
+} from "./vehicle.mapper";
+
+const tenantId = "00000000-0000-4000-8000-000000000099";
 
 const capacity = {
   maxWeight: { value: 1_000, unit: WeightUnit.Kilogram },
@@ -21,7 +25,7 @@ const capacity = {
   maxVolume: { value: 30, unit: VolumeUnit.CubicMeter },
 };
 
-const vehicleEntity: VehicleEntity = {
+const vehicleEntity = {
   id: "b6154da9-3b68-4fdc-aef2-3f9196a68f79",
   registration_number: "AA-1234-BB",
   name: "Refrigerated trailer",
@@ -42,7 +46,7 @@ const vehicleEntity: VehicleEntity = {
       max_volume_unit: "CUBIC_METER",
     },
   ],
-};
+} satisfies VehiclePersistenceRow;
 
 test("VehicleMapper reconstitutes a vehicle from its JSON-aggregated compartments", () => {
   const vehicle = VehicleMapper.toDomain(vehicleEntity);
@@ -63,7 +67,7 @@ test("VehicleMapper rejects a non-array compartments column", () => {
       VehicleMapper.toDomain({
         ...vehicleEntity,
         compartments: {},
-      } as unknown as VehicleEntity),
+      }),
     /must be a JSON array/,
   );
 });
@@ -71,10 +75,11 @@ test("VehicleMapper rejects a non-array compartments column", () => {
 test("VehicleMapper derives a clean write model for a loaded vehicle", () => {
   const vehicle = VehicleMapper.toDomain(vehicleEntity);
 
-  const persistence = VehicleMapper.toPersistence(vehicle);
+  const persistence = VehicleMapper.toPersistence(tenantId, vehicle);
 
   assert.equal(persistence.isNew, false);
   assert.deepEqual(persistence.root, {
+    tenantId,
     id: vehicleEntity.id,
     registrationNumber: vehicleEntity.registration_number,
     name: vehicleEntity.name,
@@ -95,10 +100,11 @@ test("VehicleMapper derives an insert row for every compartment of a new vehicle
     ],
   });
 
-  const persistence = VehicleMapper.toPersistence(vehicle);
+  const persistence = VehicleMapper.toPersistence(tenantId, vehicle);
 
   assert.equal(persistence.isNew, true);
   assert.equal(persistence.inserts.length, 2);
+  assert.equal(persistence.inserts[0]!.tenantId, tenantId);
   assert.equal(persistence.updates.length, 0);
   assert.deepEqual(persistence.removedIds, []);
   assert.equal(persistence.inserts[0]!.vehicleId, vehicle.id.value);
@@ -120,7 +126,7 @@ test("VehicleMapper derives update and removal rows for changed compartments", (
   });
   vehicle.removeCompartment(removed);
 
-  const persistence = VehicleMapper.toPersistence(vehicle);
+  const persistence = VehicleMapper.toPersistence(tenantId, vehicle);
 
   assert.equal(persistence.isNew, false);
   assert.equal(persistence.inserts.length, 0);
@@ -152,8 +158,8 @@ test("VehicleMapper round-trips a new vehicle through its persisted shape", () =
     ],
   });
 
-  const persistence = VehicleMapper.toPersistence(original);
-  const entity: VehicleEntity = {
+  const persistence = VehicleMapper.toPersistence(tenantId, original);
+  const entity: VehiclePersistenceRow = {
     id: persistence.root.id,
     registration_number: persistence.root.registrationNumber,
     name: persistence.root.name ?? null,

@@ -21,6 +21,8 @@ export async function persistRoot<TParams>(
 }
 
 export interface ChildPersistenceStatements<TInsertRow, TUpdateRow> {
+  readonly tenantId: string;
+  readonly ownerId: string;
   readonly inserts: readonly TInsertRow[];
   readonly updates: readonly TUpdateRow[];
   readonly removedIds: readonly string[];
@@ -29,10 +31,13 @@ export interface ChildPersistenceStatements<TInsertRow, TUpdateRow> {
     void
   >;
   readonly updateStatement?: PreparedQuery<
-    { rows: readonly TUpdateRow[] },
+    { tenantId: string; ownerId: string; rows: readonly TUpdateRow[] },
     void
   >;
-  readonly deleteStatement?: PreparedQuery<{ ids: readonly string[] }, void>;
+  readonly deleteStatement?: PreparedQuery<
+    { tenantId: string; ownerId: string; ids: readonly string[] },
+    void
+  >;
 }
 
 /**
@@ -62,6 +67,8 @@ export async function persistChildChanges<TInsertRow, TUpdateRow>(
       );
     }
     await database.exec(statements.updateStatement, {
+      tenantId: statements.tenantId,
+      ownerId: statements.ownerId,
       rows: statements.updates,
     });
   }
@@ -73,6 +80,8 @@ export async function persistChildChanges<TInsertRow, TUpdateRow>(
       );
     }
     await database.exec(statements.deleteStatement, {
+      tenantId: statements.tenantId,
+      ownerId: statements.ownerId,
       ids: statements.removedIds,
     });
   }

@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
 
 import { RouteRepository } from "../../domain/route.repository";
-import { PgRouteRepository } from "./route.pg-repository";
+import { RouteStopRepository } from "../../domain/route-stop.repository";
+import { PgRouteRepository } from "./repository/route.pg-repository";
+import { PgRouteStopRepository } from "./repository/route-stop.pg-repository";
 
 @Module({
   providers: [
@@ -9,7 +11,11 @@ import { PgRouteRepository } from "./route.pg-repository";
       provide: RouteRepository,
       useClass: PgRouteRepository,
     },
+    {
+      provide: RouteStopRepository,
+      useClass: PgRouteStopRepository,
+    },
   ],
-  exports: [RouteRepository],
+  exports: [RouteRepository, RouteStopRepository],
 })
 export class RoutePersistenceModule {}

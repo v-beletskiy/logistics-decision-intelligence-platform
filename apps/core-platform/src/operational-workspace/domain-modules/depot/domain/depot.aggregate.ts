@@ -270,7 +270,7 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
       aggregateId: this.id.value,
       occurredAt: new Date(),
       type,
-    } as DepotEvent);
+    } satisfies DepotEvent);
   }
 }
 

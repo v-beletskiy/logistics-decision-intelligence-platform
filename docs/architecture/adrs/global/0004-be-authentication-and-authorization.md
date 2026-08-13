@@ -306,7 +306,7 @@ The platform supports multi-tenancy. Tenant represents a customer company.
 
 Identity contains: `tenantId`
 
-The authenticated transport boundary creates `ExecutionContext` from the Identity. Handlers receive it through `ExecutionRequest<T>` and pass its tenant scope explicitly further (e.g. to tenant-scoped repository).
+The authenticated transport boundary creates `ExecutionContext` from the Identity. Handlers receive it through `ExecutionRequest<T>` and pass its tenant scope explicitly to tenant-scoped repository and read-store operations. The PostgreSQL tenant data model and relational isolation constraints are defined by [ADR-0006](0006-be-persistence-architecture.md).
 
 PostgreSQL Row-Level Security (RLS) is **not used** as duplicate enforcement. The database is responsible only for data integrity. Authorization is enforced in the Application Layer.
 

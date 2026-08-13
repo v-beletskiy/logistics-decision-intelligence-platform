@@ -5,4 +5,5 @@ SET registration_number = :registrationNumber!,
     depot_id = :depotId,
     status = :status!,
     updated_at = now()
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

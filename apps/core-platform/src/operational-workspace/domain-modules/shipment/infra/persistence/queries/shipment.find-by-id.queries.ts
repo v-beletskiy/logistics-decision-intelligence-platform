@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'FindShipmentById' parameters type */
 export interface IFindShipmentByIdParams {
   id: string;
+  tenantId: string;
 }
 
 /** 'FindShipmentById' return type */
@@ -42,7 +43,7 @@ export interface IFindShipmentByIdQuery {
   result: IFindShipmentByIdResult;
 }
 
-const findShipmentByIdIR: any = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":509,"b":512}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE id = :id!"};
+const findShipmentByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":516,"b":525}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":538,"b":541}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -54,7 +55,8 @@ const findShipmentByIdIR: any = {"usedParamSet":{"id":true},"params":[{"name":"i
  *        delivery_start_at, delivery_end_at,
  *        weight_value, weight_unit, length, width, height, dimension_unit
  * FROM operational_workspace.shipments
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const findShipmentById = new PreparedQuery<IFindShipmentByIdParams,IFindShipmentByIdResult>(findShipmentByIdIR);

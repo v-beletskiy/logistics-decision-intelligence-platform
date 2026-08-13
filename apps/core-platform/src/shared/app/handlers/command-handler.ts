@@ -13,7 +13,7 @@ export interface TransactionalCommandResult<TResult> {
 
 export abstract class CommandHandler {
   protected constructor(
-    protected readonly trxManager: TransactionManager,
+    protected readonly transactionManager: TransactionManager,
     protected readonly domainEventBus: DomainEventBus,
   ) {}
 
@@ -22,7 +22,7 @@ export abstract class CommandHandler {
     aggregate: DomainEventsSource,
   ): Promise<void> {
     const domainEvents = aggregate.pullDomainEvents();
-    await this.trxManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await persist();
       for (const event of domainEvents) {
         await this.domainEventBus.publish(event);
@@ -34,7 +34,7 @@ export abstract class CommandHandler {
   protected async execUseCaseTrx<TResult>(
     operation: () => Promise<TransactionalCommandResult<TResult>>,
   ): Promise<TResult> {
-    return this.trxManager.run(async () => {
+    return this.transactionManager.run(async () => {
       const { result, eventsFrom } = await operation();
       for (const aggregate of eventsFrom) {
         for (const event of aggregate.pullDomainEvents()) {

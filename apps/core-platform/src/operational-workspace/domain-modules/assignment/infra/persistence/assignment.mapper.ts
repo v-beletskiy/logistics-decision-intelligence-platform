@@ -20,10 +20,32 @@ import {
   Weight,
   WeightUnit,
 } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
-import type { AssignmentEntity } from "./entities/assignment.entity";
-import type { AssignmentShipmentEntity } from "./entities/assignment-shipment.entity";
 import type { IInsertAssignmentParams } from "./queries/assignment.insert.queries";
 import type { IInsertAssignmentShipmentsParams } from "./queries/assignment.insert-shipments.queries";
+
+export interface AssignmentShipmentPersistenceData {
+  readonly id: string;
+  readonly shipmentId: string;
+  readonly weight: number;
+  readonly weightUnit: string;
+  readonly length: number;
+  readonly width: number;
+  readonly height: number;
+  readonly dimensionUnit: string;
+}
+
+export interface AssignmentPersistenceRow {
+  readonly id: string;
+  readonly route_id: string;
+  readonly vehicle_id: string;
+  readonly driver_id: string;
+  readonly status: string;
+  readonly assigned_at: Date;
+  readonly started_at: Date | null;
+  readonly completed_at: Date | null;
+  readonly cancelled_at: Date | null;
+  readonly shipments: unknown;
+}
 
 /** Root row consumed by persistRoot, matching the assignment insert/update statements. */
 export type AssignmentRootRow = IInsertAssignmentParams;
@@ -47,8 +69,8 @@ export interface AssignmentWriteModel {
  * constructors. Writes derive their rows from the aggregate's persistence plan.
  */
 export class AssignmentMapper extends AggregatePersistenceMapper {
-  static toDomain(row: AssignmentEntity): Assignment {
-    const shipments = this.requireJsonArray<AssignmentShipmentEntity>(
+  static toDomain(row: AssignmentPersistenceRow): Assignment {
+    const shipments = this.requireJsonArray<AssignmentShipmentPersistenceData>(
       row.shipments,
       "assignment shipments",
     ).map((shipment): AssignmentShipment => {
@@ -85,11 +107,15 @@ export class AssignmentMapper extends AggregatePersistenceMapper {
     return Assignment.reconstitute(AssignmentId.from(row.id), props);
   }
 
-  static toPersistence(assignment: Assignment): AssignmentWriteModel {
+  static toPersistence(
+    tenantId: string,
+    assignment: Assignment,
+  ): AssignmentWriteModel {
     const plan = assignment.getPersistencePlan();
     return {
       isNew: plan.isNew,
       root: {
+        tenantId,
         id: assignment.id.value,
         routeId: assignment.routeId.value,
         vehicleId: assignment.vehicleId.value,
@@ -101,6 +127,7 @@ export class AssignmentMapper extends AggregatePersistenceMapper {
         cancelledAt: assignment.cancelledAt ?? null,
       },
       shipmentInserts: plan.shipments.inserts.map((shipment) => ({
+        tenantId,
         id: shipment.id.value,
         assignmentId: assignment.id.value,
         shipmentId: shipment.shipmentId.value,

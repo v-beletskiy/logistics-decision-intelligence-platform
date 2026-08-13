@@ -1,3 +1,4 @@
 /* @name DeleteShipment */
 DELETE FROM operational_workspace.shipments
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

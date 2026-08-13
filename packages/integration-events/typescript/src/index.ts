@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUIDv7 } from "node:crypto";
 
 import {
   integrationEventEnvelopeV1Schema,
@@ -91,7 +91,7 @@ export class IntegrationEventFactory<const TSource extends string = string> {
   ): CloudEvent<TData, TType, TSource> {
     return {
       specversion: "1.0",
-      id: integrationEventId(options.id ?? randomUUID()),
+      id: integrationEventId(options.id ?? randomUUIDv7()),
       source: this.source,
       type: contract.eventType,
       subject: input.subject,

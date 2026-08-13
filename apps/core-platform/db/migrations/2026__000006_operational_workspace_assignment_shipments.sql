@@ -1,8 +1,9 @@
 CREATE TABLE
   IF NOT EXISTS operational_workspace.assignment_shipments (
-    id uuid PRIMARY KEY,
-    assignment_id uuid NOT NULL REFERENCES operational_workspace.assignments (id) ON DELETE CASCADE,
-    shipment_id uuid NOT NULL REFERENCES operational_workspace.shipments (id) ON DELETE RESTRICT,
+    id uuid NOT NULL,
+    tenant_id uuid NOT NULL,
+    assignment_id uuid NOT NULL,
+    shipment_id uuid NOT NULL,
     weight double precision NOT NULL CHECK (weight >= 0),
     weight_unit text NOT NULL CHECK (weight_unit IN ('KILOGRAM', 'GRAM', 'POUND')),
     length double precision NOT NULL CHECK (length > 0),
@@ -11,9 +12,10 @@ CREATE TABLE
     dimension_unit text NOT NULL CHECK (
       dimension_unit IN ('CENTIMETER', 'MILLIMETER', 'INCH')
     ),
-    CONSTRAINT assignment_shipments_shipment_unique UNIQUE (assignment_id, shipment_id)
+    PRIMARY KEY (tenant_id, assignment_id, id),
+    CONSTRAINT assignment_shipments_assignment_fk FOREIGN KEY (tenant_id, assignment_id) REFERENCES operational_workspace.assignments (tenant_id, id) ON DELETE CASCADE,
+    CONSTRAINT assignment_shipments_shipment_fk FOREIGN KEY (tenant_id, shipment_id) REFERENCES operational_workspace.shipments (tenant_id, id) ON DELETE RESTRICT,
+    CONSTRAINT assignment_shipments_shipment_unique UNIQUE (tenant_id, assignment_id, shipment_id)
   );
 
-CREATE INDEX IF NOT EXISTS assignment_shipments_assignment_id_idx ON operational_workspace.assignment_shipments (assignment_id);
-
-CREATE INDEX IF NOT EXISTS assignment_shipments_shipment_id_idx ON operational_workspace.assignment_shipments (shipment_id);
+CREATE INDEX IF NOT EXISTS assignment_shipments_tenant_shipment_idx ON operational_workspace.assignment_shipments (tenant_id, shipment_id);

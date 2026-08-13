@@ -14,6 +14,7 @@ export interface IInsertDepotParams {
   stateOrRegion?: string | null | void;
   status: string;
   street: string;
+  tenantId: string;
   vehicleCapacity: number;
   vehicleCount: number;
 }
@@ -27,14 +28,14 @@ export interface IInsertDepotQuery {
   result: IInsertDepotResult;
 }
 
-const insertDepotIR: any = {"usedParamSet":{"id":true,"name":true,"country":true,"stateOrRegion":true,"city":true,"street":true,"buildingNumber":true,"postalCode":true,"status":true,"vehicleCapacity":true,"driverCapacity":true,"vehicleCount":true,"driverCount":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":204,"b":207}]},{"name":"name","required":true,"transform":{"type":"scalar"},"locs":[{"a":210,"b":215}]},{"name":"country","required":true,"transform":{"type":"scalar"},"locs":[{"a":218,"b":226}]},{"name":"stateOrRegion","required":false,"transform":{"type":"scalar"},"locs":[{"a":229,"b":242}]},{"name":"city","required":true,"transform":{"type":"scalar"},"locs":[{"a":245,"b":250}]},{"name":"street","required":true,"transform":{"type":"scalar"},"locs":[{"a":253,"b":260}]},{"name":"buildingNumber","required":true,"transform":{"type":"scalar"},"locs":[{"a":263,"b":278}]},{"name":"postalCode","required":true,"transform":{"type":"scalar"},"locs":[{"a":281,"b":292}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":295,"b":302}]},{"name":"vehicleCapacity","required":true,"transform":{"type":"scalar"},"locs":[{"a":305,"b":321}]},{"name":"driverCapacity","required":true,"transform":{"type":"scalar"},"locs":[{"a":324,"b":339}]},{"name":"vehicleCount","required":true,"transform":{"type":"scalar"},"locs":[{"a":342,"b":355}]},{"name":"driverCount","required":true,"transform":{"type":"scalar"},"locs":[{"a":358,"b":370}]}],"statement":"INSERT INTO operational_workspace.depots\n  (id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count)\nVALUES (:id!, :name!, :country!, :stateOrRegion, :city!, :street!, :buildingNumber!, :postalCode!, :status!, :vehicleCapacity!, :driverCapacity!, :vehicleCount!, :driverCount!)"};
+const insertDepotIR: any = {"usedParamSet":{"tenantId":true,"id":true,"name":true,"country":true,"stateOrRegion":true,"city":true,"street":true,"buildingNumber":true,"postalCode":true,"status":true,"vehicleCapacity":true,"driverCapacity":true,"vehicleCount":true,"driverCount":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":215,"b":224}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":227,"b":230}]},{"name":"name","required":true,"transform":{"type":"scalar"},"locs":[{"a":233,"b":238}]},{"name":"country","required":true,"transform":{"type":"scalar"},"locs":[{"a":241,"b":249}]},{"name":"stateOrRegion","required":false,"transform":{"type":"scalar"},"locs":[{"a":252,"b":265}]},{"name":"city","required":true,"transform":{"type":"scalar"},"locs":[{"a":268,"b":273}]},{"name":"street","required":true,"transform":{"type":"scalar"},"locs":[{"a":276,"b":283}]},{"name":"buildingNumber","required":true,"transform":{"type":"scalar"},"locs":[{"a":286,"b":301}]},{"name":"postalCode","required":true,"transform":{"type":"scalar"},"locs":[{"a":304,"b":315}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":318,"b":325}]},{"name":"vehicleCapacity","required":true,"transform":{"type":"scalar"},"locs":[{"a":328,"b":344}]},{"name":"driverCapacity","required":true,"transform":{"type":"scalar"},"locs":[{"a":347,"b":362}]},{"name":"vehicleCount","required":true,"transform":{"type":"scalar"},"locs":[{"a":365,"b":378}]},{"name":"driverCount","required":true,"transform":{"type":"scalar"},"locs":[{"a":381,"b":393}]}],"statement":"INSERT INTO operational_workspace.depots\n  (tenant_id, id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count)\nVALUES (:tenantId!, :id!, :name!, :country!, :stateOrRegion, :city!, :street!, :buildingNumber!, :postalCode!, :status!, :vehicleCapacity!, :driverCapacity!, :vehicleCount!, :driverCount!)"};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO operational_workspace.depots
- *   (id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count)
- * VALUES (:id!, :name!, :country!, :stateOrRegion, :city!, :street!, :buildingNumber!, :postalCode!, :status!, :vehicleCapacity!, :driverCapacity!, :vehicleCount!, :driverCount!)
+ *   (tenant_id, id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count)
+ * VALUES (:tenantId!, :id!, :name!, :country!, :stateOrRegion, :city!, :street!, :buildingNumber!, :postalCode!, :status!, :vehicleCapacity!, :driverCapacity!, :vehicleCount!, :driverCount!)
  * ```
  */
 export const insertDepot = new PreparedQuery<IInsertDepotParams,IInsertDepotResult>(insertDepotIR);

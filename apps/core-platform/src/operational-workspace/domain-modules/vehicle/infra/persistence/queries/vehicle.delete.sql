@@ -1,3 +1,4 @@
 /* @name DeleteVehicle */
 DELETE FROM operational_workspace.vehicles
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

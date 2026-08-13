@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomUUIDv7 } from "node:crypto";
 
 import { UuidIdentifier } from "../../../../shared/domain/shared-kernel/core/uuid-identifier";
 
@@ -8,7 +8,7 @@ export class RouteId extends UuidIdentifier<RouteId> {
   }
 
   static generate(): RouteId {
-    return new RouteId(randomUUID());
+    return new RouteId(randomUUIDv7());
   }
 
   static from(value: unknown): RouteId {

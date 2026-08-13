@@ -13,21 +13,21 @@ import { CreateShipmentCommand } from "./create-shipment.command";
 @Injectable()
 export class CreateShipmentHandler extends CommandHandler {
   constructor(
-    private readonly shipments: ShipmentRepository,
-    trxManager: TransactionManager,
+    private readonly shipmentRepository: ShipmentRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.ShipmentManage)
   async exec(
     request: ExecutionRequest<CreateShipmentCommand>,
   ): Promise<string> {
-    const { input: command } = request;
+    const { context, input: command } = request;
     const shipment = Shipment.create(command.details);
     await this.execTrxWithDomainEvents(async () => {
-      await this.shipments.save(shipment);
+      await this.shipmentRepository.save(context.tenantId, shipment);
     }, shipment);
 
     return shipment.id.value;

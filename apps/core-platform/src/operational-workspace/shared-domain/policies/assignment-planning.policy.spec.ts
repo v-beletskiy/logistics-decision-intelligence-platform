@@ -22,7 +22,6 @@ import {
 import { DriverId } from "../../domain-modules/driver/domain/driver-id";
 import { Route } from "../../domain-modules/route/domain/route.aggregate";
 import { RouteId } from "../../domain-modules/route/domain/route-id";
-import { RouteStopOperationType } from "../../domain-modules/route/domain/route-stop.entity";
 import { ShipmentId } from "../../domain-modules/shipment/domain/shipment-id";
 import {
   Compartment,
@@ -133,26 +132,7 @@ function createDriver(status: DriverStatus = DriverStatus.Available): Driver {
 }
 
 function createRoute(): Route {
-  return Route.create({
-    stops: [
-      {
-        shipmentId: "550e8400-e29b-41d4-a716-446655440001",
-        operationType: RouteStopOperationType.Pickup,
-        schedule: {
-          arrivalTime: new Date("2026-08-01T07:00:00Z"),
-          departureTime: new Date("2026-08-01T07:30:00Z"),
-        },
-      },
-      {
-        shipmentId: "550e8400-e29b-41d4-a716-446655440001",
-        operationType: RouteStopOperationType.Delivery,
-        schedule: {
-          arrivalTime: new Date("2026-08-01T12:00:00Z"),
-          departureTime: new Date("2026-08-01T12:30:00Z"),
-        },
-      },
-    ],
-  });
+  return Route.create({ plannedStopCount: 2 });
 }
 
 const feasibleShipments: readonly ShipmentLoad[] = [

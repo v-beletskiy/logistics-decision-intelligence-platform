@@ -14,26 +14,27 @@ import { UpdateShipmentDetailsCommand } from "./update-shipment-details.command"
 @Injectable()
 export class UpdateShipmentDetailsHandler extends CommandHandler {
   constructor(
-    private readonly shipments: ShipmentRepository,
-    trxManager: TransactionManager,
+    private readonly shipmentRepository: ShipmentRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.ShipmentManage)
   async exec(
     request: ExecutionRequest<UpdateShipmentDetailsCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const shipment = await this.shipments.findById(
+    const { context, input: command } = request;
+    const shipment = await this.shipmentRepository.findById(
+      context.tenantId,
       ShipmentId.from(command.shipmentId),
     );
     if (!shipment) throw new AggregateNotFoundException("Shipment");
 
     shipment.updateDetails(command.details);
     await this.execTrxWithDomainEvents(async () => {
-      await this.shipments.save(shipment);
+      await this.shipmentRepository.save(context.tenantId, shipment);
     }, shipment);
   }
 }

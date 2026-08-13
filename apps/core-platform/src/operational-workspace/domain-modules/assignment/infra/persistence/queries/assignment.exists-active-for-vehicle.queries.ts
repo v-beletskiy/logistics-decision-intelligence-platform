@@ -3,6 +3,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'ExistsActiveAssignmentForVehicle' parameters type */
 export interface IExistsActiveAssignmentForVehicleParams {
+  tenantId: string;
   vehicleId: string;
 }
 
@@ -17,7 +18,7 @@ export interface IExistsActiveAssignmentForVehicleQuery {
   result: IExistsActiveAssignmentForVehicleResult;
 }
 
-const existsActiveAssignmentForVehicleIR: any = {"usedParamSet":{"vehicleId":true},"params":[{"name":"vehicleId","required":true,"transform":{"type":"scalar"},"locs":[{"a":89,"b":99}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE vehicle_id = :vehicleId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\""};
+const existsActiveAssignmentForVehicleIR: any = {"usedParamSet":{"tenantId":true,"vehicleId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":97}]},{"name":"vehicleId","required":true,"transform":{"type":"scalar"},"locs":[{"a":120,"b":130}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE tenant_id = :tenantId!\n    AND vehicle_id = :vehicleId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\""};
 
 /**
  * Query generated from SQL:
@@ -25,7 +26,8 @@ const existsActiveAssignmentForVehicleIR: any = {"usedParamSet":{"vehicleId":tru
  * SELECT EXISTS (
  *   SELECT 1
  *   FROM operational_workspace.assignments
- *   WHERE vehicle_id = :vehicleId!
+ *   WHERE tenant_id = :tenantId!
+ *     AND vehicle_id = :vehicleId!
  *     AND status IN ('CREATED', 'IN_PROGRESS')
  * ) AS "exists!"
  * ```

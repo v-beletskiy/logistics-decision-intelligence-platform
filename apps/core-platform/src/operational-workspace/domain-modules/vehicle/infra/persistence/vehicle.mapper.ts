@@ -14,11 +14,32 @@ import {
   VolumeUnit,
   WeightUnit,
 } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
-import type { CompartmentEntity } from "./entities/compartment.entity";
-import type { VehicleEntity } from "./entities/vehicle.entity";
 import type { IInsertVehicleCompartmentsParams } from "./queries/vehicle.insert-compartments.queries";
 import type { IInsertVehicleParams } from "./queries/vehicle.insert.queries";
 import type { IUpdateVehicleCompartmentsParams } from "./queries/vehicle.update-compartments.queries";
+
+export interface CompartmentPersistenceData {
+  readonly id: string;
+  readonly type: string;
+  readonly name: string | null;
+  readonly max_weight: number;
+  readonly max_weight_unit: string;
+  readonly max_length: number;
+  readonly max_width: number;
+  readonly max_height: number;
+  readonly dimension_unit: string;
+  readonly max_volume: number;
+  readonly max_volume_unit: string;
+}
+
+export interface VehiclePersistenceRow {
+  readonly id: string;
+  readonly registration_number: string;
+  readonly name: string | null;
+  readonly depot_id: string | null;
+  readonly status: string;
+  readonly compartments: unknown;
+}
 
 /** Root row consumed by persistRoot, matching the vehicle insert/update statements. */
 export type VehicleRootRow = IInsertVehicleParams;
@@ -47,9 +68,9 @@ export interface VehicleWriteModel {
  * constructors. Writes derive their rows from the aggregate's persistence plan.
  */
 export class VehicleMapper extends AggregatePersistenceMapper {
-  static toDomain(entity: VehicleEntity): Vehicle {
-    const compartments = this.requireJsonArray<CompartmentEntity>(
-      entity.compartments,
+  static toDomain(row: VehiclePersistenceRow): Vehicle {
+    const compartments = this.requireJsonArray<CompartmentPersistenceData>(
+      row.compartments,
       "vehicle compartments",
     ).map((compartment): Compartment => {
       const props: CompartmentProps = {
@@ -79,20 +100,21 @@ export class VehicleMapper extends AggregatePersistenceMapper {
     });
 
     const props: VehicleProps = {
-      registrationNumber: entity.registration_number,
-      name: entity.name ?? undefined,
-      depotId: entity.depot_id ?? undefined,
-      status: entity.status as VehicleStatus,
+      registrationNumber: row.registration_number,
+      name: row.name ?? undefined,
+      depotId: row.depot_id ?? undefined,
+      status: row.status as VehicleStatus,
       compartments,
     };
-    return Vehicle.reconstitute(VehicleId.from(entity.id), props);
+    return Vehicle.reconstitute(VehicleId.from(row.id), props);
   }
 
-  static toPersistence(vehicle: Vehicle): VehicleWriteModel {
+  static toPersistence(tenantId: string, vehicle: Vehicle): VehicleWriteModel {
     const plan = vehicle.getPersistencePlan();
     return {
       isNew: plan.isNew,
       root: {
+        tenantId,
         id: vehicle.id.value,
         registrationNumber: vehicle.registrationNumber,
         name: vehicle.name,
@@ -100,10 +122,10 @@ export class VehicleMapper extends AggregatePersistenceMapper {
         status: vehicle.status,
       },
       inserts: plan.compartments.inserts.map((compartment) =>
-        toCompartmentInsertRow(vehicle, compartment),
+        toCompartmentInsertRow(tenantId, vehicle, compartment),
       ),
       updates: plan.compartments.updates.map((compartment) =>
-        toCompartmentUpdateRow(vehicle, compartment),
+        toCompartmentUpdateRow(compartment),
       ),
       removedIds: [...plan.compartments.removedIds],
     };
@@ -111,11 +133,13 @@ export class VehicleMapper extends AggregatePersistenceMapper {
 }
 
 function toCompartmentInsertRow(
+  tenantId: string,
   vehicle: Vehicle,
   compartment: Compartment,
 ): CompartmentInsertRow {
   const { capacity } = compartment;
   return {
+    tenantId,
     id: compartment.id.value,
     vehicleId: vehicle.id.value,
     type: compartment.type,
@@ -137,21 +161,20 @@ function toCompartmentInsertRow(
  * statement casts them at usage.
  */
 function toCompartmentUpdateRow(
-  vehicle: Vehicle,
   compartment: Compartment,
 ): CompartmentUpdateRow {
-  const row = toCompartmentInsertRow(vehicle, compartment);
+  const { capacity } = compartment;
   return {
-    id: row.id,
-    type: row.type,
-    name: row.name,
-    maxWeight: String(row.maxWeight),
-    maxWeightUnit: row.maxWeightUnit,
-    maxLength: String(row.maxLength),
-    maxWidth: String(row.maxWidth),
-    maxHeight: String(row.maxHeight),
-    dimensionUnit: row.dimensionUnit,
-    maxVolume: String(row.maxVolume),
-    maxVolumeUnit: row.maxVolumeUnit,
+    id: compartment.id.value,
+    type: compartment.type,
+    name: compartment.name,
+    maxWeight: String(capacity.maxWeight.value),
+    maxWeightUnit: capacity.maxWeight.unit,
+    maxLength: String(capacity.maxItemDimensions.length),
+    maxWidth: String(capacity.maxItemDimensions.width),
+    maxHeight: String(capacity.maxItemDimensions.height),
+    dimensionUnit: capacity.maxItemDimensions.unit,
+    maxVolume: String(capacity.maxVolume.value),
+    maxVolumeUnit: capacity.maxVolume.unit,
   };
 }

@@ -14,26 +14,27 @@ import { CancelShipmentCommand } from "./cancel-shipment.command";
 @Injectable()
 export class CancelShipmentHandler extends CommandHandler {
   constructor(
-    private readonly shipments: ShipmentRepository,
-    trxManager: TransactionManager,
+    private readonly shipmentRepository: ShipmentRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.ShipmentManage)
   async exec(
     request: ExecutionRequest<CancelShipmentCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const shipment = await this.shipments.findById(
+    const { context, input: command } = request;
+    const shipment = await this.shipmentRepository.findById(
+      context.tenantId,
       ShipmentId.from(command.shipmentId),
     );
     if (!shipment) throw new AggregateNotFoundException("Shipment");
 
     shipment.cancel();
     await this.execTrxWithDomainEvents(async () => {
-      await this.shipments.save(shipment);
+      await this.shipmentRepository.save(context.tenantId, shipment);
     }, shipment);
   }
 }

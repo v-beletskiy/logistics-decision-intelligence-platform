@@ -14,24 +14,27 @@ import { UpdateDepotDetailsCommand } from "./update-depot-details.command";
 @Injectable()
 export class UpdateDepotDetailsHandler extends CommandHandler {
   constructor(
-    private readonly depots: DepotRepository,
-    trxManager: TransactionManager,
+    private readonly depotRepository: DepotRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DepotManage)
   async exec(
     request: ExecutionRequest<UpdateDepotDetailsCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const depot = await this.depots.findById(DepotId.from(command.depotId));
+    const { context, input: command } = request;
+    const depot = await this.depotRepository.findById(
+      context.tenantId,
+      DepotId.from(command.depotId),
+    );
     if (!depot) throw new AggregateNotFoundException("Depot");
 
     depot.updateDetails(command.details);
     await this.execTrxWithDomainEvents(async () => {
-      await this.depots.save(depot);
+      await this.depotRepository.save(context.tenantId, depot);
     }, depot);
   }
 }

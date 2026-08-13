@@ -14,11 +14,11 @@ import { ChangeDriverAvailabilityCommand } from "./change-driver-availability.co
 @Injectable()
 export class ChangeDriverAvailabilityHandler extends CommandHandler {
   constructor(
-    private readonly drivers: DriverRepository,
-    trxManager: TransactionManager,
+    private readonly driverRepository: DriverRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DriverManage)
@@ -28,7 +28,7 @@ export class ChangeDriverAvailabilityHandler extends CommandHandler {
     const { context, input: command } = request;
     const tenantId = context.tenantId;
     await this.execUseCaseTrx(async () => {
-      const loadedDriver = await this.drivers.findById(
+      const loadedDriver = await this.driverRepository.findById(
         tenantId,
         DriverId.from(command.driverId),
       );
@@ -39,7 +39,7 @@ export class ChangeDriverAvailabilityHandler extends CommandHandler {
       } else {
         loadedDriver.aggregate.markUnavailable();
       }
-      await this.drivers.save(tenantId, loadedDriver);
+      await this.driverRepository.save(tenantId, loadedDriver);
 
       return { result: undefined, eventsFrom: [loadedDriver.aggregate] };
     });

@@ -14,26 +14,27 @@ import { SendVehicleToMaintenanceCommand } from "./send-vehicle-to-maintenance.c
 @Injectable()
 export class SendVehicleToMaintenanceHandler extends CommandHandler {
   constructor(
-    private readonly vehicles: VehicleRepository,
-    trxManager: TransactionManager,
+    private readonly vehicleRepository: VehicleRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.VehicleManage)
   async exec(
     request: ExecutionRequest<SendVehicleToMaintenanceCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const vehicle = await this.vehicles.findById(
+    const { context, input: command } = request;
+    const vehicle = await this.vehicleRepository.findById(
+      context.tenantId,
       VehicleId.from(command.vehicleId),
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
     vehicle.sendToMaintenance();
     await this.execTrxWithDomainEvents(async () => {
-      await this.vehicles.save(vehicle);
+      await this.vehicleRepository.save(context.tenantId, vehicle);
     }, vehicle);
   }
 }

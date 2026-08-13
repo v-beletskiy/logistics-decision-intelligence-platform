@@ -27,6 +27,8 @@ import { existsActiveAssignmentForVehicle } from "./queries/assignment.exists-ac
 import { existsRunningAssignmentForRoute } from "./queries/assignment.exists-running-for-route.queries";
 import { PgAssignmentRepository } from "./assignment.pg-repository";
 
+const tenantId = "00000000-0000-4000-8000-000000000099";
+
 const shipmentId = ShipmentId.from("550e8400-e29b-41d4-a716-446655440001");
 const routeId = RouteId.from("550e8400-e29b-41d4-a716-446655440002");
 const vehicleId = VehicleId.from("550e8400-e29b-41d4-a716-446655440003");
@@ -87,7 +89,7 @@ test("save inserts the assignment row and its shipments on registration", async 
   const { database, calls } = trackedDatabase();
   const repository = new PgAssignmentRepository(database);
 
-  await repository.save(assignment);
+  await repository.save(tenantId, assignment);
 
   assert.equal(
     calls.filter((call) => call.statement === insertAssignment).length,
@@ -102,16 +104,26 @@ test("save inserts the assignment row and its shipments on registration", async 
     1,
   );
   const insert = calls.find((call) => call.statement === insertAssignment);
-  const params = insert!.params as { id: string; status: string };
+  const params = insert!.params as {
+    tenantId: string;
+    id: string;
+    status: string;
+  };
+  assert.equal(params.tenantId, tenantId);
   assert.equal(params.id, assignment.id.value);
   assert.equal(params.status, AssignmentStatus.Created);
   const shipments = calls.find(
     (call) => call.statement === insertAssignmentShipments,
   );
   const shipmentParams = shipments!.params as {
-    rows: readonly { assignmentId: string; shipmentId: string }[];
+    rows: readonly {
+      tenantId: string;
+      assignmentId: string;
+      shipmentId: string;
+    }[];
   };
   assert.equal(shipmentParams.rows.length, 1);
+  assert.equal(shipmentParams.rows[0].tenantId, tenantId);
   assert.equal(shipmentParams.rows[0].assignmentId, assignment.id.value);
   assert.equal(shipmentParams.rows[0].shipmentId, shipmentId.value);
 });
@@ -122,7 +134,7 @@ test("save updates the assignment row when a loaded assignment changes", async (
   const { database, calls } = trackedDatabase();
   const repository = new PgAssignmentRepository(database);
 
-  await repository.save(assignment);
+  await repository.save(tenantId, assignment);
 
   assert.equal(
     calls.filter((call) => call.statement === insertAssignment).length,
@@ -149,7 +161,7 @@ test("save updates the assignment row after completion", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgAssignmentRepository(database);
 
-  await repository.save(assignment);
+  await repository.save(tenantId, assignment);
 
   const update = calls.find((call) => call.statement === updateAssignment);
   const params = update!.params as { status: string; completedAt: Date | null };
@@ -167,26 +179,26 @@ test("assignment existence checks use scoped queries without hydrating aggregate
   } as unknown as PgDatabase;
   const repository = new PgAssignmentRepository(database);
 
-  assert.equal(await repository.existsActiveForVehicle(vehicleId), true);
-  assert.equal(await repository.existsActiveForDriver(driverId), true);
-  assert.equal(await repository.existsActiveForRoute(routeId), false);
-  assert.equal(await repository.existsRunningForRoute(routeId), true);
+  assert.equal(await repository.existsActiveForVehicle(tenantId, vehicleId), true);
+  assert.equal(await repository.existsActiveForDriver(tenantId, driverId), true);
+  assert.equal(await repository.existsActiveForRoute(tenantId, routeId), false);
+  assert.equal(await repository.existsRunningForRoute(tenantId, routeId), true);
   assert.deepEqual(calls, [
     {
       statement: existsActiveAssignmentForVehicle,
-      params: { vehicleId: vehicleId.value },
+      params: { tenantId, vehicleId: vehicleId.value },
     },
     {
       statement: existsActiveAssignmentForDriver,
-      params: { driverId: driverId.value },
+      params: { tenantId, driverId: driverId.value },
     },
     {
       statement: existsActiveAssignmentForRoute,
-      params: { routeId: routeId.value },
+      params: { tenantId, routeId: routeId.value },
     },
     {
       statement: existsRunningAssignmentForRoute,
-      params: { routeId: routeId.value },
+      params: { tenantId, routeId: routeId.value },
     },
   ]);
 });

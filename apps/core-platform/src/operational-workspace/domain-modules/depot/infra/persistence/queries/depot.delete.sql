@@ -1,3 +1,4 @@
 /* @name DeleteDepot */
 DELETE FROM operational_workspace.depots
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

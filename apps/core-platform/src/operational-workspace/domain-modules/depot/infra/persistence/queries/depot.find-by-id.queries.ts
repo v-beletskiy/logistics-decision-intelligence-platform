@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'FindDepotById' parameters type */
 export interface IFindDepotByIdParams {
   id: string;
+  tenantId: string;
 }
 
 /** 'FindDepotById' return type */
@@ -29,14 +30,15 @@ export interface IFindDepotByIdQuery {
   result: IFindDepotByIdResult;
 }
 
-const findDepotByIdIR: any = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":203,"b":206}]}],"statement":"SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count\nFROM operational_workspace.depots\nWHERE id = :id!"};
+const findDepotByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":210,"b":219}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":232,"b":235}]}],"statement":"SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count\nFROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count
  * FROM operational_workspace.depots
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const findDepotById = new PreparedQuery<IFindDepotByIdParams,IFindDepotByIdResult>(findDepotByIdIR);

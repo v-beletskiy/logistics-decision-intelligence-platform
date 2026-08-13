@@ -9,6 +9,8 @@ import { insertDepot } from "./queries/depot.insert.queries";
 import { updateDepot } from "./queries/depot.update.queries";
 import { PgDepotRepository } from "./depot.pg-repository";
 
+const tenantId = "00000000-0000-4000-8000-000000000099";
+
 const address: AddressProps = {
   country: "UA",
   stateOrRegion: "Kyiv Oblast",
@@ -52,7 +54,7 @@ test("save inserts the depot row on registration", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgDepotRepository(database);
 
-  await repository.save(depot);
+  await repository.save(tenantId, depot);
 
   assert.equal(
     calls.filter((call) => call.statement === insertDepot).length,
@@ -64,6 +66,7 @@ test("save inserts the depot row on registration", async () => {
   );
   const insert = calls.find((call) => call.statement === insertDepot);
   assert.deepEqual(insert!.params, {
+    tenantId,
     id: depot.id.value,
     name: "Kyiv Hub",
     country: "UA",
@@ -86,7 +89,7 @@ test("save updates the depot row when a loaded depot changes", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgDepotRepository(database);
 
-  await repository.save(depot);
+  await repository.save(tenantId, depot);
 
   assert.equal(
     calls.filter((call) => call.statement === insertDepot).length,
@@ -98,6 +101,7 @@ test("save updates the depot row when a loaded depot changes", async () => {
   );
   const update = calls.find((call) => call.statement === updateDepot);
   assert.deepEqual(update!.params, {
+    tenantId,
     id: depot.id.value,
     name: "Kyiv Hub",
     country: "UA",
@@ -121,7 +125,7 @@ test("save updates the depot row after occupancy changes", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgDepotRepository(database);
 
-  await repository.save(depot);
+  await repository.save(tenantId, depot);
 
   const update = calls.find((call) => call.statement === updateDepot);
   const params = update!.params as {

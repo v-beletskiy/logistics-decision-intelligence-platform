@@ -1,6 +1,3 @@
-
 export class CancelRouteCommand {
-  constructor(
-    readonly routeId: string,
-  ) {}
+  constructor(readonly routeId: string) {}
 }

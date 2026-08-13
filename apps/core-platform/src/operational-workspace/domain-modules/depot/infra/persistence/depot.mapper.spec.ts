@@ -4,8 +4,9 @@ import { test } from "node:test";
 import type { AddressProps } from "../../../../../shared/domain/shared-kernel/value-objects/location/address";
 
 import { Depot, DepotStatus } from "../../domain/depot.aggregate";
-import { DepotMapper } from "./depot.mapper";
-import type { DepotEntity } from "./entities/depot.entity";
+import { DepotMapper, type DepotPersistenceRow } from "./depot.mapper";
+
+const tenantId = "00000000-0000-4000-8000-000000000099";
 
 const address: AddressProps = {
   country: "UA",
@@ -16,7 +17,7 @@ const address: AddressProps = {
   postalCode: "02000",
 };
 
-const depotEntity: DepotEntity = {
+const depotEntity: DepotPersistenceRow = {
   id: "b6154da9-3b68-4fdc-aef2-3f9196a68f79",
   name: "Kyiv Hub",
   country: "UA",
@@ -62,10 +63,11 @@ test("DepotMapper maps absent nullable address columns to undefined", () => {
 test("DepotMapper derives a clean write model for a loaded depot", () => {
   const depot = DepotMapper.toDomain(depotEntity);
 
-  const persistence = DepotMapper.toPersistence(depot);
+  const persistence = DepotMapper.toPersistence(tenantId, depot);
 
   assert.equal(persistence.isNew, false);
   assert.deepEqual(persistence.root, {
+    tenantId,
     id: depotEntity.id,
     name: depotEntity.name,
     country: depotEntity.country,
@@ -85,7 +87,7 @@ test("DepotMapper derives a clean write model for a loaded depot", () => {
 test("DepotMapper marks a registration as an insert", () => {
   const depot = Depot.create({ name: "Kyiv Hub", address }, 30, 20);
 
-  const persistence = DepotMapper.toPersistence(depot);
+  const persistence = DepotMapper.toPersistence(tenantId, depot);
 
   assert.equal(persistence.isNew, true);
   assert.equal(persistence.root.id, depot.id.value);
@@ -99,8 +101,8 @@ test("DepotMapper round-trips a depot through its persisted shape", () => {
   original.receiveVehicle();
   original.receiveDriver();
 
-  const persistence = DepotMapper.toPersistence(original);
-  const entity: DepotEntity = {
+  const persistence = DepotMapper.toPersistence(tenantId, original);
+  const entity: DepotPersistenceRow = {
     id: persistence.root.id,
     name: persistence.root.name,
     country: persistence.root.country,

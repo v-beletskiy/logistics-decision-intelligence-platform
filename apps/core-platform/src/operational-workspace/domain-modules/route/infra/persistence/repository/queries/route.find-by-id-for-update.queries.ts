@@ -1,0 +1,46 @@
+/** Types generated for queries found in "src/operational-workspace/domain-modules/route/infra/persistence/repository/queries/route.find-by-id-for-update.sql" */
+import { PreparedQuery } from '@pgtyped/runtime';
+
+/** 'FindRouteByIdForUpdate' parameters type */
+export interface IFindRouteByIdForUpdateParams {
+  id: string;
+  tenantId: string;
+}
+
+/** 'FindRouteByIdForUpdate' return type */
+export interface IFindRouteByIdForUpdateResult {
+  active_stop_sequence: number | null;
+  id: string;
+  next_stop_sequence: number;
+  planned_stop_count: number;
+  revision: string;
+  status: string;
+}
+
+/** 'FindRouteByIdForUpdate' query type */
+export interface IFindRouteByIdForUpdateQuery {
+  params: IFindRouteByIdForUpdateParams;
+  result: IFindRouteByIdForUpdateResult;
+}
+
+const findRouteByIdForUpdateIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":170,"b":179}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":194,"b":197}]}],"statement":"SELECT\n  r.id,\n  r.status,\n  r.planned_stop_count,\n  r.next_stop_sequence,\n  r.active_stop_sequence,\n  r.revision\nFROM operational_workspace.routes r\nWHERE r.tenant_id = :tenantId!\n  AND r.id = :id!\nFOR UPDATE"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT
+ *   r.id,
+ *   r.status,
+ *   r.planned_stop_count,
+ *   r.next_stop_sequence,
+ *   r.active_stop_sequence,
+ *   r.revision
+ * FROM operational_workspace.routes r
+ * WHERE r.tenant_id = :tenantId!
+ *   AND r.id = :id!
+ * FOR UPDATE
+ * ```
+ */
+export const findRouteByIdForUpdate = new PreparedQuery<IFindRouteByIdForUpdateParams,IFindRouteByIdForUpdateResult>(findRouteByIdForUpdateIR);
+
+

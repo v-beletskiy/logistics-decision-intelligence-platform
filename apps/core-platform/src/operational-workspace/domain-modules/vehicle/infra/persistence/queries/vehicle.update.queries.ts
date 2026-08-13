@@ -8,6 +8,7 @@ export interface IUpdateVehicleParams {
   name?: string | null | void;
   registrationNumber: string;
   status: string;
+  tenantId: string;
 }
 
 /** 'UpdateVehicle' return type */
@@ -19,7 +20,7 @@ export interface IUpdateVehicleQuery {
   result: IUpdateVehicleResult;
 }
 
-const updateVehicleIR: any = {"usedParamSet":{"registrationNumber":true,"name":true,"depotId":true,"status":true,"id":true},"params":[{"name":"registrationNumber","required":true,"transform":{"type":"scalar"},"locs":[{"a":64,"b":83}]},{"name":"name","required":false,"transform":{"type":"scalar"},"locs":[{"a":97,"b":101}]},{"name":"depotId","required":false,"transform":{"type":"scalar"},"locs":[{"a":119,"b":126}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":142,"b":149}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":186,"b":189}]}],"statement":"UPDATE operational_workspace.vehicles\nSET registration_number = :registrationNumber!,\n    name = :name,\n    depot_id = :depotId,\n    status = :status!,\n    updated_at = now()\nWHERE id = :id!"};
+const updateVehicleIR: any = {"usedParamSet":{"registrationNumber":true,"name":true,"depotId":true,"status":true,"tenantId":true,"id":true},"params":[{"name":"registrationNumber","required":true,"transform":{"type":"scalar"},"locs":[{"a":64,"b":83}]},{"name":"name","required":false,"transform":{"type":"scalar"},"locs":[{"a":97,"b":101}]},{"name":"depotId","required":false,"transform":{"type":"scalar"},"locs":[{"a":119,"b":126}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":142,"b":149}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":193,"b":202}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":215,"b":218}]}],"statement":"UPDATE operational_workspace.vehicles\nSET registration_number = :registrationNumber!,\n    name = :name,\n    depot_id = :depotId,\n    status = :status!,\n    updated_at = now()\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -30,7 +31,8 @@ const updateVehicleIR: any = {"usedParamSet":{"registrationNumber":true,"name":t
  *     depot_id = :depotId,
  *     status = :status!,
  *     updated_at = now()
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const updateVehicle = new PreparedQuery<IUpdateVehicleParams,IUpdateVehicleResult>(updateVehicleIR);

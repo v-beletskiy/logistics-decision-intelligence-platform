@@ -1,8 +1,5 @@
-import type { RouteStopDetails } from "../../../../domain-modules/route/domain/route-stop.entity";
+import type { RouteStopDetails } from "../../../../domain-modules/route/domain/route-stop.aggregate";
 
 export class CreateRouteCommand {
-  constructor(
-    readonly stops: readonly RouteStopDetails[],
-    readonly initiatedByUserId?: string,
-  ) {}
+  constructor(readonly stops: readonly RouteStopDetails[]) {}
 }

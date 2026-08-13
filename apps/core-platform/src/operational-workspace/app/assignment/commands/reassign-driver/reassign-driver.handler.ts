@@ -16,13 +16,13 @@ import { ReassignDriverCommand } from "./reassign-driver.command";
 @Injectable()
 export class ReassignDriverHandler extends CommandHandler {
   constructor(
-    private readonly assignments: AssignmentRepository,
-    private readonly drivers: DriverRepository,
-    private readonly assignmentPlanning: AssignmentPlanningPolicy,
-    trxManager: TransactionManager,
+    private readonly assignmentRepository: AssignmentRepository,
+    private readonly driverRepository: DriverRepository,
+    private readonly assignmentPlanningPolicy: AssignmentPlanningPolicy,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.AssignmentManage)
@@ -30,12 +30,13 @@ export class ReassignDriverHandler extends CommandHandler {
     request: ExecutionRequest<ReassignDriverCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const assignment = await this.assignments.findById(
+    const assignment = await this.assignmentRepository.findById(
+      context.tenantId,
       AssignmentId.from(command.assignmentId),
     );
     if (!assignment) throw new AggregateNotFoundException("Assignment");
 
-    const loadedDriver = await this.drivers.findById(
+    const loadedDriver = await this.driverRepository.findById(
       context.tenantId,
       DriverId.from(command.driverId),
     );
@@ -48,18 +49,19 @@ export class ReassignDriverHandler extends CommandHandler {
       return;
     }
 
-    const driverHasActiveAssignment = await this.assignments.existsActiveForDriver(
+    const driverHasActiveAssignment = await this.assignmentRepository.existsActiveForDriver(
+      context.tenantId,
       driver.id,
     );
 
-    this.assignmentPlanning.assertDriverCanBeAssigned(
+    this.assignmentPlanningPolicy.assertDriverCanBeAssigned(
       driver,
       driverHasActiveAssignment,
     );
     assignment.assignDriver(driver.id);
 
     await this.execTrxWithDomainEvents(async () => {
-      await this.assignments.save(assignment);
+      await this.assignmentRepository.save(context.tenantId, assignment);
     }, assignment);
   }
 }

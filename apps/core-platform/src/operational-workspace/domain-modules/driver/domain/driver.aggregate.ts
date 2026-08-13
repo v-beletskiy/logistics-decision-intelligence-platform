@@ -98,7 +98,11 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
       ),
       status: DriverStatus.Available,
     });
-    driver.raiseDomainEvent("DriverRegisteredDomainEvent");
+    driver.recordDomainEvent({
+      aggregateId: driver.id.value,
+      occurredAt: new Date(),
+      type: "DriverRegisteredDomainEvent",
+    });
     return driver;
   }
 
@@ -135,19 +139,31 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     this._licenseNumber = validatedDetails.licenseNumber;
     this._depotId = validatedDetails.depotId;
     this._phoneNumber = validatedDetails.phoneNumber;
-    this.raiseDomainEvent("DriverDetailsUpdatedDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverDetailsUpdatedDomainEvent",
+    });
   }
 
   markAvailable(): void {
     this.assertNotSuspended();
     this._status = DriverStatus.Available;
-    this.raiseDomainEvent("DriverMarkedAvailableDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverMarkedAvailableDomainEvent",
+    });
   }
 
   markUnavailable(): void {
     this.assertNotSuspended();
     this._status = DriverStatus.Unavailable;
-    this.raiseDomainEvent("DriverMarkedUnavailableDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverMarkedUnavailableDomainEvent",
+    });
   }
 
   suspend(): void {
@@ -155,7 +171,11 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
       throw new DomainException("A driver is already suspended.");
     }
     this._status = DriverStatus.Suspended;
-    this.raiseDomainEvent("DriverSuspendedDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverSuspendedDomainEvent",
+    });
   }
 
   reinstate(): void {
@@ -163,7 +183,11 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
       throw new DomainException("Only a suspended driver can be reinstated.");
     }
     this._status = DriverStatus.Unavailable;
-    this.raiseDomainEvent("DriverReinstatedDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverReinstatedDomainEvent",
+    });
   }
 
   addCertification(details: DriverCertificationProps): DriverCertificationId {
@@ -171,7 +195,10 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     const certification = DriverCertification.create(details);
     this.assertCertificationIsUnique(certification);
     this._certifications.push(certification);
-    this.raiseDomainEvent("DriverCertificationAddedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverCertificationAddedDomainEvent",
       certificationId: certification.id.value,
     });
     return certification.id;
@@ -185,7 +212,10 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
     const certification = DriverCertification.reconstitute(id, details);
     this.assertCertificationIsUnique(certification, id);
     this._certifications[index] = certification;
-    this.raiseDomainEvent("DriverCertificationUpdatedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverCertificationUpdatedDomainEvent",
       certificationId: id.value,
     });
   }
@@ -193,7 +223,10 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
   removeCertification(id: DriverCertificationId): void {
     const index = this.certificationIndex(id);
     this._certifications.splice(index, 1);
-    this.raiseDomainEvent("DriverCertificationRemovedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "DriverCertificationRemovedDomainEvent",
       certificationId: id.value,
     });
   }
@@ -233,18 +266,6 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
         "A driver certification type and credential number must be unique.",
       );
     }
-  }
-
-  private raiseDomainEvent(
-    type: DriverEvent["type"],
-    details: Partial<DriverEvent> = {},
-  ): void {
-    this.recordDomainEvent({
-      aggregateId: this.id.value,
-      occurredAt: new Date(),
-      type,
-      ...details,
-    } as DriverEvent);
   }
 }
 

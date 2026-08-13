@@ -13,11 +13,11 @@ import { RegisterDriverCommand } from "./register-driver.command";
 @Injectable()
 export class RegisterDriverHandler extends CommandHandler {
   constructor(
-    private readonly drivers: DriverRepository,
-    trxManager: TransactionManager,
+    private readonly driverRepository: DriverRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DriverManage)
@@ -28,7 +28,7 @@ export class RegisterDriverHandler extends CommandHandler {
     const tenantId = context.tenantId;
     return this.execUseCaseTrx(async () => {
       const driver = Driver.register(command.details);
-      await this.drivers.add(tenantId, driver);
+      await this.driverRepository.add(tenantId, driver);
 
       return { result: driver.id.value, eventsFrom: [driver] };
     });

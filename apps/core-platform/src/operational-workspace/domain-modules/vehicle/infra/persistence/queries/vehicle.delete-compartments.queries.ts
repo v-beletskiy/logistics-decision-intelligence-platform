@@ -4,6 +4,8 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'DeleteVehicleCompartments' parameters type */
 export interface IDeleteVehicleCompartmentsParams {
   ids: readonly (string | null | void)[];
+  ownerId: string;
+  tenantId: string;
 }
 
 /** 'DeleteVehicleCompartments' return type */
@@ -15,13 +17,15 @@ export interface IDeleteVehicleCompartmentsQuery {
   result: IDeleteVehicleCompartmentsResult;
 }
 
-const deleteVehicleCompartmentsIR: any = {"usedParamSet":{"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":67,"b":70}]}],"statement":"DELETE FROM operational_workspace.vehicle_compartments\nWHERE id IN :ids"};
+const deleteVehicleCompartmentsIR: any = {"usedParamSet":{"tenantId":true,"ownerId":true,"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":125,"b":128}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":73,"b":82}]},{"name":"ownerId","required":true,"transform":{"type":"scalar"},"locs":[{"a":103,"b":111}]}],"statement":"DELETE FROM operational_workspace.vehicle_compartments\nWHERE tenant_id = :tenantId!\n  AND vehicle_id = :ownerId!\n  AND id IN :ids"};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM operational_workspace.vehicle_compartments
- * WHERE id IN :ids
+ * WHERE tenant_id = :tenantId!
+ *   AND vehicle_id = :ownerId!
+ *   AND id IN :ids
  * ```
  */
 export const deleteVehicleCompartments = new PreparedQuery<IDeleteVehicleCompartmentsParams,IDeleteVehicleCompartmentsResult>(deleteVehicleCompartmentsIR);

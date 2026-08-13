@@ -6,6 +6,7 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
 /** 'FindAvailableVehicles' parameters type */
 export interface IFindAvailableVehiclesParams {
   status: string;
+  tenantId: string;
 }
 
 /** 'FindAvailableVehicles' return type */
@@ -24,7 +25,7 @@ export interface IFindAvailableVehiclesQuery {
   result: IFindAvailableVehiclesResult;
 }
 
-const findAvailableVehiclesIR: any = {"usedParamSet":{"status":true},"params":[{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":746,"b":753}]}],"statement":"SELECT\n  v.id,\n  v.registration_number,\n  v.name,\n  v.depot_id,\n  v.status,\n  COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        'id', c.id,\n        'type', c.type,\n        'name', c.name,\n        'max_weight', c.max_weight,\n        'max_weight_unit', c.max_weight_unit,\n        'max_length', c.max_length,\n        'max_width', c.max_width,\n        'max_height', c.max_height,\n        'dimension_unit', c.dimension_unit,\n        'max_volume', c.max_volume,\n        'max_volume_unit', c.max_volume_unit\n      )\n      ORDER BY c.id\n    ) FILTER (WHERE c.id IS NOT NULL),\n    '[]'::jsonb\n  ) AS compartments\nFROM operational_workspace.vehicles v\nLEFT JOIN operational_workspace.vehicle_compartments c ON c.vehicle_id = v.id\nWHERE v.status = :status!\nGROUP BY v.id\nORDER BY v.registration_number"};
+const findAvailableVehiclesIR: any = {"usedParamSet":{"tenantId":true,"status":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":782,"b":791}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":810,"b":817}]}],"statement":"SELECT\n  v.id,\n  v.registration_number,\n  v.name,\n  v.depot_id,\n  v.status,\n  COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        'id', c.id,\n        'type', c.type,\n        'name', c.name,\n        'max_weight', c.max_weight,\n        'max_weight_unit', c.max_weight_unit,\n        'max_length', c.max_length,\n        'max_width', c.max_width,\n        'max_height', c.max_height,\n        'dimension_unit', c.dimension_unit,\n        'max_volume', c.max_volume,\n        'max_volume_unit', c.max_volume_unit\n      )\n      ORDER BY c.id\n    ) FILTER (WHERE c.id IS NOT NULL),\n    '[]'::jsonb\n  ) AS compartments\nFROM operational_workspace.vehicles v\nLEFT JOIN operational_workspace.vehicle_compartments c\n  ON c.tenant_id = v.tenant_id\n AND c.vehicle_id = v.id\nWHERE v.tenant_id = :tenantId!\n  AND v.status = :status!\nGROUP BY v.id\nORDER BY v.registration_number"};
 
 /**
  * Query generated from SQL:
@@ -55,8 +56,11 @@ const findAvailableVehiclesIR: any = {"usedParamSet":{"status":true},"params":[{
  *     '[]'::jsonb
  *   ) AS compartments
  * FROM operational_workspace.vehicles v
- * LEFT JOIN operational_workspace.vehicle_compartments c ON c.vehicle_id = v.id
- * WHERE v.status = :status!
+ * LEFT JOIN operational_workspace.vehicle_compartments c
+ *   ON c.tenant_id = v.tenant_id
+ *  AND c.vehicle_id = v.id
+ * WHERE v.tenant_id = :tenantId!
+ *   AND v.status = :status!
  * GROUP BY v.id
  * ORDER BY v.registration_number
  * ```

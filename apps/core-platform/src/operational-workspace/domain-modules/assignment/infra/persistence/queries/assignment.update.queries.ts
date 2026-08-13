@@ -13,6 +13,7 @@ export interface IUpdateAssignmentParams {
   routeId: string;
   startedAt?: DateOrString | null | void;
   status: string;
+  tenantId: string;
   vehicleId: string;
 }
 
@@ -25,7 +26,7 @@ export interface IUpdateAssignmentQuery {
   result: IUpdateAssignmentResult;
 }
 
-const updateAssignmentIR: any = {"usedParamSet":{"routeId":true,"vehicleId":true,"driverId":true,"status":true,"assignedAt":true,"startedAt":true,"completedAt":true,"cancelledAt":true,"id":true},"params":[{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":56,"b":64}]},{"name":"vehicleId","required":true,"transform":{"type":"scalar"},"locs":[{"a":84,"b":94}]},{"name":"driverId","required":true,"transform":{"type":"scalar"},"locs":[{"a":113,"b":122}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":138,"b":145}]},{"name":"assignedAt","required":true,"transform":{"type":"scalar"},"locs":[{"a":166,"b":177}]},{"name":"startedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":197,"b":206}]},{"name":"completedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":228,"b":239}]},{"name":"cancelledAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":261,"b":272}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":309,"b":312}]}],"statement":"UPDATE operational_workspace.assignments\nSET route_id = :routeId!,\n    vehicle_id = :vehicleId!,\n    driver_id = :driverId!,\n    status = :status!,\n    assigned_at = :assignedAt!,\n    started_at = :startedAt,\n    completed_at = :completedAt,\n    cancelled_at = :cancelledAt,\n    updated_at = now()\nWHERE id = :id!"};
+const updateAssignmentIR: any = {"usedParamSet":{"routeId":true,"vehicleId":true,"driverId":true,"status":true,"assignedAt":true,"startedAt":true,"completedAt":true,"cancelledAt":true,"tenantId":true,"id":true},"params":[{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":56,"b":64}]},{"name":"vehicleId","required":true,"transform":{"type":"scalar"},"locs":[{"a":84,"b":94}]},{"name":"driverId","required":true,"transform":{"type":"scalar"},"locs":[{"a":113,"b":122}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":138,"b":145}]},{"name":"assignedAt","required":true,"transform":{"type":"scalar"},"locs":[{"a":166,"b":177}]},{"name":"startedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":197,"b":206}]},{"name":"completedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":228,"b":239}]},{"name":"cancelledAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":261,"b":272}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":316,"b":325}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":338,"b":341}]}],"statement":"UPDATE operational_workspace.assignments\nSET route_id = :routeId!,\n    vehicle_id = :vehicleId!,\n    driver_id = :driverId!,\n    status = :status!,\n    assigned_at = :assignedAt!,\n    started_at = :startedAt,\n    completed_at = :completedAt,\n    cancelled_at = :cancelledAt,\n    updated_at = now()\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -40,7 +41,8 @@ const updateAssignmentIR: any = {"usedParamSet":{"routeId":true,"vehicleId":true
  *     completed_at = :completedAt,
  *     cancelled_at = :cancelledAt,
  *     updated_at = now()
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const updateAssignment = new PreparedQuery<IUpdateAssignmentParams,IUpdateAssignmentResult>(updateAssignmentIR);

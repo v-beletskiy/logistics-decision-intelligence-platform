@@ -233,7 +233,7 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
       aggregateId: this.id.value,
       occurredAt: new Date(),
       type,
-    } as AssignmentEvent);
+    } satisfies AssignmentEvent);
   }
 }
 

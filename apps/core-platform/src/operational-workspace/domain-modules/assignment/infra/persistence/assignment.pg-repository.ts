@@ -23,7 +23,6 @@ import { insertAssignment } from "./queries/assignment.insert.queries";
 import { insertAssignmentShipments } from "./queries/assignment.insert-shipments.queries";
 import { updateAssignment } from "./queries/assignment.update.queries";
 import { AssignmentMapper } from "./assignment.mapper";
-import type { AssignmentEntity } from "./entities/assignment.entity";
 
 @Injectable()
 export class PgAssignmentRepository extends AssignmentRepository {
@@ -31,57 +30,64 @@ export class PgAssignmentRepository extends AssignmentRepository {
     super();
   }
 
-  async findById(id: AssignmentId): Promise<Assignment | null> {
+  async findById(tenantId: string, id: AssignmentId): Promise<Assignment | null> {
     const [row] = await this.database.exec(findAssignmentById, {
+      tenantId,
       id: id.value,
     });
     return row
-      ? AssignmentMapper.toDomain(row as unknown as AssignmentEntity)
+      ? AssignmentMapper.toDomain(row)
       : null;
   }
 
   async findByIds(
+    tenantId: string,
     ids: readonly AssignmentId[],
   ): Promise<readonly Assignment[]> {
     if (ids.length === 0) return [];
     const rows = await this.database.exec(findAssignmentsByIds, {
+      tenantId,
       ids: ids.map((id) => id.value),
     });
     return rows.map((row) =>
-      AssignmentMapper.toDomain(row as unknown as AssignmentEntity),
+      AssignmentMapper.toDomain(row),
     );
   }
 
-  async existsActiveForRoute(routeId: RouteId): Promise<boolean> {
+  async existsActiveForRoute(tenantId: string, routeId: RouteId): Promise<boolean> {
     const [result] = await this.database.exec(existsActiveAssignmentForRoute, {
+      tenantId,
       routeId: routeId.value,
     });
     return result.exists;
   }
 
-  async existsRunningForRoute(routeId: RouteId): Promise<boolean> {
+  async existsRunningForRoute(tenantId: string, routeId: RouteId): Promise<boolean> {
     const [result] = await this.database.exec(existsRunningAssignmentForRoute, {
+      tenantId,
       routeId: routeId.value,
     });
     return result.exists;
   }
 
-  async existsActiveForVehicle(vehicleId: VehicleId): Promise<boolean> {
+  async existsActiveForVehicle(tenantId: string, vehicleId: VehicleId): Promise<boolean> {
     const [result] = await this.database.exec(existsActiveAssignmentForVehicle, {
+      tenantId,
       vehicleId: vehicleId.value,
     });
     return result.exists;
   }
 
-  async existsActiveForDriver(driverId: DriverId): Promise<boolean> {
+  async existsActiveForDriver(tenantId: string, driverId: DriverId): Promise<boolean> {
     const [result] = await this.database.exec(existsActiveAssignmentForDriver, {
+      tenantId,
       driverId: driverId.value,
     });
     return result.exists;
   }
 
-  async save(assignment: Assignment): Promise<void> {
-    const persistence = AssignmentMapper.toPersistence(assignment);
+  async save(tenantId: string, assignment: Assignment): Promise<void> {
+    const persistence = AssignmentMapper.toPersistence(tenantId, assignment);
 
     await persistRoot(this.database, persistence.isNew, {
       insertStatement: insertAssignment,
@@ -90,6 +96,8 @@ export class PgAssignmentRepository extends AssignmentRepository {
     });
 
     await persistChildChanges(this.database, {
+      tenantId,
+      ownerId: assignment.id.value,
       inserts: persistence.shipmentInserts,
       updates: [],
       removedIds: persistence.removedShipmentIds,
@@ -98,7 +106,7 @@ export class PgAssignmentRepository extends AssignmentRepository {
     });
   }
 
-  async delete(id: AssignmentId): Promise<void> {
-    await this.database.exec(deleteAssignment, { id: id.value });
+  async delete(tenantId: string, id: AssignmentId): Promise<void> {
+    await this.database.exec(deleteAssignment, { tenantId, id: id.value });
   }
 }

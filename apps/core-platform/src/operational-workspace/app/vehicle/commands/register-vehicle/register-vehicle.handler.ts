@@ -13,21 +13,21 @@ import { RegisterVehicleCommand } from "./register-vehicle.command";
 @Injectable()
 export class RegisterVehicleHandler extends CommandHandler {
   constructor(
-    private readonly vehicles: VehicleRepository,
-    trxManager: TransactionManager,
+    private readonly vehicleRepository: VehicleRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.VehicleManage)
   async exec(
     request: ExecutionRequest<RegisterVehicleCommand>,
   ): Promise<string> {
-    const { input: command } = request;
+    const { context, input: command } = request;
     const vehicle = Vehicle.register(command.details);
     await this.execTrxWithDomainEvents(async () => {
-      await this.vehicles.save(vehicle);
+      await this.vehicleRepository.save(context.tenantId, vehicle);
     }, vehicle);
 
     return vehicle.id.value;

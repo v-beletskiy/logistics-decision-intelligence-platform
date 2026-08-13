@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'DeleteAssignment' parameters type */
 export interface IDeleteAssignmentParams {
   id: string;
+  tenantId: string;
 }
 
 /** 'DeleteAssignment' return type */
@@ -15,13 +16,14 @@ export interface IDeleteAssignmentQuery {
   result: IDeleteAssignmentResult;
 }
 
-const deleteAssignmentIR: any = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":57,"b":60}]}],"statement":"DELETE FROM operational_workspace.assignments\nWHERE id = :id!"};
+const deleteAssignmentIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":64,"b":73}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":86,"b":89}]}],"statement":"DELETE FROM operational_workspace.assignments\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM operational_workspace.assignments
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const deleteAssignment = new PreparedQuery<IDeleteAssignmentParams,IDeleteAssignmentResult>(deleteAssignmentIR);

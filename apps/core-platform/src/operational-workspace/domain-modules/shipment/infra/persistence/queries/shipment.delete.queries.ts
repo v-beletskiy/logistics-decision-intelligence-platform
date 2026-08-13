@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'DeleteShipment' parameters type */
 export interface IDeleteShipmentParams {
   id: string;
+  tenantId: string;
 }
 
 /** 'DeleteShipment' return type */
@@ -15,13 +16,14 @@ export interface IDeleteShipmentQuery {
   result: IDeleteShipmentResult;
 }
 
-const deleteShipmentIR: any = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":55,"b":58}]}],"statement":"DELETE FROM operational_workspace.shipments\nWHERE id = :id!"};
+const deleteShipmentIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":62,"b":71}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":84,"b":87}]}],"statement":"DELETE FROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM operational_workspace.shipments
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const deleteShipment = new PreparedQuery<IDeleteShipmentParams,IDeleteShipmentResult>(deleteShipmentIR);

@@ -28,7 +28,21 @@ apps/core-platform/
     └── shared/
 ```
 
-Tenant-owned tables include `tenant_id` in their keys, foreign keys, and query predicates. Tenant scope comes from trusted execution context and is passed explicitly to tenant-scoped repository and read-store operations.
+Tenant scope comes from trusted execution context and is passed explicitly to tenant-scoped repository and read-store operations. The shared-schema tenant model is:
+
+- aggregate roots use an application-generated, globally unique UUIDv7 `id` as their primary key and store `tenant_id NOT NULL`;
+- roots referenced by tenant-owned tables expose `UNIQUE (tenant_id, id)` for tenant-aware composite foreign keys;
+- bounded child rows use ownership-scoped keys such as `(tenant_id, aggregate_id, id)`;
+- every tenant-owned relationship includes `tenant_id` on both sides of its foreign key;
+- business uniqueness and partial uniqueness are tenant-scoped;
+- reads, writes, and existence checks include `tenant_id`.
+
+Migrations define tenant-aware foreign keys with both columns, for example
+`FOREIGN KEY (tenant_id, route_id) REFERENCES routes (tenant_id, id)`. The
+referenced root's `UNIQUE (tenant_id, id)` makes this relationship valid while
+the UUID primary key remains the aggregate's globally unique identity.
+
+Shared infrastructure tables that are not tenant-owned, such as integration delivery bookkeeping, do not acquire tenant identity.
 
 ### SQL-first persistence
 
@@ -97,9 +111,23 @@ Aggregate / child-entity reconstitution
 
 This keeps pgtyped row types, SQL aliases, and JSON payload shapes outside the domain model.
 
+#### Mapper-owned persistence-row types
+
+Each aggregate mapper declares the narrow structural `<Aggregate>PersistenceRow`
+required by `toDomain`; nested JSON children use equally focused persistence-data
+types where needed. This is the mapper's canonical read contract, not a database
+entity or a type derived from write-statement parameters.
+
+The repository passes the generated pgtyped result to the mapper directly.
+TypeScript then verifies that the statement projection supplies every field the
+mapper requires, while allowing different loader statements to select additional
+columns. A query whose projection no longer satisfies the reconstitution contract
+fails at the infrastructure boundary rather than coupling the domain to a
+statement-specific pgtyped type.
+
 ### Aggregate persistence
 
-Repositories expose `add` for a newly created aggregate and `save` for an aggregate loaded from the repository. Application-generated UUIDs identify roots and children before persistence, allowing the complete aggregate graph to be mapped before rows are written.
+Repositories expose `add` for a newly created aggregate and `save` for an aggregate loaded from the repository. Application-generated UUIDv7 identifiers identify roots and children before persistence, allowing the complete aggregate graph to be mapped before rows are written. UUIDv7 provides globally unique, time-ordered keys while identifiers remain opaque to the domain.
 
 An aggregate owns only a bounded child collection. The aggregate loader returns the root and its owned children in one round trip using `jsonb_agg` and `COALESCE`; the mapper reconstitutes the root and every child entity.
 

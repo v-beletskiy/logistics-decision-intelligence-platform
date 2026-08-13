@@ -13,4 +13,5 @@ SET name = :name!,
     vehicle_count = :vehicleCount!,
     driver_count = :driverCount!,
     updated_at = now()
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

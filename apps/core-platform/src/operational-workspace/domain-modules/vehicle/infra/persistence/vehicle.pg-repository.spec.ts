@@ -18,6 +18,8 @@ import { updateVehicleCompartments } from "./queries/vehicle.update-compartments
 import { updateVehicle } from "./queries/vehicle.update.queries";
 import { PgVehicleRepository } from "./vehicle.pg-repository";
 
+const tenantId = "00000000-0000-4000-8000-000000000099";
+
 const capacity = {
   maxWeight: { value: 1_000, unit: WeightUnit.Kilogram },
   maxItemDimensions: { length: 400, width: 200, height: 200, unit: DimensionUnit.Centimeter },
@@ -64,7 +66,7 @@ test("save inserts the header and every compartment on registration", async () =
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   assert.equal(calls.filter((call) => call.statement === insertVehicle).length, 1);
   assert.equal(calls.filter((call) => call.statement === updateVehicle).length, 0);
@@ -72,8 +74,11 @@ test("save inserts the header and every compartment on registration", async () =
     (call) => call.statement === insertVehicleCompartments,
   );
   assert.equal(insertCalls.length, 1);
-  const rows = insertCalls[0]!.params as { rows: readonly unknown[] };
+  const rows = insertCalls[0]!.params as {
+    rows: ReadonlyArray<{ tenantId: string }>;
+  };
   assert.equal(rows.rows.length, 2);
+  assert.equal(rows.rows[0]!.tenantId, tenantId);
   assert.equal(
     calls.filter((call) => call.statement === updateVehicleCompartments).length,
     0,
@@ -94,7 +99,7 @@ test("save updates the header and inserts only the added compartment", async () 
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   assert.equal(calls.filter((call) => call.statement === insertVehicle).length, 0);
   assert.equal(calls.filter((call) => call.statement === updateVehicle).length, 1);
@@ -129,7 +134,7 @@ test("save updates the header and the changed compartment when one is updated", 
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   assert.equal(calls.filter((call) => call.statement === updateVehicle).length, 1);
   const updateCalls = calls.filter(
@@ -137,8 +142,12 @@ test("save updates the header and the changed compartment when one is updated", 
   );
   assert.equal(updateCalls.length, 1);
   const rows = updateCalls[0]!.params as {
+    tenantId: string;
+    ownerId: string;
     rows: ReadonlyArray<{ id: string; type: string; name: string | null }>;
   };
+  assert.equal(rows.tenantId, tenantId);
+  assert.equal(rows.ownerId, vehicle.id.value);
   assert.equal(rows.rows.length, 1);
   assert.equal(rows.rows[0]!.id, existing.value);
   assert.equal(rows.rows[0]!.type, CompartmentType.Hazardous);
@@ -178,7 +187,7 @@ test("save batches multiple updated compartments into a single statement", async
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   const updateCalls = calls.filter(
     (call) => call.statement === updateVehicleCompartments,
@@ -204,14 +213,20 @@ test("save updates the header and deletes only the removed compartment", async (
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   assert.equal(calls.filter((call) => call.statement === updateVehicle).length, 1);
   const deleteCalls = calls.filter(
     (call) => call.statement === deleteVehicleCompartments,
   );
   assert.equal(deleteCalls.length, 1);
-  const params = deleteCalls[0]!.params as { ids: readonly string[] };
+  const params = deleteCalls[0]!.params as {
+    tenantId: string;
+    ownerId: string;
+    ids: readonly string[];
+  };
+  assert.equal(params.tenantId, tenantId);
+  assert.equal(params.ownerId, vehicle.id.value);
   assert.deepEqual(params.ids, [removed.value]);
   assert.equal(
     calls.filter((call) => call.statement === insertVehicleCompartments).length,
@@ -252,7 +267,7 @@ test("save batches multiple removed compartments into a single delete", async ()
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   const deleteCalls = calls.filter(
     (call) => call.statement === deleteVehicleCompartments,
@@ -268,7 +283,7 @@ test("save updates the header and skips compartment statements when only status 
   const { database, calls } = trackedDatabase();
   const repository = new PgVehicleRepository(database);
 
-  await repository.save(vehicle);
+  await repository.save(tenantId, vehicle);
 
   assert.equal(calls.filter((call) => call.statement === updateVehicle).length, 1);
   assert.equal(calls.filter((call) => call.statement === insertVehicle).length, 0);

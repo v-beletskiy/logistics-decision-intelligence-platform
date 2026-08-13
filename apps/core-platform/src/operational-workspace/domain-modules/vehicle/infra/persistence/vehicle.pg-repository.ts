@@ -17,7 +17,6 @@ import { insertVehicle } from "./queries/vehicle.insert.queries";
 import { updateVehicleCompartments } from "./queries/vehicle.update-compartments.queries";
 import { updateVehicle } from "./queries/vehicle.update.queries";
 import { VehicleMapper } from "./vehicle.mapper";
-import type { VehicleEntity } from "./entities/vehicle.entity";
 
 @Injectable()
 export class PgVehicleRepository extends VehicleRepository {
@@ -25,25 +24,27 @@ export class PgVehicleRepository extends VehicleRepository {
     super();
   }
 
-  async findById(id: VehicleId): Promise<Vehicle | null> {
+  async findById(tenantId: string, id: VehicleId): Promise<Vehicle | null> {
     const [vehicle] = await this.database.exec(findVehicleById, {
+      tenantId,
       id: id.value,
     });
     if (!vehicle) return null;
-    return VehicleMapper.toDomain(vehicle as unknown as VehicleEntity);
+    return VehicleMapper.toDomain(vehicle);
   }
 
-  async findAvailable(): Promise<readonly Vehicle[]> {
+  async findAvailable(tenantId: string): Promise<readonly Vehicle[]> {
     const vehicles = await this.database.exec(findAvailableVehicles, {
+      tenantId,
       status: VehicleStatus.Available,
     });
     return vehicles.map((vehicle) =>
-      VehicleMapper.toDomain(vehicle as unknown as VehicleEntity),
+      VehicleMapper.toDomain(vehicle),
     );
   }
 
-  async save(vehicle: Vehicle): Promise<void> {
-    const persistence = VehicleMapper.toPersistence(vehicle);
+  async save(tenantId: string, vehicle: Vehicle): Promise<void> {
+    const persistence = VehicleMapper.toPersistence(tenantId, vehicle);
 
     await persistRoot(this.database, persistence.isNew, {
       insertStatement: insertVehicle,
@@ -52,6 +53,8 @@ export class PgVehicleRepository extends VehicleRepository {
     });
 
     await persistChildChanges(this.database, {
+      tenantId,
+      ownerId: vehicle.id.value,
       inserts: persistence.inserts,
       updates: persistence.updates,
       removedIds: persistence.removedIds,
@@ -61,7 +64,7 @@ export class PgVehicleRepository extends VehicleRepository {
     });
   }
 
-  async delete(id: VehicleId): Promise<void> {
-    await this.database.exec(deleteVehicle, { id: id.value });
+  async delete(tenantId: string, id: VehicleId): Promise<void> {
+    await this.database.exec(deleteVehicle, { tenantId, id: id.value });
   }
 }

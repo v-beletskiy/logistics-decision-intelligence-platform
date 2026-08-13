@@ -16,26 +16,28 @@ import { ReassignVehicleCommand } from "./reassign-vehicle.command";
 @Injectable()
 export class ReassignVehicleHandler extends CommandHandler {
   constructor(
-    private readonly assignments: AssignmentRepository,
-    private readonly vehicles: VehicleRepository,
-    private readonly assignmentPlanning: AssignmentPlanningPolicy,
-    trxManager: TransactionManager,
+    private readonly assignmentRepository: AssignmentRepository,
+    private readonly vehicleRepository: VehicleRepository,
+    private readonly assignmentPlanningPolicy: AssignmentPlanningPolicy,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.AssignmentManage)
   async exec(
     request: ExecutionRequest<ReassignVehicleCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const assignment = await this.assignments.findById(
+    const { context, input: command } = request;
+    const assignment = await this.assignmentRepository.findById(
+      context.tenantId,
       AssignmentId.from(command.assignmentId),
     );
     if (!assignment) throw new AggregateNotFoundException("Assignment");
 
-    const vehicle = await this.vehicles.findById(
+    const vehicle = await this.vehicleRepository.findById(
+      context.tenantId,
       VehicleId.from(command.vehicleId),
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
@@ -47,9 +49,12 @@ export class ReassignVehicleHandler extends CommandHandler {
     }
 
     const vehicleHasActiveAssignment =
-      await this.assignments.existsActiveForVehicle(vehicle.id);
+      await this.assignmentRepository.existsActiveForVehicle(
+        context.tenantId,
+        vehicle.id,
+      );
 
-    this.assignmentPlanning.assertVehicleCanBeAssigned(
+    this.assignmentPlanningPolicy.assertVehicleCanBeAssigned(
       vehicle,
       assignment.shipments,
       vehicleHasActiveAssignment,
@@ -57,7 +62,7 @@ export class ReassignVehicleHandler extends CommandHandler {
     assignment.assignVehicle(vehicle.id);
 
     await this.execTrxWithDomainEvents(async () => {
-      await this.assignments.save(assignment);
+      await this.assignmentRepository.save(context.tenantId, assignment);
     }, assignment);
   }
 }

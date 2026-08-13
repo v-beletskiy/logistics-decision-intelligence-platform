@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'ExistsRunningAssignmentForRoute' parameters type */
 export interface IExistsRunningAssignmentForRouteParams {
   routeId: string;
+  tenantId: string;
 }
 
 /** 'ExistsRunningAssignmentForRoute' return type */
@@ -17,7 +18,7 @@ export interface IExistsRunningAssignmentForRouteQuery {
   result: IExistsRunningAssignmentForRouteResult;
 }
 
-const existsRunningAssignmentForRouteIR: any = {"usedParamSet":{"routeId":true},"params":[{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":87,"b":95}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE route_id = :routeId!\n    AND status = 'IN_PROGRESS'\n) AS \"exists!\""};
+const existsRunningAssignmentForRouteIR: any = {"usedParamSet":{"tenantId":true,"routeId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":97}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":118,"b":126}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE tenant_id = :tenantId!\n    AND route_id = :routeId!\n    AND status = 'IN_PROGRESS'\n) AS \"exists!\""};
 
 /**
  * Query generated from SQL:
@@ -25,7 +26,8 @@ const existsRunningAssignmentForRouteIR: any = {"usedParamSet":{"routeId":true},
  * SELECT EXISTS (
  *   SELECT 1
  *   FROM operational_workspace.assignments
- *   WHERE route_id = :routeId!
+ *   WHERE tenant_id = :tenantId!
+ *     AND route_id = :routeId!
  *     AND status = 'IN_PROGRESS'
  * ) AS "exists!"
  * ```

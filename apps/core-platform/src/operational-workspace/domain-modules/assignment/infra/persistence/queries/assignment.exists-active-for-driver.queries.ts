@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'ExistsActiveAssignmentForDriver' parameters type */
 export interface IExistsActiveAssignmentForDriverParams {
   driverId: string;
+  tenantId: string;
 }
 
 /** 'ExistsActiveAssignmentForDriver' return type */
@@ -17,7 +18,7 @@ export interface IExistsActiveAssignmentForDriverQuery {
   result: IExistsActiveAssignmentForDriverResult;
 }
 
-const existsActiveAssignmentForDriverIR: any = {"usedParamSet":{"driverId":true},"params":[{"name":"driverId","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":97}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE driver_id = :driverId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\""};
+const existsActiveAssignmentForDriverIR: any = {"usedParamSet":{"tenantId":true,"driverId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":97}]},{"name":"driverId","required":true,"transform":{"type":"scalar"},"locs":[{"a":119,"b":128}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE tenant_id = :tenantId!\n    AND driver_id = :driverId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\""};
 
 /**
  * Query generated from SQL:
@@ -25,7 +26,8 @@ const existsActiveAssignmentForDriverIR: any = {"usedParamSet":{"driverId":true}
  * SELECT EXISTS (
  *   SELECT 1
  *   FROM operational_workspace.assignments
- *   WHERE driver_id = :driverId!
+ *   WHERE tenant_id = :tenantId!
+ *     AND driver_id = :driverId!
  *     AND status IN ('CREATED', 'IN_PROGRESS')
  * ) AS "exists!"
  * ```

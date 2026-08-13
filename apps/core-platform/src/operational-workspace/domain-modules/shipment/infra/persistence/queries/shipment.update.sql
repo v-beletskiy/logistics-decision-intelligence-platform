@@ -26,4 +26,5 @@ SET status = :status!,
     height = :height!,
     dimension_unit = :dimensionUnit!,
     updated_at = now()
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

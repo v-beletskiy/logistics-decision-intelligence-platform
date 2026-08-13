@@ -16,17 +16,20 @@ import {
   Weight,
   WeightUnit,
 } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
-import type { AssignmentEntity } from "./entities/assignment.entity";
-import type { AssignmentShipmentEntity } from "./entities/assignment-shipment.entity";
-import { AssignmentMapper } from "./assignment.mapper";
+import {
+  AssignmentMapper,
+  type AssignmentPersistenceRow,
+  type AssignmentShipmentPersistenceData,
+} from "./assignment.mapper";
 
 const shipmentId = "550e8400-e29b-41d4-a716-446655440001";
 const routeId = "550e8400-e29b-41d4-a716-446655440002";
 const vehicleId = "550e8400-e29b-41d4-a716-446655440003";
 const driverId = "550e8400-e29b-41d4-a716-446655440004";
 const assignmentId = "550e8400-e29b-41d4-a716-446655440000";
+const tenantId = "00000000-0000-4000-8000-000000000099";
 
-const shipmentEntity: AssignmentShipmentEntity = {
+const shipmentEntity: AssignmentShipmentPersistenceData = {
   id: "550e8400-e29b-41d4-a716-44665544000a",
   shipmentId,
   weight: 100,
@@ -37,7 +40,7 @@ const shipmentEntity: AssignmentShipmentEntity = {
   dimensionUnit: "CENTIMETER",
 };
 
-const assignmentEntity: AssignmentEntity = {
+const assignmentEntity: AssignmentPersistenceRow = {
   id: assignmentId,
   route_id: routeId,
   vehicle_id: vehicleId,
@@ -98,10 +101,11 @@ test("AssignmentMapper maps absent nullable lifecycle columns to undefined", () 
 test("AssignmentMapper derives a clean write model for a loaded assignment", () => {
   const assignment = AssignmentMapper.toDomain(assignmentEntity);
 
-  const persistence = AssignmentMapper.toPersistence(assignment);
+  const persistence = AssignmentMapper.toPersistence(tenantId, assignment);
 
   assert.equal(persistence.isNew, false);
   assert.deepEqual(persistence.root, {
+    tenantId,
     id: assignmentEntity.id,
     routeId,
     vehicleId,
@@ -124,7 +128,7 @@ test("AssignmentMapper marks a registration as an insert with its shipments", ()
     shipments: [createShipment()],
   });
 
-  const persistence = AssignmentMapper.toPersistence(assignment);
+  const persistence = AssignmentMapper.toPersistence(tenantId, assignment);
 
   assert.equal(persistence.isNew, true);
   assert.equal(persistence.root.id, assignment.id.value);
@@ -133,6 +137,7 @@ test("AssignmentMapper marks a registration as an insert with its shipments", ()
   assert.equal(persistence.root.completedAt, null);
   assert.equal(persistence.root.cancelledAt, null);
   assert.equal(persistence.shipmentInserts.length, 1);
+  assert.equal(persistence.shipmentInserts[0].tenantId, tenantId);
   assert.equal(persistence.shipmentInserts[0].shipmentId, shipmentId);
   assert.equal(
     persistence.shipmentInserts[0].assignmentId,
@@ -152,8 +157,8 @@ test("AssignmentMapper round-trips an assignment through its persisted shape", (
   original.start();
   original.complete();
 
-  const persistence = AssignmentMapper.toPersistence(original);
-  const entity: AssignmentEntity = {
+  const persistence = AssignmentMapper.toPersistence(tenantId, original);
+  const entity: AssignmentPersistenceRow = {
     id: persistence.root.id,
     route_id: persistence.root.routeId,
     vehicle_id: persistence.root.vehicleId,

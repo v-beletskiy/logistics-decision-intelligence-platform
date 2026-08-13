@@ -13,6 +13,7 @@ import { DriverId } from "../../../../domain-modules/driver/domain/driver-id";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";
 import { RouteId } from "../../../../domain-modules/route/domain/route-id";
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
+import { RouteStopRepository } from "../../../../domain-modules/route/domain/route-stop.repository";
 import { ShipmentId } from "../../../../domain-modules/shipment/domain/shipment-id";
 import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
 import { VehicleId } from "../../../../domain-modules/vehicle/domain/vehicle-id";
@@ -23,16 +24,17 @@ import { CreateAssignmentCommand } from "./create-assignment.command";
 @Injectable()
 export class CreateAssignmentHandler extends CommandHandler {
   constructor(
-    private readonly routes: RouteRepository,
-    private readonly vehicles: VehicleRepository,
-    private readonly drivers: DriverRepository,
-    private readonly shipments: ShipmentRepository,
-    private readonly assignments: AssignmentRepository,
-    private readonly assignmentPlanning: AssignmentPlanningPolicy,
-    trxManager: TransactionManager,
+    private readonly routeRepository: RouteRepository,
+    private readonly routeStopRepository: RouteStopRepository,
+    private readonly vehicleRepository: VehicleRepository,
+    private readonly driverRepository: DriverRepository,
+    private readonly shipmentRepository: ShipmentRepository,
+    private readonly assignmentRepository: AssignmentRepository,
+    private readonly assignmentPlanningPolicy: AssignmentPlanningPolicy,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.AssignmentManage)
@@ -40,25 +42,37 @@ export class CreateAssignmentHandler extends CommandHandler {
     request: ExecutionRequest<CreateAssignmentCommand>,
   ): Promise<string> {
     const { context, input: command } = request;
-    const route = await this.routes.findById(RouteId.from(command.routeId));
-    if (!route) throw new AggregateNotFoundException("Route");
+    const loadedRoute = await this.routeRepository.findById(
+      context.tenantId,
+      RouteId.from(command.routeId),
+    );
+    if (!loadedRoute) throw new AggregateNotFoundException("Route");
+    const route = loadedRoute.aggregate;
 
-    const vehicle = await this.vehicles.findById(
+    const vehicle = await this.vehicleRepository.findById(
+      context.tenantId,
       VehicleId.from(command.vehicleId),
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
-    const loadedDriver = await this.drivers.findById(
+    const loadedDriver = await this.driverRepository.findById(
       context.tenantId,
       DriverId.from(command.driverId),
     );
     if (!loadedDriver) throw new AggregateNotFoundException("Driver");
     const driver = loadedDriver.aggregate;
 
+    const routeStops = await this.routeStopRepository.findAllByRouteId(
+      context.tenantId,
+      route.id,
+    );
     const shipmentIds = [
-      ...new Set(route.stops.map((stop) => stop.shipmentId)),
+      ...new Set(routeStops.map((stop) => stop.aggregate.shipmentId)),
     ].map((shipmentId) => ShipmentId.from(shipmentId));
-    const routeShipments = await this.shipments.findByIds(shipmentIds);
+    const routeShipments = await this.shipmentRepository.findByIds(
+      context.tenantId,
+      shipmentIds,
+    );
     if (routeShipments.length !== shipmentIds.length) {
       throw new AggregateNotFoundException(
         "One or more route shipments do not exist.",
@@ -70,12 +84,12 @@ export class CreateAssignmentHandler extends CommandHandler {
       driverHasActiveAssignment,
       routeHasActiveAssignment,
     ] = await Promise.all([
-      this.assignments.existsActiveForVehicle(vehicle.id),
-      this.assignments.existsActiveForDriver(driver.id),
-      this.assignments.existsActiveForRoute(route.id),
+      this.assignmentRepository.existsActiveForVehicle(context.tenantId, vehicle.id),
+      this.assignmentRepository.existsActiveForDriver(context.tenantId, driver.id),
+      this.assignmentRepository.existsActiveForRoute(context.tenantId, route.id),
     ]);
 
-    this.assignmentPlanning.assertCanCreateAssignment(
+    this.assignmentPlanningPolicy.assertCanCreateAssignment(
       route,
       vehicle,
       driver,
@@ -101,7 +115,7 @@ export class CreateAssignmentHandler extends CommandHandler {
     });
 
     await this.execTrxWithDomainEvents(async () => {
-      await this.assignments.save(assignment);
+      await this.assignmentRepository.save(context.tenantId, assignment);
     }, assignment);
 
     return assignment.id.value;

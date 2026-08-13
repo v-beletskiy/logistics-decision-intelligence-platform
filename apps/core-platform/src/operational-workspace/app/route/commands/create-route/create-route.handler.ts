@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+
 import { Authorized } from "../../../../../shared/access-control/authorization/authorized.decorator";
 import { Permission } from "../../../../../shared/access-control/permissions/permission.enum";
 import type { ExecutionRequest } from "../../../../../shared/app/execution/execution-context";
@@ -7,42 +8,58 @@ import { CommandHandler } from "../../../../../shared/app/handlers/command-handl
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Route } from "../../../../domain-modules/route/domain/route.aggregate";
+import { RouteStop } from "../../../../domain-modules/route/domain/route-stop.aggregate";
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
-import { ShipmentId } from "../../../../domain-modules/shipment/domain/shipment-id";
+import { RouteStopRepository } from "../../../../domain-modules/route/domain/route-stop.repository";
 import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
+import { RoutePlanningPolicy } from "../../../../shared-domain/policies/route-planning.policy";
 import { CreateRouteCommand } from "./create-route.command";
 
 @Injectable()
 export class CreateRouteHandler extends CommandHandler {
   constructor(
-    private readonly routes: RouteRepository,
-    private readonly shipments: ShipmentRepository,
-    trxManager: TransactionManager,
+    private readonly routeRepository: RouteRepository,
+    private readonly routeStopRepository: RouteStopRepository,
+    private readonly shipmentRepository: ShipmentRepository,
+    private readonly routePlanningPolicy: RoutePlanningPolicy,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.RouteUpdate)
-  async exec(
-    request: ExecutionRequest<CreateRouteCommand>,
-  ): Promise<string> {
-    const { input: command } = request;
-    const shipmentIds = [
-      ...new Set(command.stops.map((stop) => stop.shipmentId)),
-    ].map((shipmentId) => ShipmentId.from(shipmentId));
-    const shipments = await this.shipments.findByIds(shipmentIds);
-    if (shipments.length !== shipmentIds.length) {
-      throw new AggregateNotFoundException(
-        "One or more route shipments do not exist.",
+  async exec(request: ExecutionRequest<CreateRouteCommand>): Promise<string> {
+    const { context, input: command } = request;
+    return this.execUseCaseTrx(async () => {
+      const shipmentIds = [
+        ...new Map(
+          command.stops.map((stop) => [stop.shipmentId.value, stop.shipmentId]),
+        ).values(),
+      ];
+      const shipments = await this.shipmentRepository.findByIds(
+        context.tenantId,
+        shipmentIds,
       );
-    }
+      if (shipments.length !== shipmentIds.length) {
+        throw new AggregateNotFoundException(
+          "One or more route shipments do not exist.",
+        );
+      }
 
-    const route = Route.create({ stops: command.stops });
-    await this.execTrxWithDomainEvents(async () => {
-      await this.routes.save(route);
-    }, route);
+      this.routePlanningPolicy.assertCanCreate(command.stops);
+      const route = Route.create({ plannedStopCount: command.stops.length });
+      const stops = command.stops.map((stop, index) =>
+        RouteStop.create({
+          ...stop,
+          routeId: route.id,
+          sequence: index + 1,
+        }),
+      );
+      await this.routeRepository.add(context.tenantId, route);
+      await this.routeStopRepository.addMany(context.tenantId, stops);
 
-    return route.id.value;
+      return { result: route.id.value, eventsFrom: [route] };
+    });
   }
 }

@@ -16,11 +16,34 @@ import {
 } from "../../../../../../../shared/infra/persistence/persistence-hydration";
 import type {
   ISearchDriversCursorParams,
-  ISearchDriversCursorResult,
   ISearchDriversPageParams,
-  ISearchDriversPageResult,
 } from "../queries/driver.search.queries";
 import type { DriverSearchCursorPosition } from "../driver-search.cursor";
+
+interface DriverSearchRow {
+  readonly id: string;
+  readonly first_name: string;
+  readonly last_name: string;
+  readonly license_number: string;
+  readonly depot_id: string | null;
+  readonly phone_number: string | null;
+  readonly status: string;
+  readonly certifications: unknown;
+}
+
+interface DriverSearchPageRow {
+  readonly id: string | null;
+  readonly first_name: string | null;
+  readonly last_name: string | null;
+  readonly license_number: string | null;
+  readonly depot_id: string | null;
+  readonly phone_number: string | null;
+  readonly status: string | null;
+  readonly certifications: unknown;
+  readonly totalItems: number;
+}
+
+type DriverSearchPageItemRow = DriverSearchPageRow & DriverSearchRow;
 
 type PageSortParams = Pick<
   ISearchDriversPageParams,
@@ -74,7 +97,7 @@ export class DriverSearchMapper {
   }
 
   static pageRowsToListItems(
-    rows: readonly ISearchDriversPageResult[],
+    rows: readonly DriverSearchPageRow[],
   ): readonly DriverListItem[] {
     return rows
       .filter(DriverSearchMapper.isPageItemRow)
@@ -82,7 +105,7 @@ export class DriverSearchMapper {
   }
 
   static cursorRowsToListItems(
-    rows: readonly ISearchDriversCursorResult[],
+    rows: readonly DriverSearchRow[],
   ): readonly DriverListItem[] {
     return rows.map(DriverSearchMapper.toListItem);
   }
@@ -116,8 +139,8 @@ export class DriverSearchMapper {
   }
 
   private static isPageItemRow(
-    row: ISearchDriversPageResult,
-  ): row is ISearchDriversPageResult & ISearchDriversCursorResult {
+    row: DriverSearchPageRow,
+  ): row is DriverSearchPageItemRow {
     // The SQL emits one all-null item row only when the requested page is empty,
     // so the exact total remains available without a second count query.
     return row.id !== null;
@@ -141,7 +164,7 @@ export class DriverSearchMapper {
     };
   }
 
-  private static toListItem(row: ISearchDriversCursorResult): DriverListItem {
+  private static toListItem(row: DriverSearchRow): DriverListItem {
     return hydratePersistenceData("driver search result", () => ({
       id: row.id,
       firstName: row.first_name,

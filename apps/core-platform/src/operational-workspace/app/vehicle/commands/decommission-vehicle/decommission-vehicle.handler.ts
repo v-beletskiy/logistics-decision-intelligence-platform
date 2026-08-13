@@ -14,26 +14,27 @@ import { DecommissionVehicleCommand } from "./decommission-vehicle.command";
 @Injectable()
 export class DecommissionVehicleHandler extends CommandHandler {
   constructor(
-    private readonly vehicles: VehicleRepository,
-    trxManager: TransactionManager,
+    private readonly vehicleRepository: VehicleRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.VehicleManage)
   async exec(
     request: ExecutionRequest<DecommissionVehicleCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const vehicle = await this.vehicles.findById(
+    const { context, input: command } = request;
+    const vehicle = await this.vehicleRepository.findById(
+      context.tenantId,
       VehicleId.from(command.vehicleId),
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
     vehicle.decommission();
     await this.execTrxWithDomainEvents(async () => {
-      await this.vehicles.save(vehicle);
+      await this.vehicleRepository.save(context.tenantId, vehicle);
     }, vehicle);
   }
 }

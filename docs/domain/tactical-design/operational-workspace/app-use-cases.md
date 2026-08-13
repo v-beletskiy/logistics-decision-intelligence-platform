@@ -170,9 +170,9 @@ Create an operational Route containing ordered execution stops for one or more S
 #### Flow
 
 1. Load Shipments via ShipmentRepository.findByIds().
-2. Create Route aggregate.
-3. Create RouteStop entities for shipment Pickup and Delivery operations.
-4. Persist Route via RouteRepository.save().
+2. Validate the proposed stop structure through RoutePlanningPolicy.
+3. Create Route and independently persisted RouteStop aggregates.
+4. Persist Route and bulk-insert RouteStops in one transaction.
 5. Publish RouteCreatedDomainEvent.
 6. Publish `RouteOptimizationInputChangedApplicationEvent` for the in-process
    Decision Intelligence context.
@@ -260,6 +260,22 @@ Complete Route execution after all required RouteStops have been completed.
 2. Execute Route.complete().
 3. Persist Route via RouteRepository.save().
 4. Publish RouteCompletedDomainEvent event.
+
+---
+
+### Execute Route Stop
+
+#### Purpose
+
+Progress one RouteStop without loading the Route's complete stop collection.
+
+#### Flow
+
+1. Lock Route, then lock the addressed RouteStop by `(routeId, sequence)`.
+2. Starting records the Route's active sequence.
+3. Arrival changes RouteStop from `Planned` to `InProgress`.
+4. Departure completes RouteStop and advances Route progression in the same transaction.
+5. Persist affected aggregates and publish domain events after commit.
 
 ---
 

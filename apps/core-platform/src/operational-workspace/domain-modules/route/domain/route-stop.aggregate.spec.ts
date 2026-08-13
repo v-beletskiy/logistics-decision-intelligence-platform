@@ -1,0 +1,58 @@
+import * as assert from "node:assert/strict";
+import { test } from "node:test";
+
+import {
+  RouteStop,
+  RouteStopOperationType,
+  RouteStopStatus,
+} from "./route-stop.aggregate";
+import { RouteId } from "./route-id";
+import { ShipmentId } from "../../shipment/domain/shipment-id";
+
+function createStop(): RouteStop {
+  return RouteStop.create({
+    routeId: RouteId.generate(),
+    shipmentId: ShipmentId.generate(),
+    sequence: 1,
+    operationType: RouteStopOperationType.Pickup,
+    plannedArrivalAt: new Date("2026-08-05T08:00:00Z"),
+    plannedDepartureAt: new Date("2026-08-05T09:00:00Z"),
+  });
+}
+
+test("RouteStop records arrival then departure as its execution lifecycle", () => {
+  const stop = createStop();
+  const arrival = new Date("2026-08-05T08:10:00Z");
+  const departure = new Date("2026-08-05T08:45:00Z");
+
+  stop.recordArrival(arrival);
+  assert.equal(stop.status, RouteStopStatus.InProgress);
+  stop.recordDeparture(departure);
+
+  assert.equal(stop.status, RouteStopStatus.Completed);
+  assert.equal(stop.actualArrivalAt, arrival);
+  assert.equal(stop.actualDepartureAt, departure);
+});
+
+test("RouteStop does not complete before an arrival", () => {
+  const stop = createStop();
+  assert.throws(
+    () => stop.recordDeparture(new Date("2026-08-05T08:45:00Z")),
+    /in-progress route stop/,
+  );
+});
+
+test("RouteStop requires a ShipmentId reference", () => {
+  assert.throws(
+    () =>
+      RouteStop.create({
+        routeId: RouteId.generate(),
+        shipmentId: "shipment-1" as never,
+        sequence: 1,
+        operationType: RouteStopOperationType.Pickup,
+        plannedArrivalAt: new Date("2026-08-05T08:00:00Z"),
+        plannedDepartureAt: new Date("2026-08-05T09:00:00Z"),
+      }),
+    /must reference a shipment/,
+  );
+});

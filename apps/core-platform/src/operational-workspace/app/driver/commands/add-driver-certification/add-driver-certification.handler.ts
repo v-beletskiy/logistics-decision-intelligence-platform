@@ -14,11 +14,11 @@ import { AddDriverCertificationCommand } from "./add-driver-certification.comman
 @Injectable()
 export class AddDriverCertificationHandler extends CommandHandler {
   constructor(
-    private readonly drivers: DriverRepository,
-    trxManager: TransactionManager,
+    private readonly driverRepository: DriverRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DriverManage)
@@ -28,7 +28,7 @@ export class AddDriverCertificationHandler extends CommandHandler {
     const { context, input: command } = request;
     const tenantId = context.tenantId;
     return this.execUseCaseTrx(async () => {
-      const loadedDriver = await this.drivers.findById(
+      const loadedDriver = await this.driverRepository.findById(
         tenantId,
         DriverId.from(command.driverId),
       );
@@ -37,7 +37,7 @@ export class AddDriverCertificationHandler extends CommandHandler {
       const certificationId = loadedDriver.aggregate.addCertification(
         command.details,
       );
-      await this.drivers.save(tenantId, loadedDriver);
+      await this.driverRepository.save(tenantId, loadedDriver);
 
       return {
         result: certificationId.value,

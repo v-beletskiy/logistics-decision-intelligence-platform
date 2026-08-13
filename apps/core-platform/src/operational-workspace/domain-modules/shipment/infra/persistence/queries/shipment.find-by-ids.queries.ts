@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'FindShipmentsByIds' parameters type */
 export interface IFindShipmentsByIdsParams {
   ids: readonly (string | null | void)[];
+  tenantId: string;
 }
 
 /** 'FindShipmentsByIds' return type */
@@ -42,7 +43,7 @@ export interface IFindShipmentsByIdsQuery {
   result: IFindShipmentsByIdsResult;
 }
 
-const findShipmentsByIdsIR: any = {"usedParamSet":{"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":510,"b":513}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE id IN :ids"};
+const findShipmentsByIdsIR: any = {"usedParamSet":{"tenantId":true,"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":539,"b":542}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":516,"b":525}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id IN :ids"};
 
 /**
  * Query generated from SQL:
@@ -54,7 +55,8 @@ const findShipmentsByIdsIR: any = {"usedParamSet":{"ids":true},"params":[{"name"
  *        delivery_start_at, delivery_end_at,
  *        weight_value, weight_unit, length, width, height, dimension_unit
  * FROM operational_workspace.shipments
- * WHERE id IN :ids
+ * WHERE tenant_id = :tenantId!
+ *   AND id IN :ids
  * ```
  */
 export const findShipmentsByIds = new PreparedQuery<IFindShipmentsByIdsParams,IFindShipmentsByIdsResult>(findShipmentsByIdsIR);

@@ -13,8 +13,36 @@ import {
   type WeightProps,
 } from "../../../../../shared/domain/shared-kernel/value-objects/measurement";
 import type { AddressProps } from "../../../../../shared/domain/shared-kernel/value-objects/location/address";
-import type { ShipmentEntity } from "./entities/shipment.entity";
 import type { IInsertShipmentParams } from "./queries/shipment.insert.queries";
+
+export interface ShipmentPersistenceRow {
+  readonly id: string;
+  readonly status: string;
+  readonly pickup_completed: boolean;
+  readonly delivery_completed: boolean;
+  readonly pickup_country: string;
+  readonly pickup_state_or_region: string | null;
+  readonly pickup_city: string;
+  readonly pickup_street: string;
+  readonly pickup_building_number: string;
+  readonly pickup_postal_code: string;
+  readonly pickup_start_at: Date;
+  readonly pickup_end_at: Date;
+  readonly delivery_country: string;
+  readonly delivery_state_or_region: string | null;
+  readonly delivery_city: string;
+  readonly delivery_street: string;
+  readonly delivery_building_number: string;
+  readonly delivery_postal_code: string;
+  readonly delivery_start_at: Date;
+  readonly delivery_end_at: Date;
+  readonly weight_value: number;
+  readonly weight_unit: string;
+  readonly length: number;
+  readonly width: number;
+  readonly height: number;
+  readonly dimension_unit: string;
+}
 
 /** Root row consumed by persistRoot, matching the shipment insert/update statements. */
 export type ShipmentRootRow = IInsertShipmentParams;
@@ -32,7 +60,7 @@ export interface ShipmentWriteModel {
  * constructors. Writes derive their rows from the aggregate's persistence plan.
  */
 export class ShipmentMapper extends AggregatePersistenceMapper {
-  static toDomain(row: ShipmentEntity): Shipment {
+  static toDomain(row: ShipmentPersistenceRow): Shipment {
     const props: ShipmentProps = {
       pickup: ShipmentEndpoint.create({
         address: endpointAddress(row, "pickup"),
@@ -59,11 +87,12 @@ export class ShipmentMapper extends AggregatePersistenceMapper {
     return Shipment.reconstitute(ShipmentId.from(row.id), props);
   }
 
-  static toPersistence(shipment: Shipment): ShipmentWriteModel {
+  static toPersistence(tenantId: string, shipment: Shipment): ShipmentWriteModel {
     const plan = shipment.getPersistencePlan();
     return {
       isNew: plan.isNew,
       root: {
+        tenantId,
         id: shipment.id.value,
         status: shipment.status,
         pickupCompleted: shipment.pickupCompleted,
@@ -96,7 +125,7 @@ export class ShipmentMapper extends AggregatePersistenceMapper {
 }
 
 function endpointAddress(
-  row: ShipmentEntity,
+  row: ShipmentPersistenceRow,
   endpoint: "pickup" | "delivery",
 ): AddressProps {
   const prefix = endpoint === "pickup" ? "pickup" : "delivery";

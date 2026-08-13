@@ -27,6 +27,9 @@ SELECT
     '[]'::jsonb
   ) AS shipments
 FROM operational_workspace.assignments a
-LEFT JOIN operational_workspace.assignment_shipments s ON s.assignment_id = a.id
-WHERE a.id IN :ids
+LEFT JOIN operational_workspace.assignment_shipments s
+  ON s.tenant_id = a.tenant_id
+ AND s.assignment_id = a.id
+WHERE a.tenant_id = :tenantId!
+  AND a.id IN :ids
 GROUP BY a.id;

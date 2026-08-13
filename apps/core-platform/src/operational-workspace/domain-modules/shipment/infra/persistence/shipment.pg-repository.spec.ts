@@ -25,6 +25,8 @@ import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries";
 import { updateShipment } from "./queries/shipment.update.queries";
 import { PgShipmentRepository } from "./shipment.pg-repository";
 
+const tenantId = "00000000-0000-4000-8000-000000000099";
+
 const pickupAddress: AddressProps = {
   country: "UA",
   stateOrRegion: "Kyiv Oblast",
@@ -115,7 +117,7 @@ test("save inserts the shipment row on registration", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgShipmentRepository(database);
 
-  await repository.save(shipment);
+  await repository.save(tenantId, shipment);
 
   assert.equal(
     calls.filter((call) => call.statement === insertShipment).length,
@@ -127,10 +129,12 @@ test("save inserts the shipment row on registration", async () => {
   );
   const insert = calls.find((call) => call.statement === insertShipment);
   const params = insert!.params as {
+    tenantId: string;
     id: string;
     status: string;
     weightValue: number;
   };
+  assert.equal(params.tenantId, tenantId);
   assert.equal(params.id, shipment.id.value);
   assert.equal(params.status, ShipmentStatus.Created);
   assert.equal(params.weightValue, weight.value);
@@ -142,7 +146,7 @@ test("save updates the shipment row when a loaded shipment changes", async () =>
   const { database, calls } = trackedDatabase();
   const repository = new PgShipmentRepository(database);
 
-  await repository.save(shipment);
+  await repository.save(tenantId, shipment);
 
   assert.equal(
     calls.filter((call) => call.statement === insertShipment).length,
@@ -164,7 +168,7 @@ test("save updates the shipment row after delivery completion", async () => {
   const { database, calls } = trackedDatabase();
   const repository = new PgShipmentRepository(database);
 
-  await repository.save(shipment);
+  await repository.save(tenantId, shipment);
 
   const update = calls.find((call) => call.statement === updateShipment);
   const params = update!.params as {
@@ -183,13 +187,13 @@ test("findByIds unwraps shipment identifiers only at the persistence boundary", 
     ShipmentId.from("00000000-0000-4000-8000-000000000003"),
   ];
 
-  const shipments = await repository.findByIds(shipmentIds);
+  const shipments = await repository.findByIds(tenantId, shipmentIds);
 
   assert.deepEqual(shipments, []);
   assert.deepEqual(calls, [
     {
       statement: findShipmentsByIds,
-      params: { ids: shipmentIds.map((id) => id.value) },
+      params: { tenantId, ids: shipmentIds.map((id) => id.value) },
     },
   ]);
 });

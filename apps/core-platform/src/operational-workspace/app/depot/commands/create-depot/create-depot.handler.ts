@@ -13,21 +13,21 @@ import { CreateDepotCommand } from "./create-depot.command";
 @Injectable()
 export class CreateDepotHandler extends CommandHandler {
   constructor(
-    private readonly depots: DepotRepository,
-    trxManager: TransactionManager,
+    private readonly depotRepository: DepotRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DepotManage)
   async exec(
     request: ExecutionRequest<CreateDepotCommand>,
   ): Promise<string> {
-    const { input: command } = request;
+    const { context, input: command } = request;
     const depot = Depot.create(command.details, command.vehicleCapacity, command.driverCapacity);
     await this.execTrxWithDomainEvents(async () => {
-      await this.depots.save(depot);
+      await this.depotRepository.save(context.tenantId, depot);
     }, depot);
 
     return depot.id.value;

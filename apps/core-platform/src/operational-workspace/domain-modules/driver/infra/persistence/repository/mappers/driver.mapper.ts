@@ -10,8 +10,6 @@ import {
   type DriverProps,
 } from "../../../../domain/driver.aggregate";
 import { DriverId } from "../../../../domain/driver-id";
-import type { IFindDriverByIdForUpdateResult } from "../queries/driver.find-by-id-for-update.queries";
-import type { IFindDriverByIdResult } from "../queries/driver.find-by-id.queries";
 import type { IInsertDriverParams } from "../queries/driver.insert.queries";
 import type { IReconcileDriverCertificationsParams } from "../queries/driver.reconcile-certifications.queries";
 
@@ -23,13 +21,20 @@ interface DriverCertificationPersistenceData {
   readonly validUntil: string;
 }
 
-type DriverLoadResult =
-  | IFindDriverByIdResult
-  | IFindDriverByIdForUpdateResult;
+export interface DriverPersistenceRow {
+  readonly id: string;
+  readonly first_name: string;
+  readonly last_name: string;
+  readonly license_number: string;
+  readonly depot_id: string | null;
+  readonly phone_number: string | null;
+  readonly status: string;
+  readonly certifications: unknown;
+}
 
 /** Maps between the complete Driver aggregate and its PostgreSQL representation. */
 export class DriverMapper {
-  static toDomain(row: DriverLoadResult): Driver {
+  static toDomain(row: DriverPersistenceRow): Driver {
     return hydratePersistenceData("driver", () => {
       const props: DriverProps = {
         firstName: row.first_name,

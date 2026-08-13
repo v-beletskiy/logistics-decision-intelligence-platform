@@ -2,8 +2,11 @@ import type { Shipment } from "./shipment.aggregate";
 import type { ShipmentId } from "./shipment-id";
 
 export abstract class ShipmentRepository {
-  abstract findById(id: ShipmentId): Promise<Shipment | null>;
-  abstract findByIds(ids: readonly ShipmentId[]): Promise<readonly Shipment[]>;
-  abstract save(shipment: Shipment): Promise<void>;
-  abstract delete(id: ShipmentId): Promise<void>;
+  abstract findById(tenantId: string, id: ShipmentId): Promise<Shipment | null>;
+  abstract findByIds(
+    tenantId: string,
+    ids: readonly ShipmentId[],
+  ): Promise<readonly Shipment[]>;
+  abstract save(tenantId: string, shipment: Shipment): Promise<void>;
+  abstract delete(tenantId: string, id: ShipmentId): Promise<void>;
 }

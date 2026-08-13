@@ -117,7 +117,11 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       },
       true,
     );
-    vehicle.raiseDomainEvent("VehicleRegisteredDomainEvent");
+    vehicle.recordDomainEvent({
+      aggregateId: vehicle.id.value,
+      occurredAt: new Date(),
+      type: "VehicleRegisteredDomainEvent",
+    });
     return vehicle;
   }
 
@@ -145,14 +149,21 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
     this._registrationNumber = validatedDetails.registrationNumber;
     this._name = validatedDetails.name;
     this._depotId = validatedDetails.depotId;
-    this.raiseDomainEvent("VehicleDetailsUpdatedDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleDetailsUpdatedDomainEvent",
+    });
   }
 
   addCompartment(details: CompartmentProps): CompartmentId {
     this.assertNotDecommissioned();
     const compartment = Compartment.create(details);
     this._compartments.add(compartment);
-    this.raiseDomainEvent("VehicleCompartmentAddedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleCompartmentAddedDomainEvent",
       compartmentId: compartment.id.value,
     });
     return compartment.id;
@@ -161,7 +172,10 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
   updateCompartment(id: CompartmentId, details: CompartmentProps): void {
     this.assertNotDecommissioned();
     this._compartments.replace(id.value, Compartment.reconstitute(id, details));
-    this.raiseDomainEvent("VehicleCompartmentUpdatedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleCompartmentUpdatedDomainEvent",
       compartmentId: id.value,
     });
   }
@@ -174,7 +188,10 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       );
     }
     this._compartments.remove(id.value);
-    this.raiseDomainEvent("VehicleCompartmentRemovedDomainEvent", {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleCompartmentRemovedDomainEvent",
       compartmentId: id.value,
     });
   }
@@ -187,7 +204,11 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       );
     }
     this._status = VehicleStatus.Available;
-    this.raiseDomainEvent("VehicleMarkedAvailableDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleMarkedAvailableDomainEvent",
+    });
   }
 
   markUnavailable(): void {
@@ -198,7 +219,11 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       );
     }
     this._status = VehicleStatus.Unavailable;
-    this.raiseDomainEvent("VehicleMarkedUnavailableDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleMarkedUnavailableDomainEvent",
+    });
   }
 
   sendToMaintenance(): void {
@@ -207,7 +232,11 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       throw new DomainException("A vehicle is already in maintenance.");
     }
     this._status = VehicleStatus.Maintenance;
-    this.raiseDomainEvent("VehicleSentToMaintenanceDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleSentToMaintenanceDomainEvent",
+    });
   }
 
   returnFromMaintenance(): void {
@@ -217,7 +246,11 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       );
     }
     this._status = VehicleStatus.Available;
-    this.raiseDomainEvent("VehicleReturnedFromMaintenanceDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleReturnedFromMaintenanceDomainEvent",
+    });
   }
 
   decommission(): void {
@@ -225,25 +258,17 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       throw new DomainException("A vehicle is already decommissioned.");
     }
     this._status = VehicleStatus.Decommissioned;
-    this.raiseDomainEvent("VehicleDecommissionedDomainEvent");
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type: "VehicleDecommissionedDomainEvent",
+    });
   }
 
   private assertNotDecommissioned(): void {
     if (this._status === VehicleStatus.Decommissioned) {
       throw new DomainException("A decommissioned vehicle cannot be changed.");
     }
-  }
-
-  private raiseDomainEvent(
-    type: VehicleEvent["type"],
-    details: Partial<VehicleEvent> = {},
-  ): void {
-    this.recordDomainEvent({
-      aggregateId: this.id.value,
-      occurredAt: new Date(),
-      type,
-      ...details,
-    } as VehicleEvent);
   }
 }
 

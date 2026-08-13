@@ -14,11 +14,11 @@ import { ReinstateDriverCommand } from "./reinstate-driver.command";
 @Injectable()
 export class ReinstateDriverHandler extends CommandHandler {
   constructor(
-    private readonly drivers: DriverRepository,
-    trxManager: TransactionManager,
+    private readonly driverRepository: DriverRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.DriverManage)
@@ -28,14 +28,14 @@ export class ReinstateDriverHandler extends CommandHandler {
     const { context, input: command } = request;
     const tenantId = context.tenantId;
     await this.execUseCaseTrx(async () => {
-      const loadedDriver = await this.drivers.findById(
+      const loadedDriver = await this.driverRepository.findById(
         tenantId,
         DriverId.from(command.driverId),
       );
       if (!loadedDriver) throw new AggregateNotFoundException("Driver");
 
       loadedDriver.aggregate.reinstate();
-      await this.drivers.save(tenantId, loadedDriver);
+      await this.driverRepository.save(tenantId, loadedDriver);
 
       return { result: undefined, eventsFrom: [loadedDriver.aggregate] };
     });

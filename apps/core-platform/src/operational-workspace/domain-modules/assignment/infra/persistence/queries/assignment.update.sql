@@ -9,4 +9,5 @@ SET route_id = :routeId!,
     completed_at = :completedAt,
     cancelled_at = :cancelledAt,
     updated_at = now()
-WHERE id = :id!;
+WHERE tenant_id = :tenantId!
+  AND id = :id!;

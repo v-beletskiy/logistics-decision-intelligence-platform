@@ -9,8 +9,23 @@ import {
   Address,
   type AddressProps,
 } from "../../../../../shared/domain/shared-kernel/value-objects/location/address";
-import type { DepotEntity } from "./entities/depot.entity";
 import type { IInsertDepotParams } from "./queries/depot.insert.queries";
+
+export interface DepotPersistenceRow {
+  readonly id: string;
+  readonly name: string;
+  readonly country: string;
+  readonly state_or_region: string | null;
+  readonly city: string;
+  readonly street: string;
+  readonly building_number: string;
+  readonly postal_code: string;
+  readonly status: string;
+  readonly vehicle_capacity: number;
+  readonly driver_capacity: number;
+  readonly vehicle_count: number;
+  readonly driver_count: number;
+}
 
 /** Root row consumed by persistRoot, matching the depot insert/update statements. */
 export type DepotRootRow = IInsertDepotParams;
@@ -28,7 +43,7 @@ export interface DepotWriteModel {
  * constructors. Writes derive their rows from the aggregate's persistence plan.
  */
 export class DepotMapper extends AggregatePersistenceMapper {
-  static toDomain(row: DepotEntity): Depot {
+  static toDomain(row: DepotPersistenceRow): Depot {
     const props: DepotProps = {
       name: row.name,
       address: Address.create({
@@ -48,11 +63,12 @@ export class DepotMapper extends AggregatePersistenceMapper {
     return Depot.reconstitute(DepotId.from(row.id), props);
   }
 
-  static toPersistence(depot: Depot): DepotWriteModel {
+  static toPersistence(tenantId: string, depot: Depot): DepotWriteModel {
     const plan = depot.getPersistencePlan();
     return {
       isNew: plan.isNew,
       root: {
+        tenantId,
         id: depot.id.value,
         name: depot.name,
         country: depot.address.country,

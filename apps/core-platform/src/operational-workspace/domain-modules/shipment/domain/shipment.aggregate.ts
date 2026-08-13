@@ -214,7 +214,7 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
       aggregateId: this.id.value,
       occurredAt: new Date(),
       type,
-    } as ShipmentEvent);
+    } satisfies ShipmentEvent);
   }
 }
 

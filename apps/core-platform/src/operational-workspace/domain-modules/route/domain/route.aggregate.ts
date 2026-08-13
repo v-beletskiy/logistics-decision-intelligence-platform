@@ -1,21 +1,11 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
-import type { PersistencePlan } from "../../../../shared/domain/shared-kernel/core/persistence-plan";
-import type { ChildChangeSet } from "../../../../shared/domain/shared-kernel/core/child-changes";
-import { ChildCollection } from "../../../../shared/domain/shared-kernel/core/child-collection";
+import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { requirePositiveInteger } from "../../../../shared/domain/shared-kernel/validation/primitives/number/require-positive-integer";
 
 import type { RouteEvent } from "./events/route.domain-events";
 import { RouteId } from "./route-id";
-import { RouteStopId } from "./route-stop-id";
-import {
-  RouteStop,
-  RouteStopDetails,
-  RouteStopOperationType,
-  RouteStopSnapshot,
-  RouteStopStatus,
-} from "./route-stop.entity";
 
 export enum RouteStatus {
   Draft = "DRAFT",
@@ -25,68 +15,75 @@ export enum RouteStatus {
   Cancelled = "CANCELLED",
 }
 
-/** Business properties used to create a route. */
 export interface RouteDetails {
-  readonly stops: readonly RouteStopDetails[];
+  readonly plannedStopCount: number;
 }
 
-/** Complete Route state, excluding only the Route identity. */
-export interface RouteProps {
-  readonly stops: readonly RouteStop[];
+export interface RouteProps extends RouteDetails {
   readonly status: RouteStatus;
+  readonly nextPermittedStopSequence: number;
+  readonly activeStopSequence?: number;
 }
 
-/** Persistence decisions derived from the aggregate state since it was loaded. */
-export interface RoutePersistencePlan extends PersistencePlan {
-  readonly stops: ChildChangeSet<RouteStop>;
-}
-
-/** Operational plan for the ordered pickup and delivery execution of shipments. */
+/** Owns route lifecycle and the strictly ordered progression through its stops. */
 export class Route extends Aggregate<RouteId, RouteEvent> {
-  private readonly _stops: ChildCollection<RouteStop>;
   private _status: RouteStatus;
+  private readonly _plannedStopCount: number;
+  private _nextPermittedStopSequence: number;
+  private _activeStopSequence?: number;
 
-  private constructor(id: RouteId, props: RouteProps, isNew: boolean) {
-    super(id, isNew);
-    this._status = props.status;
-    if (!isEnumValue(RouteStatus, this._status)) {
+  private constructor(id: RouteId, props: RouteProps) {
+    super(id);
+    if (!isEnumValue(RouteStatus, props.status)) {
       throw new DomainException("A route status is invalid.");
     }
-    this._stops = new ChildCollection(
-      (stop) => stop.id.value,
-      copyAndValidateStops(props.stops),
-      isNew,
+    this._status = props.status;
+    this._plannedStopCount = requirePositiveInteger(
+      props.plannedStopCount,
+      "Route planned stop count",
     );
-    this.assertStructureIsValid();
+    this._nextPermittedStopSequence = requirePositiveInteger(
+      props.nextPermittedStopSequence,
+      "Route next stop sequence",
+    );
+    this._activeStopSequence =
+      props.activeStopSequence === undefined
+        ? undefined
+        : requirePositiveInteger(
+            props.activeStopSequence,
+            "Route active stop sequence",
+          );
+    this.assertProgressionIsValid();
   }
 
   get status(): RouteStatus {
     return this._status;
   }
 
-  get stops(): readonly RouteStopSnapshot[] {
-    return this._stops.all().map((stop) => stop.toSnapshot());
+  get plannedStopCount(): number {
+    return this._plannedStopCount;
+  }
+
+  get nextPermittedStopSequence(): number {
+    return this._nextPermittedStopSequence;
+  }
+
+  get activeStopSequence(): number | undefined {
+    return this._activeStopSequence;
   }
 
   static create(details: RouteDetails): Route {
-    const route = new Route(
-      RouteId.generate(),
-      {
-        stops: details.stops.map((stop) => RouteStop.create(stop)),
-        status: RouteStatus.Planned,
-      },
-      true,
-    );
+    const route = new Route(RouteId.generate(), {
+      plannedStopCount: details.plannedStopCount,
+      status: RouteStatus.Planned,
+      nextPermittedStopSequence: 1,
+    });
     route.raiseDomainEvent("RouteCreatedDomainEvent");
     return route;
   }
 
   static reconstitute(id: RouteId, props: RouteProps): Route {
-    return new Route(id, props, false);
-  }
-
-  getPersistencePlan(): RoutePersistencePlan {
-    return { ...super.getPersistencePlan(), stops: this._stops.changes() };
+    return new Route(id, props);
   }
 
   start(hasRunningAssignment: boolean): void {
@@ -102,47 +99,37 @@ export class Route extends Aggregate<RouteId, RouteEvent> {
     this.raiseDomainEvent("RouteStartedDomainEvent");
   }
 
-  startRouteStop(stopId: RouteStopId): void {
-    if (this._status !== RouteStatus.InProgress) {
-      throw new DomainException(
-        "Route stop start requires an in-progress route.",
-      );
+  startStop(sequence: number): void {
+    this.assertCanExecuteStop(sequence);
+    if (this._activeStopSequence !== undefined) {
+      throw new DomainException("Another route stop is already active.");
     }
-    const stop = this.findStop(stopId);
-    const stops = this._stops.all();
-    const priorStops = stops.slice(0, stops.indexOf(stop));
-    const hasNonCompletedPriorStop = priorStops.some(
-      (candidate) => candidate.status !== RouteStopStatus.Completed,
-    );
-    if (hasNonCompletedPriorStop) {
-      throw new DomainException("Route stops must be executed in sequence.");
-    }
-    stop.start();
-    this._stops.touch(stop.id.value);
+    this._activeStopSequence = sequence;
   }
 
-  completeStop(stopId: RouteStopId): void {
-    if (this._status !== RouteStatus.InProgress) {
-      throw new DomainException(
-        "Route stop completion requires an in-progress route.",
-      );
+  assertCanRecordStopArrival(sequence: number): void {
+    this.assertCanExecuteStop(sequence);
+    if (this._activeStopSequence !== sequence) {
+      throw new DomainException("The route stop is not active.");
     }
-    const stop = this.findStop(stopId);
-    stop.complete();
-    this._stops.touch(stop.id.value);
+  }
+
+  completeStop(sequence: number): void {
+    this.assertCanRecordStopArrival(sequence);
+    this._activeStopSequence = undefined;
+    this._nextPermittedStopSequence += 1;
   }
 
   complete(): void {
     if (this._status !== RouteStatus.InProgress) {
+      throw new DomainException("Only an in-progress route can be completed.");
+    }
+    if (this._activeStopSequence !== undefined) {
       throw new DomainException(
-        "Route stop execution requires an in-progress route.",
+        "The active route stop must be completed before the route.",
       );
     }
-
-    const hasNonCompletedStop = this._stops
-      .all()
-      .some((stop) => stop.status !== RouteStopStatus.Completed);
-    if (hasNonCompletedStop) {
+    if (this._nextPermittedStopSequence !== this._plannedStopCount + 1) {
       throw new DomainException(
         "All route stops must be completed before the route can be completed.",
       );
@@ -162,72 +149,41 @@ export class Route extends Aggregate<RouteId, RouteEvent> {
     this.raiseDomainEvent("RouteCancelledDomainEvent");
   }
 
-  private assertStructureIsValid(): void {
-    const stops = this._stops.all();
-    if (stops.length < 2) {
+  private assertCanExecuteStop(sequence: number): void {
+    if (this._status !== RouteStatus.InProgress) {
       throw new DomainException(
-        "A route must contain at least one pickup and one delivery stop.",
+        "Route stop execution requires an in-progress route.",
       );
     }
-    const perShipment = new Map<string, RouteStop[]>();
-    for (const stop of stops) {
-      const shipmentStops = perShipment.get(stop.shipmentId) ?? [];
-      shipmentStops.push(stop);
-      perShipment.set(stop.shipmentId, shipmentStops);
-    }
-    for (const [shipmentId, shipmentStops] of perShipment) {
-      const pickups = shipmentStops.filter(
-        (stop) => stop.operationType === RouteStopOperationType.Pickup,
-      );
-      const deliveries = shipmentStops.filter(
-        (stop) => stop.operationType === RouteStopOperationType.Delivery,
-      );
-      if (pickups.length !== 1 || deliveries.length !== 1) {
-        throw new DomainException(
-          `Shipment ${shipmentId} must have exactly one pickup and one delivery route stop.`,
-        );
-      }
-      if (stops.indexOf(pickups[0]) > stops.indexOf(deliveries[0])) {
-        throw new DomainException(
-          `The pickup for shipment ${shipmentId} must precede its delivery.`,
-        );
-      }
+    if (sequence !== this._nextPermittedStopSequence) {
+      throw new DomainException("Route stops must be executed in sequence.");
     }
   }
 
-  private findStop(stopId: RouteStopId): RouteStop {
-    const stop = this._stops
-      .all()
-      .find((candidate) => candidate.id.equals(stopId));
-    if (!stop)
-      throw new DomainException(
-        "The route stop does not belong to this route.",
-      );
-    return stop;
+  private assertProgressionIsValid(): void {
+    if (this._nextPermittedStopSequence > this._plannedStopCount + 1) {
+      throw new DomainException("Route next stop sequence is invalid.");
+    }
+    if (
+      this._activeStopSequence !== undefined &&
+      this._activeStopSequence !== this._nextPermittedStopSequence
+    ) {
+      throw new DomainException("Route active stop sequence is invalid.");
+    }
+    if (
+      this._status === RouteStatus.Completed &&
+      (this._nextPermittedStopSequence !== this._plannedStopCount + 1 ||
+        this._activeStopSequence !== undefined)
+    ) {
+      throw new DomainException("A completed route has invalid progression.");
+    }
   }
 
-  private raiseDomainEvent(
-    type: RouteEvent["type"],
-    details: Partial<RouteEvent> = {},
-  ): void {
+  private raiseDomainEvent(type: RouteEvent["type"]): void {
     this.recordDomainEvent({
       aggregateId: this.id.value,
       occurredAt: new Date(),
       type,
-      ...details,
-    } as RouteEvent);
+    } satisfies RouteEvent);
   }
-}
-
-function copyAndValidateStops(stops: readonly RouteStop[]): RouteStop[] {
-  if (!Array.isArray(stops)) {
-    throw new DomainException("Route stops must be specified as a list.");
-  }
-  if (stops.some((stop) => !(stop instanceof RouteStop))) {
-    throw new DomainException("Route stops must be valid route-stop entities.");
-  }
-  if (new Set(stops.map((stop) => stop.id.value)).size !== stops.length) {
-    throw new DomainException("Route stop identifiers must be unique.");
-  }
-  return [...stops];
 }

@@ -4,6 +4,7 @@ import { PreparedQuery } from '@pgtyped/runtime';
 /** 'DeleteDepot' parameters type */
 export interface IDeleteDepotParams {
   id: string;
+  tenantId: string;
 }
 
 /** 'DeleteDepot' return type */
@@ -15,13 +16,14 @@ export interface IDeleteDepotQuery {
   result: IDeleteDepotResult;
 }
 
-const deleteDepotIR: any = {"usedParamSet":{"id":true},"params":[{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":52,"b":55}]}],"statement":"DELETE FROM operational_workspace.depots\nWHERE id = :id!"};
+const deleteDepotIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":59,"b":68}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":81,"b":84}]}],"statement":"DELETE FROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
  * ```
  * DELETE FROM operational_workspace.depots
- * WHERE id = :id!
+ * WHERE tenant_id = :tenantId!
+ *   AND id = :id!
  * ```
  */
 export const deleteDepot = new PreparedQuery<IDeleteDepotParams,IDeleteDepotResult>(deleteDepotIR);

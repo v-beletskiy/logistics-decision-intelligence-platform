@@ -14,26 +14,27 @@ import { AddVehicleCompartmentCommand } from "./add-vehicle-compartment.command"
 @Injectable()
 export class AddVehicleCompartmentHandler extends CommandHandler {
   constructor(
-    private readonly vehicles: VehicleRepository,
-    trxManager: TransactionManager,
+    private readonly vehicleRepository: VehicleRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.VehicleManage)
   async exec(
     request: ExecutionRequest<AddVehicleCompartmentCommand>,
   ): Promise<string> {
-    const { input: command } = request;
-    const vehicle = await this.vehicles.findById(
+    const { context, input: command } = request;
+    const vehicle = await this.vehicleRepository.findById(
+      context.tenantId,
       VehicleId.from(command.vehicleId),
     );
     if (!vehicle) throw new AggregateNotFoundException("Vehicle");
 
     const compartmentId = vehicle.addCompartment(command.details);
     await this.execTrxWithDomainEvents(async () => {
-      await this.vehicles.save(vehicle);
+      await this.vehicleRepository.save(context.tenantId, vehicle);
     }, vehicle);
 
     return compartmentId.value;

@@ -14,26 +14,27 @@ import { StartAssignmentCommand } from "./start-assignment.command";
 @Injectable()
 export class StartAssignmentHandler extends CommandHandler {
   constructor(
-    private readonly assignments: AssignmentRepository,
-    trxManager: TransactionManager,
+    private readonly assignmentRepository: AssignmentRepository,
+    transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
-    super(trxManager, domainEventBus);
+    super(transactionManager, domainEventBus);
   }
 
   @Authorized(Permission.AssignmentManage)
   async exec(
     request: ExecutionRequest<StartAssignmentCommand>,
   ): Promise<void> {
-    const { input: command } = request;
-    const assignment = await this.assignments.findById(
+    const { context, input: command } = request;
+    const assignment = await this.assignmentRepository.findById(
+      context.tenantId,
       AssignmentId.from(command.assignmentId),
     );
     if (!assignment) throw new AggregateNotFoundException("Assignment");
 
     assignment.start();
     await this.execTrxWithDomainEvents(async () => {
-      await this.assignments.save(assignment);
+      await this.assignmentRepository.save(context.tenantId, assignment);
     }, assignment);
   }
 }

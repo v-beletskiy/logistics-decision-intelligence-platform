@@ -11,7 +11,6 @@ import { findDepotById } from "./queries/depot.find-by-id.queries";
 import { insertDepot } from "./queries/depot.insert.queries";
 import { updateDepot } from "./queries/depot.update.queries";
 import { DepotMapper } from "./depot.mapper";
-import type { DepotEntity } from "./entities/depot.entity";
 
 @Injectable()
 export class PgDepotRepository extends DepotRepository {
@@ -19,20 +18,23 @@ export class PgDepotRepository extends DepotRepository {
     super();
   }
 
-  async findById(id: DepotId): Promise<Depot | null> {
-    const [row] = await this.database.exec(findDepotById, { id: id.value });
-    return row ? DepotMapper.toDomain(row as unknown as DepotEntity) : null;
+  async findById(tenantId: string, id: DepotId): Promise<Depot | null> {
+    const [row] = await this.database.exec(findDepotById, {
+      tenantId,
+      id: id.value,
+    });
+    return row ? DepotMapper.toDomain(row) : null;
   }
 
-  async find(): Promise<readonly Depot[]> {
-    const rows = await this.database.exec(findDepots, undefined);
+  async find(tenantId: string): Promise<readonly Depot[]> {
+    const rows = await this.database.exec(findDepots, { tenantId });
     return rows.map((row) =>
-      DepotMapper.toDomain(row as unknown as DepotEntity),
+      DepotMapper.toDomain(row),
     );
   }
 
-  async save(depot: Depot): Promise<void> {
-    const persistence = DepotMapper.toPersistence(depot);
+  async save(tenantId: string, depot: Depot): Promise<void> {
+    const persistence = DepotMapper.toPersistence(tenantId, depot);
     await persistRoot(this.database, persistence.isNew, {
       insertStatement: insertDepot,
       updateStatement: updateDepot,
@@ -40,7 +42,7 @@ export class PgDepotRepository extends DepotRepository {
     });
   }
 
-  async delete(id: DepotId): Promise<void> {
-    await this.database.exec(deleteDepot, { id: id.value });
+  async delete(tenantId: string, id: DepotId): Promise<void> {
+    await this.database.exec(deleteDepot, { tenantId, id: id.value });
   }
 }

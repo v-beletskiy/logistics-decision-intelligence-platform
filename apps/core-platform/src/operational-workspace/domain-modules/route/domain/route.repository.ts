@@ -1,10 +1,20 @@
 import type { Route } from "./route.aggregate";
 import type { RouteId } from "./route-id";
-import type { ShipmentId } from "../../shipment/domain/shipment-id";
+
+export interface LoadedRoute {
+  readonly aggregate: Route;
+  readonly expectedRevision: string;
+}
 
 export abstract class RouteRepository {
-  abstract findById(id: RouteId): Promise<Route | null>;
-  abstract findByShipmentId(shipmentId: ShipmentId): Promise<readonly Route[]>;
-  abstract save(route: Route): Promise<void>;
-  abstract delete(id: RouteId): Promise<void>;
+  abstract findById(
+    tenantId: string,
+    id: RouteId,
+  ): Promise<LoadedRoute | null>;
+  abstract findByIdForUpdate(
+    tenantId: string,
+    id: RouteId,
+  ): Promise<LoadedRoute | null>;
+  abstract add(tenantId: string, route: Route): Promise<void>;
+  abstract save(tenantId: string, loadedRoute: LoadedRoute): Promise<string>;
 }

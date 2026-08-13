@@ -16,7 +16,7 @@ import { SearchDriversQuery } from "./search-drivers.query";
 
 @Injectable()
 export class SearchDriversHandler {
-  constructor(private readonly drivers: DriverReadStore) {}
+  constructor(private readonly driverReadStore: DriverReadStore) {}
 
   @Authorized(Permission.DriverRead)
   async exec(
@@ -26,13 +26,13 @@ export class SearchDriversHandler {
     const criteria = { tenantId: context.tenantId, ...query.filters };
 
     if (query.search.mode === "page") {
-      return this.drivers.search(criteria, {
+      return this.driverReadStore.search(criteria, {
         ...validatePagination(query.search),
         sort: query.search.sort ?? DEFAULT_DRIVER_PAGE_SORT,
       });
     }
 
-    return this.drivers.search(criteria, {
+    return this.driverReadStore.search(criteria, {
       ...validatePagination(query.search),
       sort: query.search.sort ?? DEFAULT_DRIVER_CURSOR_SORT,
     });

@@ -1,6 +1,3 @@
-
 export class StartRouteCommand {
-  constructor(
-    readonly routeId: string,
-  ) {}
+  constructor(readonly routeId: string) {}
 }
