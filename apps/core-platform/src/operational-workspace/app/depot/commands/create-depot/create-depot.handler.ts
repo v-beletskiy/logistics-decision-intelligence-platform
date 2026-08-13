@@ -25,11 +25,14 @@ export class CreateDepotHandler extends CommandHandler {
     request: ExecutionRequest<CreateDepotCommand>,
   ): Promise<string> {
     const { context, input: command } = request;
-    const depot = Depot.create(command.details, command.vehicleCapacity, command.driverCapacity);
-    await this.execTrxWithDomainEvents(async () => {
-      await this.depotRepository.save(context.tenantId, depot);
-    }, depot);
-
-    return depot.id.value;
+    return this.execUseCaseTrx(async () => {
+      const depot = Depot.create(
+        command.details,
+        command.vehicleCapacity,
+        command.driverCapacity,
+      );
+      await this.depotRepository.add(context.tenantId, depot);
+      return { result: depot.id.value, eventsFrom: [depot] };
+    });
   }
 }

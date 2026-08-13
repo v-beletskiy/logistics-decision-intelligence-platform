@@ -18,7 +18,7 @@ export interface IFindDriverByIdForUpdateResult {
   last_name: string;
   license_number: string;
   phone_number: string | null;
-  revision: number;
+  revision: string;
   status: string;
 }
 

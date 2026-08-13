@@ -1,8 +1,8 @@
-import type { DepotDetails } from "../../../../domain-modules/depot/domain/depot.aggregate";
+import type { DepotDetailsInput } from "../../depot.inputs";
 
 export class UpdateDepotDetailsCommand {
   constructor(
     readonly depotId: string,
-    readonly details: DepotDetails,
+    readonly details: DepotDetailsInput,
   ) {}
 }

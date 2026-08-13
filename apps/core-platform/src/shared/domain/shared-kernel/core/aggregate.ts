@@ -1,7 +1,6 @@
 import type { DomainEvent } from "../events/domain-event";
 
 import { Entity, type EntityId } from "./entity";
-import type { PersistencePlan } from "./persistence-plan";
 
 /**
  * Entity that is a consistency boundary and records its uncommitted domain
@@ -12,15 +11,9 @@ export abstract class Aggregate<
   TDomainEvent extends DomainEvent,
 > extends Entity<TId> {
   private readonly domainEvents: TDomainEvent[] = [];
-  private readonly isNewFlag: boolean;
 
-  protected constructor(id: TId, isNew = false) {
+  protected constructor(id: TId) {
     super(id);
-    this.isNewFlag = isNew;
-  }
-
-  getPersistencePlan(): PersistencePlan {
-    return { isNew: this.isNewFlag };
   }
 
   protected recordDomainEvent(event: TDomainEvent): void {

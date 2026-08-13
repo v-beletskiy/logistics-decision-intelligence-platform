@@ -26,15 +26,18 @@ export class StartAssignmentHandler extends CommandHandler {
     request: ExecutionRequest<StartAssignmentCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const assignment = await this.assignmentRepository.findById(
+    return this.execUseCaseTrx(async () => {
+    const loadedAssignment = await this.assignmentRepository.findById(
       context.tenantId,
       AssignmentId.from(command.assignmentId),
     );
-    if (!assignment) throw new AggregateNotFoundException("Assignment");
+    if (!loadedAssignment) throw new AggregateNotFoundException("Assignment");
+
+    const assignment = loadedAssignment.aggregate;
 
     assignment.start();
-    await this.execTrxWithDomainEvents(async () => {
-      await this.assignmentRepository.save(context.tenantId, assignment);
-    }, assignment);
+      await this.assignmentRepository.save(context.tenantId, loadedAssignment);
+      return { result: undefined, eventsFrom: [assignment] };
+    });
   }
 }

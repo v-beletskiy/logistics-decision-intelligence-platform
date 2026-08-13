@@ -1,8 +1,8 @@
-import type { CompartmentProps } from '../../../../domain-modules/vehicle/domain/vehicle.aggregate';
+import type { VehicleCompartmentInput } from "../../vehicle.inputs";
 
 export class AddVehicleCompartmentCommand {
   constructor(
     readonly vehicleId: string,
-    readonly details: CompartmentProps,
+    readonly details: VehicleCompartmentInput,
   ) {}
 }

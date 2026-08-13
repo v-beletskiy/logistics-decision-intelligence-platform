@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { ShipmentRepository } from "../../domain/shipment.repository";
-import { PgShipmentRepository } from "./shipment.pg-repository";
+import { PgShipmentRepository } from "./repository/shipment.pg-repository";
 
 @Module({
   providers: [

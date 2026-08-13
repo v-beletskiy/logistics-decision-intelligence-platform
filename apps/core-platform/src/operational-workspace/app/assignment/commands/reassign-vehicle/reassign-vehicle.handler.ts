@@ -10,7 +10,7 @@ import { AssignmentId } from "../../../../domain-modules/assignment/domain/assig
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
 import { VehicleId } from "../../../../domain-modules/vehicle/domain/vehicle-id";
 import { VehicleRepository } from "../../../../domain-modules/vehicle/domain/vehicle.repository";
-import { AssignmentPlanningPolicy } from "../../../../shared-domain/policies/assignment-planning.policy";
+import { AssignmentPlanningPolicy } from "../../../../domain-modules/assignment/domain/policies/assignment-planning.policy";
 import { ReassignVehicleCommand } from "./reassign-vehicle.command";
 
 @Injectable()
@@ -30,39 +30,41 @@ export class ReassignVehicleHandler extends CommandHandler {
     request: ExecutionRequest<ReassignVehicleCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const assignment = await this.assignmentRepository.findById(
-      context.tenantId,
-      AssignmentId.from(command.assignmentId),
-    );
-    if (!assignment) throw new AggregateNotFoundException("Assignment");
-
-    const vehicle = await this.vehicleRepository.findById(
-      context.tenantId,
-      VehicleId.from(command.vehicleId),
-    );
-    if (!vehicle) throw new AggregateNotFoundException("Vehicle");
-
-    const keepsCurrentVehicle = assignment.vehicleId.equals(vehicle.id);
-    if (keepsCurrentVehicle) {
-      assignment.assignVehicle(vehicle.id);
-      return;
-    }
-
-    const vehicleHasActiveAssignment =
-      await this.assignmentRepository.existsActiveForVehicle(
+    return this.execUseCaseTrx(async () => {
+      const loadedAssignment = await this.assignmentRepository.findById(
         context.tenantId,
-        vehicle.id,
+        AssignmentId.from(command.assignmentId),
       );
+      if (!loadedAssignment) {
+        throw new AggregateNotFoundException("Assignment");
+      }
+      const assignment = loadedAssignment.aggregate;
 
-    this.assignmentPlanningPolicy.assertVehicleCanBeAssigned(
-      vehicle,
-      assignment.shipments,
-      vehicleHasActiveAssignment,
-    );
-    assignment.assignVehicle(vehicle.id);
+      const loadedVehicle = await this.vehicleRepository.findById(
+        context.tenantId,
+        VehicleId.from(command.vehicleId),
+      );
+      if (!loadedVehicle) throw new AggregateNotFoundException("Vehicle");
+      const vehicle = loadedVehicle.aggregate;
 
-    await this.execTrxWithDomainEvents(async () => {
-      await this.assignmentRepository.save(context.tenantId, assignment);
-    }, assignment);
+      if (assignment.vehicleId.equals(vehicle.id)) {
+        return { result: undefined, eventsFrom: [] };
+      }
+
+      const vehicleHasActiveAssignment =
+        await this.assignmentRepository.existsActiveForVehicle(
+          context.tenantId,
+          vehicle.id,
+        );
+
+      this.assignmentPlanningPolicy.assertVehicleCanBeAssigned(
+        vehicle,
+        assignment.shipments,
+        vehicleHasActiveAssignment,
+      );
+      assignment.assignVehicle(vehicle.id);
+      await this.assignmentRepository.save(context.tenantId, loadedAssignment);
+      return { result: undefined, eventsFrom: [assignment] };
+    });
   }
 }

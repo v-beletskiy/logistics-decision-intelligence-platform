@@ -17,6 +17,7 @@ CREATE TABLE
     started_at timestamptz,
     completed_at timestamptz,
     cancelled_at timestamptz,
+    revision bigint NOT NULL DEFAULT 1 CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now (),
     updated_at timestamptz NOT NULL DEFAULT now (),
     CONSTRAINT assignments_tenant_id_unique UNIQUE (tenant_id, id),

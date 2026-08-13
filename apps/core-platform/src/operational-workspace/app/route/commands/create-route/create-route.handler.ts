@@ -12,7 +12,8 @@ import { RouteStop } from "../../../../domain-modules/route/domain/route-stop.ag
 import { RouteRepository } from "../../../../domain-modules/route/domain/route.repository";
 import { RouteStopRepository } from "../../../../domain-modules/route/domain/route-stop.repository";
 import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
-import { RoutePlanningPolicy } from "../../../../shared-domain/policies/route-planning.policy";
+import { RoutePlanningPolicy } from "../../../../domain-modules/route/domain/policies/route-planning.policy";
+import { RouteInputMapper } from "../../mappers/route-input.mapper";
 import { CreateRouteCommand } from "./create-route.command";
 
 @Injectable()
@@ -32,9 +33,12 @@ export class CreateRouteHandler extends CommandHandler {
   async exec(request: ExecutionRequest<CreateRouteCommand>): Promise<string> {
     const { context, input: command } = request;
     return this.execUseCaseTrx(async () => {
+      const stopDetails = command.stops.map((stop) =>
+        RouteInputMapper.toStopDetails(stop),
+      );
       const shipmentIds = [
         ...new Map(
-          command.stops.map((stop) => [stop.shipmentId.value, stop.shipmentId]),
+          stopDetails.map((stop) => [stop.shipmentId.value, stop.shipmentId]),
         ).values(),
       ];
       const shipments = await this.shipmentRepository.findByIds(
@@ -47,9 +51,9 @@ export class CreateRouteHandler extends CommandHandler {
         );
       }
 
-      this.routePlanningPolicy.assertCanCreate(command.stops);
-      const route = Route.create({ plannedStopCount: command.stops.length });
-      const stops = command.stops.map((stop, index) =>
+      this.routePlanningPolicy.assertCanCreate(stopDetails);
+      const route = Route.create({ plannedStopCount: stopDetails.length });
+      const stops = stopDetails.map((stop, index) =>
         RouteStop.create({
           ...stop,
           routeId: route.id,

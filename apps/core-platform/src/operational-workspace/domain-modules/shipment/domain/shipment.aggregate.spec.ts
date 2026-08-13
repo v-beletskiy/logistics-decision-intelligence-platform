@@ -60,7 +60,6 @@ test("Shipment registers as created with pending endpoints", () => {
   assert.equal(shipment.weight.value, 400);
   assert.equal(shipment.weight.unit, WeightUnit.Kilogram);
   assert.equal(shipment.dimensions.length, 200);
-  assert.equal(shipment.getPersistencePlan().isNew, true);
   assert.deepEqual(
     shipment.pullDomainEvents().map((event) => event.type),
     ["ShipmentCreatedDomainEvent"],
@@ -187,20 +186,4 @@ test("Shipment updates details while mutable", () => {
     shipment.pullDomainEvents().map((event) => event.type),
     ["ShipmentDetailsUpdatedDomainEvent"],
   );
-});
-
-test("Shipment persistence plan marks a reconstitution as loaded", () => {
-  const created = Shipment.create(details);
-  const shipment = Shipment.reconstitute(ShipmentId.generate(), {
-    ...details,
-    pickup: created.pickup,
-    delivery: created.delivery,
-    weight: created.weight,
-    dimensions: created.dimensions,
-    pickupCompleted: true,
-    deliveryCompleted: false,
-    status: ShipmentStatus.InProgress,
-  });
-
-  assert.equal(shipment.getPersistencePlan().isNew, false);
 });

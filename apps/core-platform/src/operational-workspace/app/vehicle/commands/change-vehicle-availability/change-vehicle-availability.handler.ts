@@ -26,19 +26,22 @@ export class ChangeVehicleAvailabilityHandler extends CommandHandler {
     request: ExecutionRequest<ChangeVehicleAvailabilityCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const vehicle = await this.vehicleRepository.findById(
+    return this.execUseCaseTrx(async () => {
+    const loadedVehicle = await this.vehicleRepository.findById(
       context.tenantId,
       VehicleId.from(command.vehicleId),
     );
-    if (!vehicle) throw new AggregateNotFoundException("Vehicle");
+    if (!loadedVehicle) throw new AggregateNotFoundException("Vehicle");
+
+    const vehicle = loadedVehicle.aggregate;
 
     if (command.available) {
       vehicle.markAvailable();
     } else {
       vehicle.markUnavailable();
     }
-    await this.execTrxWithDomainEvents(async () => {
-      await this.vehicleRepository.save(context.tenantId, vehicle);
-    }, vehicle);
+      await this.vehicleRepository.save(context.tenantId, loadedVehicle);
+      return { result: undefined, eventsFrom: [vehicle] };
+    });
   }
 }

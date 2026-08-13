@@ -4,15 +4,13 @@ import { DomainException } from "../../../../shared/domain/shared-kernel/excepti
 import { optionalTrimmedString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/optional-trimmed-string";
 import { requireNonBlankString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/require-non-blank-string";
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
-import type { ChildChangeSet } from "../../../../shared/domain/shared-kernel/core/child-changes";
-import { ChildCollection } from "../../../../shared/domain/shared-kernel/core/child-collection";
 
 import { Compartment } from "./compartment.entity";
 import type { CompartmentProps } from "./compartment.entity";
 import { CompartmentId } from "./compartment-id";
 import type { VehicleEvent } from "./events/vehicle.domain-events";
 import { VehicleId } from "./vehicle-id";
-import type { PersistencePlan } from "../../../../shared/domain/shared-kernel/core/persistence-plan";
+import { DepotId } from "../../depot/domain/depot-id";
 
 export { Capacity } from "./capacity.value-object";
 export type { CapacityProps } from "./capacity.value-object";
@@ -30,7 +28,7 @@ export enum VehicleStatus {
 export interface VehicleDetails {
   readonly registrationNumber: string;
   readonly name?: string;
-  readonly depotId?: string;
+  readonly depotId?: DepotId;
 }
 
 /** Business properties required to register a Vehicle and its initial compartments. */
@@ -42,27 +40,23 @@ export interface RegisterVehicleDetails extends VehicleDetails {
 export interface VehicleProps {
   readonly registrationNumber: string;
   readonly name?: string;
-  readonly depotId?: string;
+  readonly depotId?: DepotId;
   readonly compartments: readonly Compartment[];
   readonly status: VehicleStatus;
 }
 
-/** Persistence decisions derived from the aggregate state since it was loaded. */
-export interface VehiclePersistencePlan extends PersistencePlan {
-  readonly isNew: boolean;
-  readonly compartments: ChildChangeSet<Compartment>;
-}
+export const MAX_VEHICLE_COMPARTMENTS = 5;
 
 /** A transportation asset used to execute assignments. */
 export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
   private _registrationNumber: string;
   private _name?: string;
-  private _depotId?: string;
-  private _compartments: ChildCollection<Compartment>;
+  private _depotId?: DepotId;
+  private readonly _compartments: Compartment[];
   private _status: VehicleStatus;
 
-  private constructor(id: VehicleId, props: VehicleProps, isNew: boolean) {
-    super(id, isNew);
+  private constructor(id: VehicleId, props: VehicleProps) {
+    super(id);
 
     const validatedDetails = Vehicle.validateDetails(props);
     this._registrationNumber = validatedDetails.registrationNumber;
@@ -70,11 +64,7 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
     this._depotId = validatedDetails.depotId;
 
     const compartments = copyAndValidateCompartments(props.compartments);
-    this._compartments = new ChildCollection(
-      (compartment) => compartment.id.value,
-      compartments,
-      isNew,
-    );
+    this._compartments = compartments;
     const status = requireVehicleStatus(props.status);
     this._status = status;
   }
@@ -87,24 +77,16 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
     return this._name;
   }
 
-  get depotId(): string | undefined {
+  get depotId(): DepotId | undefined {
     return this._depotId;
   }
 
   get compartments(): readonly Compartment[] {
-    return this._compartments.all();
+    return [...this._compartments];
   }
 
   get status(): VehicleStatus {
     return this._status;
-  }
-
-  /** Persistence decisions derived since load, for the repository to persist. */
-  getPersistencePlan(): VehiclePersistencePlan {
-    return {
-      ...super.getPersistencePlan(),
-      compartments: this._compartments.changes(),
-    };
   }
 
   static register(details: RegisterVehicleDetails): Vehicle {
@@ -115,7 +97,6 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
         compartments: createCompartments(details.compartments),
         status: VehicleStatus.Available,
       },
-      true,
     );
     vehicle.recordDomainEvent({
       aggregateId: vehicle.id.value,
@@ -126,7 +107,7 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
   }
 
   static reconstitute(id: VehicleId, props: VehicleProps): Vehicle {
-    return new Vehicle(id, props, false);
+    return new Vehicle(id, props);
   }
 
   private static validateDetails(details: VehicleDetails): VehicleDetails {
@@ -136,10 +117,7 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
         "Vehicle registration number",
       ),
       name: optionalTrimmedString(details.name, "Vehicle name"),
-      depotId: optionalTrimmedString(
-        details.depotId,
-        "Vehicle depot identifier",
-      ),
+      depotId: optionalDepotId(details.depotId),
     };
   }
 
@@ -158,8 +136,9 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
 
   addCompartment(details: CompartmentProps): CompartmentId {
     this.assertNotDecommissioned();
+    assertVehicleCompartmentLimit(this._compartments.length + 1);
     const compartment = Compartment.create(details);
-    this._compartments.add(compartment);
+    this._compartments.push(compartment);
     this.recordDomainEvent({
       aggregateId: this.id.value,
       occurredAt: new Date(),
@@ -171,7 +150,8 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
 
   updateCompartment(id: CompartmentId, details: CompartmentProps): void {
     this.assertNotDecommissioned();
-    this._compartments.replace(id.value, Compartment.reconstitute(id, details));
+    const index = this.compartmentIndex(id);
+    this._compartments[index] = Compartment.reconstitute(id, details);
     this.recordDomainEvent({
       aggregateId: this.id.value,
       occurredAt: new Date(),
@@ -187,7 +167,7 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
         "A vehicle must have at least one compartment.",
       );
     }
-    this._compartments.remove(id.value);
+    this._compartments.splice(this.compartmentIndex(id), 1);
     this.recordDomainEvent({
       aggregateId: this.id.value,
       occurredAt: new Date(),
@@ -270,6 +250,24 @@ export class Vehicle extends Aggregate<VehicleId, VehicleEvent> {
       throw new DomainException("A decommissioned vehicle cannot be changed.");
     }
   }
+
+  private compartmentIndex(id: CompartmentId): number {
+    const index = this._compartments.findIndex((compartment) =>
+      compartment.id.equals(id),
+    );
+    if (index < 0) {
+      throw new DomainException("The compartment does not belong to this vehicle.");
+    }
+    return index;
+  }
+}
+
+function optionalDepotId(value: DepotId | undefined): DepotId | undefined {
+  if (value === undefined) return undefined;
+  if (!(value instanceof DepotId)) {
+    throw new DomainException("Vehicle depot identifier is invalid.");
+  }
+  return value;
 }
 
 function createCompartments(
@@ -283,6 +281,7 @@ function createCompartments(
 
   const compartments = compartmentDetails.map(Compartment.create);
   assertVehicleHasCompartments(compartments);
+  assertVehicleCompartmentLimit(compartments.length);
   return compartments;
 }
 
@@ -304,6 +303,7 @@ function copyAndValidateCompartments(
   }
 
   assertVehicleHasCompartments(compartments);
+  assertVehicleCompartmentLimit(compartments.length);
   assertUniqueCompartmentIds(compartments);
   return [...compartments];
 }
@@ -313,6 +313,14 @@ function assertVehicleHasCompartments(
 ): void {
   if (compartments.length === 0) {
     throw new DomainException("A vehicle must have at least one compartment.");
+  }
+}
+
+function assertVehicleCompartmentLimit(count: number): void {
+  if (count > MAX_VEHICLE_COMPARTMENTS) {
+    throw new DomainException(
+      `A vehicle cannot contain more than ${MAX_VEHICLE_COMPARTMENTS} compartments.`,
+    );
   }
 }
 

@@ -3,7 +3,7 @@ import type { DriverId } from "./driver-id";
 
 export interface LoadedDriver {
   readonly aggregate: Driver;
-  readonly expectedRevision: number;
+  readonly expectedRevision: string;
 }
 
 export abstract class DriverRepository {
@@ -16,5 +16,5 @@ export abstract class DriverRepository {
     id: DriverId,
   ): Promise<LoadedDriver | null>;
   abstract add(tenantId: string, driver: Driver): Promise<void>;
-  abstract save(tenantId: string, loadedDriver: LoadedDriver): Promise<number>;
+  abstract save(tenantId: string, loadedDriver: LoadedDriver): Promise<string>;
 }

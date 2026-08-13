@@ -12,6 +12,7 @@ import {
 } from "./driver-certification.entity";
 import { DriverCertificationId } from "./driver-certification-id";
 import { DriverId } from "./driver-id";
+import { DepotId } from "../../depot/domain/depot-id";
 import { validatePersonFirstName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-first-name";
 import { validatePersonLastName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-last-name";
 
@@ -27,7 +28,7 @@ export interface DriverDetails {
   readonly firstName: string;
   readonly lastName: string;
   readonly licenseNumber: string;
-  readonly depotId?: string;
+  readonly depotId?: DepotId;
   readonly phoneNumber?: string;
 }
 
@@ -45,7 +46,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
   private _firstName: string;
   private _lastName: string;
   private _licenseNumber: string;
-  private _depotId?: string;
+  private _depotId?: DepotId;
   private _phoneNumber?: string;
   private _status: DriverStatus;
   private readonly _certifications: DriverCertification[];
@@ -76,7 +77,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
   get licenseNumber(): string {
     return this._licenseNumber;
   }
-  get depotId(): string | undefined {
+  get depotId(): DepotId | undefined {
     return this._depotId;
   }
   get phoneNumber(): string | undefined {
@@ -121,10 +122,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
         details.licenseNumber,
         "Driver license number",
       ),
-      depotId: optionalTrimmedString(
-        details.depotId,
-        "Driver depot identifier",
-      ),
+      depotId: optionalDepotId(details.depotId),
       phoneNumber: optionalTrimmedString(
         details.phoneNumber,
         "Driver phone number",
@@ -267,6 +265,14 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
       );
     }
   }
+}
+
+function optionalDepotId(value: DepotId | undefined): DepotId | undefined {
+  if (value === undefined) return undefined;
+  if (!(value instanceof DepotId)) {
+    throw new DomainException("Driver depot identifier is invalid.");
+  }
+  return value;
 }
 
 function copyAndValidateCertifications(

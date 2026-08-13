@@ -17,19 +17,6 @@ export abstract class CommandHandler {
     protected readonly domainEventBus: DomainEventBus,
   ) {}
 
-  protected async execTrxWithDomainEvents(
-    persist: () => Promise<void>,
-    aggregate: DomainEventsSource,
-  ): Promise<void> {
-    const domainEvents = aggregate.pullDomainEvents();
-    await this.transactionManager.run(async () => {
-      await persist();
-      for (const event of domainEvents) {
-        await this.domainEventBus.publish(event);
-      }
-    });
-  }
-
   /** Runs the complete read-decide-write use case in one transaction. */
   protected async execUseCaseTrx<TResult>(
     operation: () => Promise<TransactionalCommandResult<TResult>>,

@@ -100,6 +100,35 @@ Outbox is required only for distributed, cross-service events.
 
 ---
 
+## Application Input Contracts
+
+Commands and queries define explicit, transport-independent use-case contracts.
+Module-local `*Input` interfaces enumerate the fields accepted by the use case and
+may reuse selected Domain contract property types with `Pick`.
+
+```ts
+export interface RouteStopInput
+  extends Pick<
+    RouteStopDetails,
+    "operationType" | "plannedArrivalAt" | "plannedDepartureAt"
+  > {
+  readonly shipmentId: string;
+}
+```
+
+This keeps the accepted field set stable when the Domain contract gains fields,
+while selected property types remain aligned with the Domain. Application mappers
+convert boundary representations such as string identifiers into Domain value
+objects. When a Domain operation requires new data, the mapper or handler fails
+typechecking until the application deliberately sources that data and, when
+appropriate, extends its input contract.
+
+Query inputs follow read-model requirements and are defined independently of
+Aggregate construction contracts. Transport DTOs remain responsible for external
+format validation and are mapped to application inputs.
+
+---
+
 ## Transactions
 
 - State-changing use cases execute through the shared transaction boundary.

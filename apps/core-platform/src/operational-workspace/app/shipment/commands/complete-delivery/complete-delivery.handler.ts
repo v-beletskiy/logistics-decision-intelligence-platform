@@ -26,15 +26,18 @@ export class CompleteDeliveryHandler extends CommandHandler {
     request: ExecutionRequest<CompleteDeliveryCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const shipment = await this.shipmentRepository.findById(
+    return this.execUseCaseTrx(async () => {
+    const loadedShipment = await this.shipmentRepository.findById(
       context.tenantId,
       ShipmentId.from(command.shipmentId),
     );
-    if (!shipment) throw new AggregateNotFoundException("Shipment");
+    if (!loadedShipment) throw new AggregateNotFoundException("Shipment");
+
+    const shipment = loadedShipment.aggregate;
 
     shipment.completeDelivery();
-    await this.execTrxWithDomainEvents(async () => {
-      await this.shipmentRepository.save(context.tenantId, shipment);
-    }, shipment);
+      await this.shipmentRepository.save(context.tenantId, loadedShipment);
+      return { result: undefined, eventsFrom: [shipment] };
+    });
   }
 }

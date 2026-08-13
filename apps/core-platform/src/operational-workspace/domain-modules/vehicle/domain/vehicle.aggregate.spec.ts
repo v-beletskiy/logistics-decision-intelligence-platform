@@ -9,7 +9,6 @@ import {
   VehicleStatus,
 } from './vehicle.aggregate';
 import { VehicleId } from './vehicle-id';
-import { CompartmentId } from './compartment-id';
 
 const details = {
   registrationNumber: 'AA-1234-BB',
@@ -71,6 +70,25 @@ test('Vehicle manages compartments as stable child entities', () => {
   assert.throws(() => vehicle.removeCompartment(existingId), /at least one compartment/);
 });
 
+test('Vehicle bounds its aggregate-owned compartment set', () => {
+  const vehicle = Vehicle.register(details);
+  for (let index = 0; index < 4; index += 1) {
+    vehicle.addCompartment({
+      type: CompartmentType.DryCargo,
+      capacity: details.compartments[0]!.capacity,
+    });
+  }
+
+  assert.throws(
+    () =>
+      vehicle.addCompartment({
+        type: CompartmentType.DryCargo,
+        capacity: details.compartments[0]!.capacity,
+      }),
+    /cannot contain more than 5 compartments/,
+  );
+});
+
 test('Vehicle rejects unsupported compartment types and statuses', () => {
   assert.throws(
     () => Vehicle.register({
@@ -106,54 +124,4 @@ test('Vehicle validates required and optional text values at runtime', () => {
     }),
     /Compartment name must be text when specified/,
   );
-});
-
-test('Vehicle persistence plan reflects registration as new with all compartments inserted', () => {
-  const vehicle = Vehicle.register(details);
-  const plan = vehicle.getPersistencePlan();
-
-  assert.equal(plan.isNew, true);
-  assert.deepEqual(
-    plan.compartments.inserts.map((compartment) => compartment.id.value),
-    vehicle.compartments.map((compartment) => compartment.id.value),
-  );
-  assert.equal(plan.compartments.updates.length, 0);
-  assert.equal(plan.compartments.removedIds.length, 0);
-});
-
-test('Vehicle persistence plan tracks add, update and removal after load', () => {
-  const vehicle = Vehicle.reconstitute(
-    VehicleId.generate(),
-    {
-      ...details,
-      compartments: [Compartment.reconstitute(CompartmentId.generate(), details.compartments[0]!)],
-      status: VehicleStatus.Available,
-    },
-  );
-  assert.equal(vehicle.getPersistencePlan().isNew, false);
-  assert.equal(vehicle.getPersistencePlan().compartments.inserts.length, 0);
-
-  const addedId = vehicle.addCompartment({
-    type: CompartmentType.Refrigerated,
-    capacity: details.compartments[0]!.capacity,
-  });
-  vehicle.updateCompartment(addedId, {
-    type: CompartmentType.Frozen,
-    capacity: details.compartments[0]!.capacity,
-  });
-
-  let plan = vehicle.getPersistencePlan();
-  assert.equal(plan.compartments.inserts.length, 1);
-  assert.equal(plan.compartments.updates.length, 0);
-
-  const existingId = vehicle.compartments[0]!.id;
-  vehicle.updateCompartment(existingId, details.compartments[0]!);
-  plan = vehicle.getPersistencePlan();
-  assert.equal(plan.compartments.inserts.length, 1);
-  assert.equal(plan.compartments.updates.length, 1);
-
-  vehicle.removeCompartment(existingId);
-  plan = vehicle.getPersistencePlan();
-  assert.deepEqual(plan.compartments.removedIds, [existingId.value]);
-  assert.equal(plan.compartments.updates.length, 0);
 });

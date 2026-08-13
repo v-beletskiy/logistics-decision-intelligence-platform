@@ -1,7 +1,7 @@
-import type { RegisterVehicleDetails } from "../../../../domain-modules/vehicle/domain/vehicle.aggregate";
+import type { RegisterVehicleInput } from "../../vehicle.inputs";
 
 export class RegisterVehicleCommand {
   constructor(
-    readonly details: RegisterVehicleDetails,
+    readonly details: RegisterVehicleInput,
   ) {}
 }

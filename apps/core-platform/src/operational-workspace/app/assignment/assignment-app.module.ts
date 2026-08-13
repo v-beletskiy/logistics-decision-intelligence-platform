@@ -6,7 +6,7 @@ import { ReassignDriverHandler } from "./commands/reassign-driver/reassign-drive
 import { StartAssignmentHandler } from "./commands/start-assignment/start-assignment.handler";
 import { CompleteAssignmentHandler } from "./commands/complete-assignment/complete-assignment.handler";
 import { CancelAssignmentHandler } from "./commands/cancel-assignment/cancel-assignment.handler";
-import { AssignmentPlanningPolicy } from "../../shared-domain/policies/assignment-planning.policy";
+import { AssignmentPlanningPolicy } from "../../domain-modules/assignment/domain/policies/assignment-planning.policy";
 import { AssignmentPersistenceModule } from "../../domain-modules/assignment/infra/persistence/assignment-persistence.module";
 import { RoutePersistenceModule } from "../../domain-modules/route/infra/persistence/route-persistence.module";
 import { VehiclePersistenceModule } from "../../domain-modules/vehicle/infra/persistence/vehicle-persistence.module";

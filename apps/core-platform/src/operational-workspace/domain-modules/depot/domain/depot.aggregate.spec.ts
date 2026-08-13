@@ -28,7 +28,6 @@ test("Depot registers active with empty occupancy and records creation", () => {
   assert.equal(depot.driverCapacity, 20);
   assert.equal(depot.vehicleCount, 0);
   assert.equal(depot.driverCount, 0);
-  assert.equal(depot.getPersistencePlan().isNew, true);
   assert.deepEqual(
     depot.pullDomainEvents().map((event) => event.type),
     ["DepotCreatedDomainEvent"],
@@ -245,19 +244,4 @@ test("Depot releases vehicles and drivers only when present", () => {
   depot.releaseDriver();
   assert.equal(depot.vehicleCount, 0);
   assert.equal(depot.driverCount, 0);
-});
-
-test("Depot persistence plan marks a reconstitution as loaded", () => {
-  const created = Depot.create(details, 10, 10);
-  const depot = Depot.reconstitute(DepotId.generate(), {
-    name: "Kyiv Hub",
-    address: created.address,
-    vehicleCapacity: 10,
-    driverCapacity: 10,
-    vehicleCount: 1,
-    driverCount: 1,
-    status: DepotStatus.Active,
-  });
-
-  assert.equal(depot.getPersistencePlan().isNew, false);
 });

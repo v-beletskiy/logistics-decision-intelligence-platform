@@ -14,6 +14,7 @@ CREATE TABLE
     driver_capacity integer NOT NULL CHECK (driver_capacity > 0),
     vehicle_count integer NOT NULL DEFAULT 0 CHECK (vehicle_count >= 0),
     driver_count integer NOT NULL DEFAULT 0 CHECK (driver_count >= 0),
+    revision bigint NOT NULL DEFAULT 1 CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now (),
     updated_at timestamptz NOT NULL DEFAULT now (),
     CONSTRAINT depots_tenant_id_unique UNIQUE (tenant_id, id),

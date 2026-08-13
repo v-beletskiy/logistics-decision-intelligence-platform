@@ -68,7 +68,7 @@ export class PgDriverRepository extends DriverRepository {
    * save path. Full-state reconciliation is suitable for a small, bounded child
    * collection like this one. Split large collections into separate aggregates.
    */
-  async save(tenantId: string, loadedDriver: LoadedDriver): Promise<number> {
+  async save(tenantId: string, loadedDriver: LoadedDriver): Promise<string> {
     const persistence = DriverMapper.toPersistence(
       tenantId,
       loadedDriver.aggregate,

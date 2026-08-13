@@ -10,6 +10,7 @@ import {
   type DriverProps,
 } from "../../../../domain/driver.aggregate";
 import { DriverId } from "../../../../domain/driver-id";
+import { DepotId } from "../../../../../depot/domain/depot-id";
 import type { IInsertDriverParams } from "../queries/driver.insert.queries";
 import type { IReconcileDriverCertificationsParams } from "../queries/driver.reconcile-certifications.queries";
 
@@ -40,7 +41,7 @@ export class DriverMapper {
         firstName: row.first_name,
         lastName: row.last_name,
         licenseNumber: row.license_number,
-        depotId: row.depot_id ?? undefined,
+        depotId: row.depot_id === null ? undefined : DepotId.from(row.depot_id),
         phoneNumber: row.phone_number ?? undefined,
         status: row.status as DriverStatus,
         certifications: DriverMapper.certificationsToDomain(row.certifications),
@@ -75,7 +76,7 @@ export class DriverMapper {
       firstName: driver.firstName,
       lastName: driver.lastName,
       licenseNumber: driver.licenseNumber,
-      depotId: driver.depotId,
+      depotId: driver.depotId?.value,
       phoneNumber: driver.phoneNumber,
       status: driver.status,
     };

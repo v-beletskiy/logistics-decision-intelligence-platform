@@ -26,7 +26,7 @@ function trackedDatabase(options: {
       calls.push({ statement, params });
       if (statement === insertDriver) return [];
       if (statement === updateDriver) {
-        return options.updateSucceeds === false ? [] : [{ revision: 4 }];
+        return options.updateSucceeds === false ? [] : [{ revision: "4" }];
       }
       if (
         statement === findDriverById ||
@@ -41,7 +41,7 @@ function trackedDatabase(options: {
             depot_id: null,
             phone_number: null,
             status: "AVAILABLE",
-            revision: 3,
+            revision: "3",
             certifications: [],
           },
         ];
@@ -54,7 +54,7 @@ function trackedDatabase(options: {
 
 function createLoadedDriver(): {
   aggregate: Driver;
-  expectedRevision: number;
+  expectedRevision: string;
 } {
   return {
     aggregate: Driver.reconstitute(
@@ -67,7 +67,7 @@ function createLoadedDriver(): {
         status: DriverStatus.Available,
       },
     ),
-    expectedRevision: 3,
+    expectedRevision: "3",
   };
 }
 
@@ -105,9 +105,9 @@ test("save uses the expected revision before reconciling children", async () => 
     loadedDriver,
   );
 
-  assert.equal(revision, 4);
-  const update = calls[0]?.params as { expectedRevision: number };
-  assert.equal(update.expectedRevision, 3);
+  assert.equal(revision, "4");
+  const update = calls[0]?.params as { expectedRevision: string };
+  assert.equal(update.expectedRevision, "3");
   assert.deepEqual(
     calls.map((call) => call.statement),
     [updateDriver, reconcileDriverCertifications],
@@ -132,7 +132,7 @@ test("pessimistic loading locks and hydrates in one query", async () => {
     tenantId,
     DriverId.from("00000000-0000-4000-8000-000000000001"),
   );
-  assert.equal(loadedDriver?.expectedRevision, 3);
+  assert.equal(loadedDriver?.expectedRevision, "3");
   assert.deepEqual(
     inside.calls.map((call) => call.statement),
     [findDriverByIdForUpdate],

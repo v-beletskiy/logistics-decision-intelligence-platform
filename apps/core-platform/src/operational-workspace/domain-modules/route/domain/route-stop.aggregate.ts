@@ -2,6 +2,8 @@ import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
 import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { optionalValidDate } from "../../../../shared/domain/shared-kernel/validation/primitives/date/optional-valid-date";
+import { requireValidDate } from "../../../../shared/domain/shared-kernel/validation/primitives/date/require-valid-date";
 import { requirePositiveInteger } from "../../../../shared/domain/shared-kernel/validation/primitives/number/require-positive-integer";
 
 import { ShipmentId } from "../../shipment/domain/shipment-id";
@@ -45,8 +47,8 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
   readonly shipmentId: ShipmentId;
   readonly sequence: number;
   readonly operationType: RouteStopOperationType;
-  readonly plannedArrivalAt: Date;
-  readonly plannedDepartureAt: Date;
+  private readonly _plannedArrivalAt: Date;
+  private readonly _plannedDepartureAt: Date;
   private _actualArrivalAt?: Date;
   private _actualDepartureAt?: Date;
   private _status: RouteStopStatus;
@@ -69,19 +71,19 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
     }
     this.operationType = props.operationType;
     this._status = props.status;
-    this.plannedArrivalAt = requireDate(
+    this._plannedArrivalAt = requireValidDate(
       props.plannedArrivalAt,
       "Route stop planned arrival",
     );
-    this.plannedDepartureAt = requireDate(
+    this._plannedDepartureAt = requireValidDate(
       props.plannedDepartureAt,
       "Route stop planned departure",
     );
-    this._actualArrivalAt = optionalDate(
+    this._actualArrivalAt = optionalValidDate(
       props.actualArrivalAt,
       "Route stop actual arrival",
     );
-    this._actualDepartureAt = optionalDate(
+    this._actualDepartureAt = optionalValidDate(
       props.actualDepartureAt,
       "Route stop actual departure",
     );
@@ -92,12 +94,20 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
     return this._status;
   }
 
+  get plannedArrivalAt(): Date {
+    return new Date(this._plannedArrivalAt);
+  }
+
+  get plannedDepartureAt(): Date {
+    return new Date(this._plannedDepartureAt);
+  }
+
   get actualArrivalAt(): Date | undefined {
-    return this._actualArrivalAt;
+    return this._actualArrivalAt && new Date(this._actualArrivalAt);
   }
 
   get actualDepartureAt(): Date | undefined {
-    return this._actualDepartureAt;
+    return this._actualDepartureAt && new Date(this._actualDepartureAt);
   }
 
   static create(details: CreateRouteStopDetails): RouteStop {
@@ -117,7 +127,7 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
         "Arrival can only be recorded for a planned route stop.",
       );
     }
-    this._actualArrivalAt = requireDate(at, "Route stop actual arrival");
+    this._actualArrivalAt = requireValidDate(at, "Route stop actual arrival");
     this._status = RouteStopStatus.InProgress;
     this.raiseDomainEvent("RouteStopArrivedDomainEvent");
   }
@@ -128,7 +138,7 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
         "Departure can only be recorded for an in-progress route stop.",
       );
     }
-    const departure = requireDate(at, "Route stop actual departure");
+    const departure = requireValidDate(at, "Route stop actual departure");
     if (!this._actualArrivalAt || departure < this._actualArrivalAt) {
       throw new DomainException("Route stop departure cannot precede arrival.");
     }
@@ -151,7 +161,7 @@ export class RouteStop extends Aggregate<RouteStopId, RouteStopEvent> {
   }
 
   private assertTimelineIsValid(): void {
-    if (this.plannedDepartureAt < this.plannedArrivalAt) {
+    if (this._plannedDepartureAt < this._plannedArrivalAt) {
       throw new DomainException(
         "Route stop planned departure cannot precede arrival.",
       );
@@ -215,16 +225,4 @@ function requireShipmentId(value: unknown): ShipmentId {
     throw new DomainException("A route stop must reference a shipment.");
   }
   return value;
-}
-
-function requireDate(value: unknown, label: string): Date {
-  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
-    throw new DomainException(`${label} must be a valid date.`);
-  }
-  return value;
-}
-
-function optionalDate(value: unknown, label: string): Date | undefined {
-  if (value === undefined) return undefined;
-  return requireDate(value, label);
 }

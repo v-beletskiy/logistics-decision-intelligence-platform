@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { DepotRepository } from "../../domain/depot.repository";
-import { PgDepotRepository } from "./depot.pg-repository";
+import { PgDepotRepository } from "./repository/depot.pg-repository";
 
 @Module({
   providers: [

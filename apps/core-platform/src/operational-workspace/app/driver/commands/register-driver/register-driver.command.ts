@@ -1,5 +1,5 @@
-import type { RegisterDriverDetails } from "../../../../domain-modules/driver/domain/driver.aggregate";
+import type { RegisterDriverInput } from "../../driver.inputs";
 
 export class RegisterDriverCommand {
-  constructor(readonly details: RegisterDriverDetails) {}
+  constructor(readonly details: RegisterDriverInput) {}
 }

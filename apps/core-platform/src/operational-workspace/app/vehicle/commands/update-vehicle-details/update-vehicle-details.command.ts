@@ -1,8 +1,8 @@
-import type { VehicleDetails } from "../../../../domain-modules/vehicle/domain/vehicle.aggregate";
+import type { VehicleDetailsInput } from "../../vehicle.inputs";
 
 export class UpdateVehicleDetailsCommand {
   constructor(
     readonly vehicleId: string,
-    readonly details: VehicleDetails,
+    readonly details: VehicleDetailsInput,
   ) {}
 }

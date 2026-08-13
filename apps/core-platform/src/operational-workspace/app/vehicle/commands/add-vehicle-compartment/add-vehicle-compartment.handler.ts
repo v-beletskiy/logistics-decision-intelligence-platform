@@ -26,17 +26,18 @@ export class AddVehicleCompartmentHandler extends CommandHandler {
     request: ExecutionRequest<AddVehicleCompartmentCommand>,
   ): Promise<string> {
     const { context, input: command } = request;
-    const vehicle = await this.vehicleRepository.findById(
-      context.tenantId,
-      VehicleId.from(command.vehicleId),
-    );
-    if (!vehicle) throw new AggregateNotFoundException("Vehicle");
+    return this.execUseCaseTrx(async () => {
+      const loadedVehicle = await this.vehicleRepository.findById(
+        context.tenantId,
+        VehicleId.from(command.vehicleId),
+      );
+      if (!loadedVehicle) throw new AggregateNotFoundException("Vehicle");
 
-    const compartmentId = vehicle.addCompartment(command.details);
-    await this.execTrxWithDomainEvents(async () => {
-      await this.vehicleRepository.save(context.tenantId, vehicle);
-    }, vehicle);
+      const vehicle = loadedVehicle.aggregate;
 
-    return compartmentId.value;
+      const compartmentId = vehicle.addCompartment(command.details);
+      await this.vehicleRepository.save(context.tenantId, loadedVehicle);
+      return { result: compartmentId.value, eventsFrom: [vehicle] };
+    });
   }
 }

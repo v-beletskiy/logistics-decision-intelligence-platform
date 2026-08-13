@@ -1,9 +1,6 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
-import type { ChildChangeSet } from "../../../../shared/domain/shared-kernel/core/child-changes";
-import { ChildCollection } from "../../../../shared/domain/shared-kernel/core/child-collection";
-import type { PersistencePlan } from "../../../../shared/domain/shared-kernel/core/persistence-plan";
 import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
 
 import { AssignmentId } from "./assignment-id";
@@ -37,17 +34,14 @@ export interface AssignmentProps extends AssignmentAllocation {
   readonly cancelledAt?: Date;
 }
 
-/** Persistence decisions derived from the aggregate state since it was loaded. */
-export interface AssignmentPersistencePlan extends PersistencePlan {
-  readonly shipments: ChildChangeSet<AssignmentShipment>;
-}
+export const MAX_ASSIGNMENT_SHIPMENTS = 20;
 
 /** A work order binding a set of shipments to a route, vehicle and driver. */
 export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
   private _routeId: RouteId;
   private _vehicleId: VehicleId;
   private _driverId: DriverId;
-  private _shipments: ChildCollection<AssignmentShipment>;
+  private readonly _shipments: AssignmentShipment[];
   private _status: AssignmentStatus;
   private _assignedAt: Date;
   private _startedAt?: Date;
@@ -57,9 +51,8 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
   private constructor(
     id: AssignmentId,
     props: AssignmentProps,
-    isNew: boolean,
   ) {
-    super(id, isNew);
+    super(id);
 
     this._routeId = requireAssignmentReference(props.routeId, RouteId, "route");
     this._vehicleId = requireAssignmentReference(
@@ -78,11 +71,7 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
     this._completedAt = props.completedAt;
     this._cancelledAt = props.cancelledAt;
 
-    this._shipments = new ChildCollection<AssignmentShipment>(
-      (shipment) => shipment.id.value,
-      copyAndValidateShipments(props.shipments),
-      isNew,
-    );
+    this._shipments = copyAndValidateShipments(props.shipments);
   }
 
   get routeId(): RouteId {
@@ -98,7 +87,7 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
   }
 
   get shipments(): readonly AssignmentShipment[] {
-    return this._shipments.all();
+    return [...this._shipments];
   }
 
   get status(): AssignmentStatus {
@@ -129,14 +118,6 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
     return this._cancelledAt;
   }
 
-  /** Persistence decisions derived since load, for the repository to persist. */
-  getPersistencePlan(): AssignmentPersistencePlan {
-    return {
-      ...super.getPersistencePlan(),
-      shipments: this._shipments.changes(),
-    };
-  }
-
   static create(allocation: AssignmentAllocation): Assignment {
     const assignment = new Assignment(
       AssignmentId.generate(),
@@ -145,14 +126,13 @@ export class Assignment extends Aggregate<AssignmentId, AssignmentEvent> {
         status: AssignmentStatus.Created,
         assignedAt: new Date(),
       },
-      true,
     );
     assignment.raiseDomainEvent("AssignmentCreatedDomainEvent");
     return assignment;
   }
 
   static reconstitute(id: AssignmentId, props: AssignmentProps): Assignment {
-    return new Assignment(id, props, false);
+    return new Assignment(id, props);
   }
 
   assignVehicle(vehicleId: VehicleId): void {
@@ -253,6 +233,11 @@ function copyAndValidateShipments(
   if (shipments.length === 0) {
     throw new DomainException(
       "An assignment must contain at least one shipment.",
+    );
+  }
+  if (shipments.length > MAX_ASSIGNMENT_SHIPMENTS) {
+    throw new DomainException(
+      `An assignment cannot contain more than ${MAX_ASSIGNMENT_SHIPMENTS} shipments.`,
     );
   }
   assertUniqueShipmentReferences(shipments);

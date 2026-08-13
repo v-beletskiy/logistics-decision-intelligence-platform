@@ -53,8 +53,8 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
   private _deliveryCompleted: boolean;
   private _status: ShipmentStatus;
 
-  private constructor(id: ShipmentId, props: ShipmentProps, isNew: boolean) {
-    super(id, isNew);
+  private constructor(id: ShipmentId, props: ShipmentProps) {
+    super(id);
 
     const validatedDetails = Shipment.validateDetails(props);
     this._pickup = validatedDetails.pickup;
@@ -111,14 +111,13 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
         deliveryCompleted: false,
         status: ShipmentStatus.Created,
       },
-      true,
     );
     shipment.raiseDomainEvent("ShipmentCreatedDomainEvent");
     return shipment;
   }
 
   static reconstitute(id: ShipmentId, props: ShipmentProps): Shipment {
-    return new Shipment(id, props, false);
+    return new Shipment(id, props);
   }
 
   private static validateDetails(

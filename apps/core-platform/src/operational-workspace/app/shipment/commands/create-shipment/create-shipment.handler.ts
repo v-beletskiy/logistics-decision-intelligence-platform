@@ -25,11 +25,10 @@ export class CreateShipmentHandler extends CommandHandler {
     request: ExecutionRequest<CreateShipmentCommand>,
   ): Promise<string> {
     const { context, input: command } = request;
-    const shipment = Shipment.create(command.details);
-    await this.execTrxWithDomainEvents(async () => {
-      await this.shipmentRepository.save(context.tenantId, shipment);
-    }, shipment);
-
-    return shipment.id.value;
+    return this.execUseCaseTrx(async () => {
+      const shipment = Shipment.create(command.details);
+      await this.shipmentRepository.add(context.tenantId, shipment);
+      return { result: shipment.id.value, eventsFrom: [shipment] };
+    });
   }
 }

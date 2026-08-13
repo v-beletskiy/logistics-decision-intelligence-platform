@@ -8,6 +8,7 @@ import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Vehicle } from "../../../../domain-modules/vehicle/domain/vehicle.aggregate";
 import { VehicleRepository } from "../../../../domain-modules/vehicle/domain/vehicle.repository";
+import { VehicleInputMapper } from "../../mappers/vehicle-input.mapper";
 import { RegisterVehicleCommand } from "./register-vehicle.command";
 
 @Injectable()
@@ -25,11 +26,12 @@ export class RegisterVehicleHandler extends CommandHandler {
     request: ExecutionRequest<RegisterVehicleCommand>,
   ): Promise<string> {
     const { context, input: command } = request;
-    const vehicle = Vehicle.register(command.details);
-    await this.execTrxWithDomainEvents(async () => {
-      await this.vehicleRepository.save(context.tenantId, vehicle);
-    }, vehicle);
-
-    return vehicle.id.value;
+    return this.execUseCaseTrx(async () => {
+      const vehicle = Vehicle.register(
+        VehicleInputMapper.toRegistrationDetails(command.details),
+      );
+      await this.vehicleRepository.add(context.tenantId, vehicle);
+      return { result: vehicle.id.value, eventsFrom: [vehicle] };
+    });
   }
 }

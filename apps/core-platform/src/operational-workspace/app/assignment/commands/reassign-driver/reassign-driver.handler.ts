@@ -10,7 +10,7 @@ import { AssignmentId } from "../../../../domain-modules/assignment/domain/assig
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
 import { DriverId } from "../../../../domain-modules/driver/domain/driver-id";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";
-import { AssignmentPlanningPolicy } from "../../../../shared-domain/policies/assignment-planning.policy";
+import { AssignmentPlanningPolicy } from "../../../../domain-modules/assignment/domain/policies/assignment-planning.policy";
 import { ReassignDriverCommand } from "./reassign-driver.command";
 
 @Injectable()
@@ -30,38 +30,40 @@ export class ReassignDriverHandler extends CommandHandler {
     request: ExecutionRequest<ReassignDriverCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const assignment = await this.assignmentRepository.findById(
-      context.tenantId,
-      AssignmentId.from(command.assignmentId),
-    );
-    if (!assignment) throw new AggregateNotFoundException("Assignment");
+    return this.execUseCaseTrx(async () => {
+      const loadedAssignment = await this.assignmentRepository.findById(
+        context.tenantId,
+        AssignmentId.from(command.assignmentId),
+      );
+      if (!loadedAssignment) {
+        throw new AggregateNotFoundException("Assignment");
+      }
+      const assignment = loadedAssignment.aggregate;
 
-    const loadedDriver = await this.driverRepository.findById(
-      context.tenantId,
-      DriverId.from(command.driverId),
-    );
-    if (!loadedDriver) throw new AggregateNotFoundException("Driver");
-    const driver = loadedDriver.aggregate;
+      const loadedDriver = await this.driverRepository.findById(
+        context.tenantId,
+        DriverId.from(command.driverId),
+      );
+      if (!loadedDriver) throw new AggregateNotFoundException("Driver");
+      const driver = loadedDriver.aggregate;
 
-    const keepsCurrentDriver = assignment.driverId.equals(driver.id);
-    if (keepsCurrentDriver) {
+      if (assignment.driverId.equals(driver.id)) {
+        return { result: undefined, eventsFrom: [] };
+      }
+
+      const driverHasActiveAssignment =
+        await this.assignmentRepository.existsActiveForDriver(
+          context.tenantId,
+          driver.id,
+        );
+
+      this.assignmentPlanningPolicy.assertDriverCanBeAssigned(
+        driver,
+        driverHasActiveAssignment,
+      );
       assignment.assignDriver(driver.id);
-      return;
-    }
-
-    const driverHasActiveAssignment = await this.assignmentRepository.existsActiveForDriver(
-      context.tenantId,
-      driver.id,
-    );
-
-    this.assignmentPlanningPolicy.assertDriverCanBeAssigned(
-      driver,
-      driverHasActiveAssignment,
-    );
-    assignment.assignDriver(driver.id);
-
-    await this.execTrxWithDomainEvents(async () => {
-      await this.assignmentRepository.save(context.tenantId, assignment);
-    }, assignment);
+      await this.assignmentRepository.save(context.tenantId, loadedAssignment);
+      return { result: undefined, eventsFrom: [assignment] };
+    });
   }
 }

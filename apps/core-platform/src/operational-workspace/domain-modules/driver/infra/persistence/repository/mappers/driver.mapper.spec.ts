@@ -14,7 +14,7 @@ const driverRow: IFindDriverByIdResult = {
   depot_id: "514366f7-8429-4fc1-8cb1-4efb5c687ee1",
   phone_number: "+380501234567",
   status: "AVAILABLE",
-  revision: 3,
+  revision: "3",
   certifications: [
     {
       id: "00000000-0000-4000-8000-000000000011",

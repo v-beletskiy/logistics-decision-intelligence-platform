@@ -68,7 +68,6 @@ test("Assignment registers as created and records creation", () => {
   assert.equal(assignment.shipments.length, 2);
   assert.equal(assignment.shipments[0].shipmentId.equals(shipmentIdA), true);
   assert.equal(assignment.shipments[1].shipmentId.equals(shipmentIdB), true);
-  assert.equal(assignment.getPersistencePlan().isNew, true);
   assert.deepEqual(
     assignment.pullDomainEvents().map((event) => event.type),
     ["AssignmentCreatedDomainEvent"],
@@ -116,6 +115,17 @@ test("Assignment rejects an empty shipment set", () => {
         shipments: [],
       }),
     /at least one shipment/,
+  );
+});
+
+test("Assignment bounds its aggregate-owned shipment set", () => {
+  assert.throws(
+    () =>
+      Assignment.reconstitute(AssignmentId.generate(), {
+        ...props,
+        shipments: Array.from({ length: 21 }, () => shipments[0]!),
+      }),
+    /cannot contain more than 20 shipments/,
   );
 });
 

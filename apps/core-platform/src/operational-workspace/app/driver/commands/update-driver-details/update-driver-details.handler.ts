@@ -9,6 +9,7 @@ import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";
 import { DriverId } from "../../../../domain-modules/driver/domain/driver-id";
+import { DriverInputMapper } from "../../mappers/driver-input.mapper";
 import { UpdateDriverDetailsCommand } from "./update-driver-details.command";
 
 @Injectable()
@@ -34,7 +35,9 @@ export class UpdateDriverDetailsHandler extends CommandHandler {
       );
       if (!loadedDriver) throw new AggregateNotFoundException("Driver");
 
-      loadedDriver.aggregate.updateDetails(command.details);
+      loadedDriver.aggregate.updateDetails(
+        DriverInputMapper.toDetails(command.details),
+      );
       await this.driverRepository.save(tenantId, loadedDriver);
 
       return { result: undefined, eventsFrom: [loadedDriver.aggregate] };

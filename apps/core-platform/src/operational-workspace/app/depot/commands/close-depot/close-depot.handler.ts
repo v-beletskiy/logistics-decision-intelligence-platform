@@ -26,15 +26,18 @@ export class CloseDepotHandler extends CommandHandler {
     request: ExecutionRequest<CloseDepotCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const depot = await this.depotRepository.findById(
+    return this.execUseCaseTrx(async () => {
+    const loadedDepot = await this.depotRepository.findById(
       context.tenantId,
       DepotId.from(command.depotId),
     );
-    if (!depot) throw new AggregateNotFoundException("Depot");
+    if (!loadedDepot) throw new AggregateNotFoundException("Depot");
+
+    const depot = loadedDepot.aggregate;
 
     depot.close();
-    await this.execTrxWithDomainEvents(async () => {
-      await this.depotRepository.save(context.tenantId, depot);
-    }, depot);
+      await this.depotRepository.save(context.tenantId, loadedDepot);
+      return { result: undefined, eventsFrom: [depot] };
+    });
   }
 }

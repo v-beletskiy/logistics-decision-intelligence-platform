@@ -44,8 +44,8 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
   private _driverCount: number;
   private _status: DepotStatus;
 
-  private constructor(id: DepotId, props: DepotProps, isNew: boolean) {
-    super(id, isNew);
+  private constructor(id: DepotId, props: DepotProps) {
+    super(id);
 
     const validatedDetails = Depot.validateDetails(props);
     this._name = validatedDetails.name;
@@ -121,14 +121,13 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
         driverCount: 0,
         status: DepotStatus.Active,
       },
-      true,
     );
     depot.raiseDomainEvent("DepotCreatedDomainEvent");
     return depot;
   }
 
   static reconstitute(id: DepotId, props: DepotProps): Depot {
-    return new Depot(id, props, false);
+    return new Depot(id, props);
   }
 
   private static validateDetails(

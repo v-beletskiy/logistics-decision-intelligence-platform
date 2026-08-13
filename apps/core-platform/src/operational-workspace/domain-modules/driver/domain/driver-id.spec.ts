@@ -15,7 +15,7 @@ test("DriverId validates UUID values and preserves value equality", () => {
 });
 
 test("DriverId creates UUIDv7 values", () => {
-  const driverId = DriverId.create();
+  const driverId = DriverId.generate();
 
   assert.match(driverId.value, /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
 });

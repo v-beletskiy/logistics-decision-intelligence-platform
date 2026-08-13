@@ -1,7 +1,7 @@
-import type { ShipmentDetails } from "../../../../domain-modules/shipment/domain/shipment.aggregate";
+import type { ShipmentDetailsInput } from "../../shipment.inputs";
 
 export class CreateShipmentCommand {
   constructor(
-    readonly details: ShipmentDetails,
+    readonly details: ShipmentDetailsInput,
   ) {}
 }

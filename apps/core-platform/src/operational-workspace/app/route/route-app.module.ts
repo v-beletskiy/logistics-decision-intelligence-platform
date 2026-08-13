@@ -10,7 +10,7 @@ import { RecordRouteStopDepartureHandler } from "./commands/record-route-stop-de
 import { RoutePersistenceModule } from "../../domain-modules/route/infra/persistence/route-persistence.module";
 import { ShipmentPersistenceModule } from "../../domain-modules/shipment/infra/persistence/shipment-persistence.module";
 import { AssignmentPersistenceModule } from "../../domain-modules/assignment/infra/persistence/assignment-persistence.module";
-import { RoutePlanningPolicy } from "../../shared-domain/policies/route-planning.policy";
+import { RoutePlanningPolicy } from "../../domain-modules/route/domain/policies/route-planning.policy";
 
 @Module({
   imports: [

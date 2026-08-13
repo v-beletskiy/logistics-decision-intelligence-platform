@@ -1,10 +1,12 @@
 /** Types generated for queries found in "src/operational-workspace/domain-modules/driver/infra/persistence/repository/queries/driver.update.sql" */
 import { PreparedQuery } from '@pgtyped/runtime';
 
+export type NumberOrString = number | string;
+
 /** 'UpdateDriver' parameters type */
 export interface IUpdateDriverParams {
   depotId?: string | null | void;
-  expectedRevision: number;
+  expectedRevision: NumberOrString;
   firstName: string;
   id: string;
   lastName: string;
@@ -16,7 +18,7 @@ export interface IUpdateDriverParams {
 
 /** 'UpdateDriver' return type */
 export interface IUpdateDriverResult {
-  revision: number;
+  revision: string;
 }
 
 /** 'UpdateDriver' query type */

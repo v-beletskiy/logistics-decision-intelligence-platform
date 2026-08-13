@@ -1,8 +1,8 @@
-import type { DepotDetails } from "../../../../domain-modules/depot/domain/depot.aggregate";
+import type { DepotDetailsInput } from "../../depot.inputs";
 
 export class CreateDepotCommand {
   constructor(
-    readonly details: DepotDetails,
+    readonly details: DepotDetailsInput,
     readonly vehicleCapacity: number,
     readonly driverCapacity: number,
   ) {}

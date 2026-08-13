@@ -8,6 +8,7 @@ import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Driver } from "../../../../domain-modules/driver/domain/driver.aggregate";
 import { DriverRepository } from "../../../../domain-modules/driver/domain/driver.repository";
+import { DriverInputMapper } from "../../mappers/driver-input.mapper";
 import { RegisterDriverCommand } from "./register-driver.command";
 
 @Injectable()
@@ -27,7 +28,9 @@ export class RegisterDriverHandler extends CommandHandler {
     const { context, input: command } = request;
     const tenantId = context.tenantId;
     return this.execUseCaseTrx(async () => {
-      const driver = Driver.register(command.details);
+      const driver = Driver.register(
+        DriverInputMapper.toRegistrationDetails(command.details),
+      );
       await this.driverRepository.add(tenantId, driver);
 
       return { result: driver.id.value, eventsFrom: [driver] };

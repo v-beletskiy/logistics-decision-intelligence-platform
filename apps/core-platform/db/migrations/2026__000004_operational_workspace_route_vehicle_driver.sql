@@ -82,6 +82,7 @@ CREATE TABLE
         'DECOMMISSIONED'
       )
     ),
+    revision bigint NOT NULL DEFAULT 1 CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now (),
     updated_at timestamptz NOT NULL DEFAULT now (),
     CONSTRAINT vehicles_tenant_id_unique UNIQUE (tenant_id, id),
@@ -140,7 +141,7 @@ CREATE TABLE
     status text NOT NULL CHECK (
       status IN ('AVAILABLE', 'UNAVAILABLE', 'SUSPENDED')
     ),
-    revision integer NOT NULL DEFAULT 1 CHECK (revision > 0),
+    revision bigint NOT NULL DEFAULT 1 CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now (),
     updated_at timestamptz NOT NULL DEFAULT now (),
     CONSTRAINT drivers_tenant_id_unique UNIQUE (tenant_id, id),

@@ -1,9 +1,9 @@
-import type { DriverCertificationProps } from "../../../../domain-modules/driver/domain/driver-certification.entity";
+import type { DriverCertificationInput } from "../../driver.inputs";
 
 export class UpdateDriverCertificationCommand {
   constructor(
     readonly driverId: string,
     readonly certificationId: string,
-    readonly details: DriverCertificationProps,
+    readonly details: DriverCertificationInput,
   ) {}
 }

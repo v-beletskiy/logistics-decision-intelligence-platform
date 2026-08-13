@@ -31,6 +31,7 @@ CREATE TABLE
     dimension_unit text NOT NULL CHECK (
       dimension_unit IN ('CENTIMETER', 'MILLIMETER', 'INCH')
     ),
+    revision bigint NOT NULL DEFAULT 1 CHECK (revision > 0),
     created_at timestamptz NOT NULL DEFAULT now (),
     updated_at timestamptz NOT NULL DEFAULT now (),
     CONSTRAINT shipments_tenant_id_unique UNIQUE (tenant_id, id),

@@ -26,15 +26,18 @@ export class CancelAssignmentHandler extends CommandHandler {
     request: ExecutionRequest<CancelAssignmentCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    const assignment = await this.assignmentRepository.findById(
-      context.tenantId,
-      AssignmentId.from(command.assignmentId),
-    );
-    if (!assignment) throw new AggregateNotFoundException("Assignment");
+    return this.execUseCaseTrx(async () => {
+      const loadedAssignment = await this.assignmentRepository.findById(
+        context.tenantId,
+        AssignmentId.from(command.assignmentId),
+      );
+      if (!loadedAssignment) throw new AggregateNotFoundException("Assignment");
 
-    assignment.cancel();
-    await this.execTrxWithDomainEvents(async () => {
-      await this.assignmentRepository.save(context.tenantId, assignment);
-    }, assignment);
+      const assignment = loadedAssignment.aggregate;
+
+      assignment.cancel();
+      await this.assignmentRepository.save(context.tenantId, loadedAssignment);
+      return { result: undefined, eventsFrom: [assignment] };
+    });
   }
 }
