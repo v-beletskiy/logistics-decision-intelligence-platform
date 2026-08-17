@@ -6,7 +6,7 @@
     "removeComments": true,
     "target": "ES2024",
     "lib": ["ES2024"],
-    "types": ["node"],
+    "types": ["node", "json-schema"],
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,

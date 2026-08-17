@@ -1,6 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import {
   Driver,
   DriverStatus,
@@ -97,6 +98,27 @@ test("Driver owns the lifecycle of its certification entities", () => {
   );
 });
 
+test("Driver reports a specific exception for an oversized certification field", () => {
+  assert.throws(
+    () =>
+      Driver.register({
+        ...details,
+        certifications: [
+          {
+            ...certification(1),
+            type: "A".repeat(101),
+          },
+        ],
+      }),
+    (exception) => {
+      assert.ok(exception instanceof DomainException);
+      assert.equal(exception.code, "driver.certification-field-too-long");
+      assert.deepEqual(exception.context, { field: "type", maxLength: 100 });
+      return true;
+    },
+  );
+});
+
 test("Driver rejects duplicate and unknown certifications", () => {
   const certification = {
     type: "HAZMAT",
@@ -117,6 +139,28 @@ test("Driver rejects duplicate and unknown certifications", () => {
       ),
     /does not belong/,
   );
+});
+
+test("Driver distinguishes certification credential pairs without delimiter encoding", () => {
+  const driver = Driver.register({
+    ...details,
+    certifications: [
+      {
+        type: "A\u0000B",
+        credentialNumber: "C",
+        validFrom: new Date("2026-01-01T00:00:00Z"),
+        validUntil: new Date("2027-01-01T00:00:00Z"),
+      },
+      {
+        type: "A",
+        credentialNumber: "B\u0000C",
+        validFrom: new Date("2026-01-01T00:00:00Z"),
+        validUntil: new Date("2027-01-01T00:00:00Z"),
+      },
+    ],
+  });
+
+  assert.equal(driver.certifications.length, 2);
 });
 
 test("Driver limits its certification collection to ten children", () => {

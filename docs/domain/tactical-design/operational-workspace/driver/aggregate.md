@@ -5,15 +5,21 @@ A transportation operator responsible for executing Assignments using a Vehicle.
 ## Invariants
 
 - A Driver always has exactly one DriverStatus.
+- Names, license number, phone number, and certification fields are non-blank.
+- A Driver owns at most ten Certifications.
+- Certification identifiers and `(type, credential number)` pairs are unique within a Driver.
+- Availability cannot change while a Driver is suspended.
 
 ## Commands
 
 - RegisterDriverCommand
 - UpdateDriverDetailsCommand
-- MarkDriverAvailableCommand
-- MarkDriverUnavailableCommand
+- ChangeDriverAvailabilityCommand
 - SuspendDriverCommand
 - ReinstateDriverCommand
+- AddDriverCertificationCommand
+- UpdateDriverCertificationCommand
+- RemoveDriverCertificationCommand
 
 ## Domain Events
 
@@ -23,6 +29,9 @@ A transportation operator responsible for executing Assignments using a Vehicle.
 - DriverMarkedUnavailableDomainEvent
 - DriverSuspendedDomainEvent
 - DriverReinstatedDomainEvent
+- DriverCertificationAddedDomainEvent
+- DriverCertificationUpdatedDomainEvent
+- DriverCertificationRemovedDomainEvent
 
 ## Enums
 
@@ -34,10 +43,10 @@ A transportation operator responsible for executing Assignments using a Vehicle.
 ## Repository Interfaces
 
 - DriverRepository
-  - findById(id: DriverId)
-  - findAvailable()
-  - save(driver: Driver)
-  - delete(id: DriverId)
+  - findById(tenantId, id)
+  - findByIdForUpdate(tenantId, id)
+  - add(tenantId, driver)
+  - save(tenantId, loadedDriver)
 
 ## References to other aggregates
 

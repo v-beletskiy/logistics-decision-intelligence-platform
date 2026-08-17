@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { normalizeSortDirection } from "./sorting";
+import { InvalidSortError, normalizeSortDirection } from "./sorting";
 
 test("normalizeSortDirection applies its default and preserves valid values", () => {
   assert.equal(normalizeSortDirection(undefined), "asc");
@@ -11,4 +11,11 @@ test("normalizeSortDirection applies its default and preserves valid values", ()
 
 test("normalizeSortDirection rejects unsupported values", () => {
   assert.throws(() => normalizeSortDirection("sideways"), /invalid/);
+});
+
+test("InvalidSortError owns its stable machine code", () => {
+  assert.equal(
+    new InvalidSortError("Invalid sort.").code,
+    "query.sort-invalid",
+  );
 });

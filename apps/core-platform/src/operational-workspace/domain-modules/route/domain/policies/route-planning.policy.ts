@@ -1,4 +1,4 @@
-import { DomainException } from "../../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../../shared/domain/shared-kernel/domain.exceptions";
 
 import {
   RouteStopOperationType,

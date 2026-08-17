@@ -11,8 +11,13 @@ import { DriverReadStore, type DriverListItem } from "./driver-read-store";
 import {
   DEFAULT_DRIVER_CURSOR_SORT,
   DEFAULT_DRIVER_PAGE_SORT,
+  type DriverCursorSort,
+  type DriverPageSort,
 } from "./driver-search";
-import { SearchDriversQuery } from "./search-drivers.query";
+import {
+  SearchDriversQuery,
+  type SearchDriversQueryInput,
+} from "./search-drivers.query";
 
 @Injectable()
 export class SearchDriversHandler {
@@ -23,18 +28,61 @@ export class SearchDriversHandler {
     request: ExecutionRequest<SearchDriversQuery>,
   ): Promise<PaginationResult<DriverListItem>> {
     const { context, input: query } = request;
-    const criteria = { tenantId: context.tenantId, ...query.filters };
+    const {
+      mode,
+      page,
+      pageSize,
+      cursor,
+      status,
+      depotId,
+      lastNamePrefix,
+      certificationType,
+      sortBy,
+      direction,
+    } = query.input;
+    const criteria = {
+      tenantId: context.tenantId,
+      status,
+      depotId,
+      lastNamePrefix,
+      certificationType,
+    };
 
-    if (query.search.mode === "page") {
+    if (mode === "page") {
       return this.driverReadStore.search(criteria, {
-        ...validatePagination(query.search),
-        sort: query.search.sort ?? DEFAULT_DRIVER_PAGE_SORT,
+        ...validatePagination({ mode, page, pageSize }),
+        sort: resolvePageSort(sortBy, direction),
       });
     }
 
     return this.driverReadStore.search(criteria, {
-      ...validatePagination(query.search),
-      sort: query.search.sort ?? DEFAULT_DRIVER_CURSOR_SORT,
+      ...validatePagination({ mode, cursor, pageSize }),
+      sort: resolveCursorSort(sortBy, direction),
     });
   }
+}
+
+function resolvePageSort(
+  sortBy: SearchDriversQueryInput["sortBy"],
+  direction: SearchDriversQueryInput["direction"],
+): DriverPageSort {
+  if (sortBy === undefined) return DEFAULT_DRIVER_PAGE_SORT;
+
+  const sortDirection = direction ?? "asc";
+  if (sortBy === "name") {
+    return {
+      by: "name",
+      lastNameDirection: sortDirection,
+      firstNameDirection: sortDirection,
+    };
+  }
+  return { by: sortBy, direction: sortDirection };
+}
+
+function resolveCursorSort(
+  sortBy: SearchDriversQueryInput["sortBy"],
+  direction: SearchDriversQueryInput["direction"],
+): DriverCursorSort {
+  if (sortBy === undefined) return DEFAULT_DRIVER_CURSOR_SORT;
+  return { by: sortBy, direction: direction ?? "asc" };
 }

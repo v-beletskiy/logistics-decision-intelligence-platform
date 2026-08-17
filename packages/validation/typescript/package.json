@@ -20,13 +20,14 @@
     "dist"
   ],
   "dependencies": {
+    "@types/json-schema": "^7.0.15",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "node ../../../scripts/clean-package-dist.js dist && tsc -p tsconfig.json",
     "lint": "tsc --noEmit",
-    "test": "tsc -p tsconfig.json && node --test 'dist/**/*.spec.js'",
+    "test": "node --test 'dist/**/*.spec.js'",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

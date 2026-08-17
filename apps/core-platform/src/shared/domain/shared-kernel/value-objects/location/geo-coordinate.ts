@@ -1,4 +1,4 @@
-import { DomainException } from "../../exceptions/domain.exception";
+import { DomainException } from "../../domain.exceptions";
 import { requireFiniteNumber } from "../../validation/primitives/number/require-finite-number";
 import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
 import { ValueObject } from "../../core/value-object";

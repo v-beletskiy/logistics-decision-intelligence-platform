@@ -1,7 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../shared/app/exceptions/concurrency-conflict.exception";
+import { DriverLicenseNumberConflictException } from "../../../../../app/driver/driver.exceptions";
+import { ConcurrencyConflictException } from "../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../shared/infra/persistence/pg-database";
+import {
+  isPgConstraintViolation,
+  PG_SQLSTATE,
+} from "../../../../../../shared/infra/persistence/pg-error";
 import { Driver } from "../../../domain/driver.aggregate";
 import { DriverId } from "../../../domain/driver-id";
 import {
@@ -17,6 +22,9 @@ import {
   type IReconcileDriverCertificationsParams,
 } from "./queries/driver.reconcile-certifications.queries";
 import { updateDriver } from "./queries/driver.update.queries";
+
+const DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT =
+  "drivers_tenant_license_number_unique";
 
 @Injectable()
 export class PgDriverRepository extends DriverRepository {
@@ -56,7 +64,19 @@ export class PgDriverRepository extends DriverRepository {
 
   async add(tenantId: string, driver: Driver): Promise<void> {
     const persistence = DriverMapper.toPersistence(tenantId, driver);
-    await this.database.exec(insertDriver, persistence.root);
+    try {
+      await this.database.exec(insertDriver, persistence.root);
+    } catch (error: unknown) {
+      if (
+        isPgConstraintViolation(error, {
+          sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
+          constraint: DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT,
+        })
+      ) {
+        throw new DriverLicenseNumberConflictException({ cause: error });
+      }
+      throw error;
+    }
     await this.reconcileCertifications(persistence.certifications);
   }
 

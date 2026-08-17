@@ -6,23 +6,27 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
+import { SchemaValidationError } from "@logistics-decision-intelligence/validation/json-schema";
+import { InvalidQueryError } from "@logistics-decision-intelligence/querying";
 import {
-  InvalidPaginationError,
-  InvalidSortError,
-} from "@logistics-decision-intelligence/querying";
-import { DomainException } from "../../domain/shared-kernel/exceptions/domain.exception";
+  DomainConflictException,
+  DomainException,
+} from "../../domain/shared-kernel/domain.exceptions";
 import { AuthorizationDeniedException } from "../../access-control/authorization/authorization.exceptions";
-import { AggregateNotFoundException } from "../../app/exceptions/aggregate-not-found.exception";
-import { ApplicationException } from "../../app/exceptions/application.exception";
-import { ConcurrencyConflictException } from "../../app/exceptions/concurrency-conflict.exception";
-import { IdempotencyViolationException } from "../../app/exceptions/idempotency-violation.exception";
-
-interface ErrorResponse {
-  readonly statusCode: number;
-  readonly message: string | readonly string[];
-  readonly error?: string;
-  readonly requestId?: string;
-}
+import {
+  AggregateNotFoundException,
+  ApplicationConflictException,
+  ApplicationInputException,
+} from "../../app/app.exceptions";
+import {
+  AuthenticationException,
+  InvalidCredentialsException,
+} from "../../access-control/authentication/authentication.exception";
+import {
+  problem,
+  type ProblemDetails,
+  composeValidationProblem,
+} from "./err-problem-details";
 
 interface HttpRequestContext {
   readonly id?: string;
@@ -30,8 +34,9 @@ interface HttpRequestContext {
 }
 
 interface HttpResponseContext {
+  header(name: string, value: string): unknown;
   status(statusCode: number): {
-    send(body: ErrorResponse): unknown;
+    send(body: ProblemDetails): unknown;
   };
 }
 
@@ -45,96 +50,130 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const context = host.switchToHttp();
     const request = context.getRequest<HttpRequestContext>();
     const response = context.getResponse<HttpResponseContext>();
-    const errorResponse = this.toErrorResponse(exception, request.id);
+    const errorResponse = this.toProblemDetails(exception, request.id);
 
-    if (errorResponse.statusCode >= HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (errorResponse.status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         `Request: ${request.url}`,
         exception instanceof Error ? exception.stack : undefined,
       );
     }
 
-    void response.status(errorResponse.statusCode).send(errorResponse);
+    response.header("content-type", "application/problem+json");
+    if (request.id !== undefined) response.header("x-request-id", request.id);
+    if (errorResponse.status === HttpStatus.UNAUTHORIZED) {
+      response.header("www-authenticate", "Bearer");
+    }
+    void response.status(errorResponse.status).send(errorResponse);
   }
 
-  private toErrorResponse(
+  private toProblemDetails(
     exception: unknown,
     requestId: string | undefined,
-  ): ErrorResponse {
-    if (exception instanceof AuthorizationDeniedException) {
-      return {
-        statusCode: HttpStatus.FORBIDDEN,
-        message: "Forbidden resource.",
-        error: "Forbidden",
+  ): ProblemDetails {
+    if (exception instanceof SchemaValidationError) {
+      return composeValidationProblem(exception.issues, requestId);
+    }
+
+    if (exception instanceof AuthenticationException) {
+      return problem({
+        code: exception.code,
+        title:
+          exception instanceof InvalidCredentialsException
+            ? "Authentication failed."
+            : "Authentication is required.",
+        status: HttpStatus.UNAUTHORIZED,
         requestId,
-      };
+      });
+    }
+
+    if (exception instanceof AuthorizationDeniedException) {
+      return problem({
+        code: exception.code,
+        title: "Access is denied.",
+        status: HttpStatus.FORBIDDEN,
+        requestId,
+      });
     }
 
     if (exception instanceof AggregateNotFoundException) {
-      return {
-        statusCode: HttpStatus.NOT_FOUND,
-        message: exception.message,
-        error: "Not Found",
+      return problem({
+        code: exception.code,
+        title: "Resource not found.",
+        detail: exception.message,
+        status: HttpStatus.NOT_FOUND,
         requestId,
-      };
+      });
     }
 
-    if (
-      exception instanceof ConcurrencyConflictException ||
-      exception instanceof IdempotencyViolationException
-    ) {
-      return {
-        statusCode: HttpStatus.CONFLICT,
-        message: exception.message,
-        error: "Conflict",
+    if (exception instanceof ApplicationConflictException) {
+      return problem({
+        code: exception.code,
+        title: "Request conflicts with current resource state.",
+        detail: exception.message,
+        status: HttpStatus.CONFLICT,
         requestId,
-      };
+      });
     }
 
-    if (
-      exception instanceof ApplicationException ||
-      exception instanceof InvalidPaginationError ||
-      exception instanceof InvalidSortError
-    ) {
-      return {
-        statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: exception.message,
-        error: "Application Error",
+    if (exception instanceof ApplicationInputException) {
+      return problem({
+        code: exception.code,
+        title: "Request cannot be processed.",
+        detail: exception.message,
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
         requestId,
-      };
+      });
+    }
+
+    if (exception instanceof InvalidQueryError) {
+      return problem({
+        code: exception.code,
+        title: "Query is invalid.",
+        detail: exception.message,
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        requestId,
+      });
+    }
+
+    if (exception instanceof DomainConflictException) {
+      return problem({
+        code: exception.code,
+        title: "Request conflicts with current resource state.",
+        detail: exception.message,
+        status: HttpStatus.CONFLICT,
+        requestId,
+      });
     }
 
     if (exception instanceof DomainException) {
-      return {
-        statusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        message: exception.message,
-        error: "Business Rule Violation",
+      return problem({
+        code: exception.code,
+        title: "Business rule violation.",
+        detail: exception.message,
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
         requestId,
-      };
+      });
     }
 
     if (exception instanceof HttpException) {
-      const response = exception.getResponse();
-      const body =
-        typeof response === "string"
-          ? { message: response }
-          : (response as {
-              message?: string | readonly string[];
-              error?: string;
-            });
-      return {
-        statusCode: exception.getStatus(),
-        message: body.message ?? exception.message,
-        error: body.error,
+      const status = exception.getStatus();
+      return problem({
+        code: `http.${status}`,
+        title:
+          status >= HttpStatus.INTERNAL_SERVER_ERROR
+            ? "Service unavailable."
+            : exception.message,
+        status,
         requestId,
-      };
+      });
     }
 
-    return {
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: "Internal server error.",
-      error: "Internal Server Error",
+    return problem({
+      code: "http.internal-error",
+      title: "Internal server error.",
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
       requestId,
-    };
+    });
   }
 }

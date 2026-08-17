@@ -3,7 +3,7 @@ import {
   isPositiveFiniteNumber,
 } from '@logistics-decision-intelligence/validation';
 
-import { DomainException } from '../../../exceptions/domain.exception';
+import { DomainException } from '../../../domain.exceptions';
 
 /** Returns a finite number greater than zero or raises a domain error. */
 export function requirePositiveFiniteNumber(

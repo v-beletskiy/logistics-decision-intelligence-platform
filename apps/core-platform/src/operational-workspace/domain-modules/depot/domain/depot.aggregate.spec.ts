@@ -4,6 +4,10 @@ import { test } from "node:test";
 import type { AddressProps } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
 
 import { Depot, DepotStatus } from "./depot.aggregate";
+import {
+  DepotDriverCapacityExceededException,
+  DepotVehicleCapacityExceededException,
+} from "./depot.exceptions";
 import { DepotId } from "./depot-id";
 
 const address: AddressProps = {
@@ -144,18 +148,32 @@ test("Depot rejects a capacity below its current occupancy", () => {
   const vehicleDepot = Depot.create(details, 10, 10);
   vehicleDepot.receiveVehicle();
   vehicleDepot.receiveVehicle();
+  vehicleDepot.pullDomainEvents();
   assert.throws(
     () => vehicleDepot.updateVehicleCapacity(1),
-    /vehicle occupancy cannot exceed/,
+    (exception) => {
+      assert.ok(exception instanceof DepotVehicleCapacityExceededException);
+      assert.deepEqual(exception.context, { vehicleCount: 2, vehicleCapacity: 1 });
+      return true;
+    },
   );
+  assert.equal(vehicleDepot.vehicleCapacity, 10);
+  assert.deepEqual(vehicleDepot.pullDomainEvents(), []);
 
   const driverDepot = Depot.create(details, 10, 10);
   driverDepot.receiveDriver();
   driverDepot.receiveDriver();
+  driverDepot.pullDomainEvents();
   assert.throws(
     () => driverDepot.updateDriverCapacity(1),
-    /driver occupancy cannot exceed/,
+    (exception) => {
+      assert.ok(exception instanceof DepotDriverCapacityExceededException);
+      assert.deepEqual(exception.context, { driverCount: 2, driverCapacity: 1 });
+      return true;
+    },
   );
+  assert.equal(driverDepot.driverCapacity, 10);
+  assert.deepEqual(driverDepot.pullDomainEvents(), []);
 });
 
 test("Depot transitions between active and inactive states", () => {

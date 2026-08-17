@@ -12,12 +12,18 @@ import { TransactionManager } from "../../shared/infra/persistence/transaction-m
 import { OperationalWorkspaceAppModule } from "./operational-workspace-app.module";
 
 const testConfig: AppConfig = {
-  processRoles: ["api"],
+  processRoles: ["outbox-publisher"],
   host: "127.0.0.1",
   port: 3000,
+  schemaBaseUri: "https://schemas.example.com",
   database: {
     url: "postgres://test:test@127.0.0.1:5432/test",
     poolMax: 1,
+  },
+  authentication: {
+    issuer: "test",
+    audience: "test",
+    accessTokenTtlSeconds: 900,
   },
   messaging: {
     rabbitMqUrl: "amqp://test:test@127.0.0.1:5672/test",

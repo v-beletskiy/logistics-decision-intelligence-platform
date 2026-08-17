@@ -1,4 +1,4 @@
-import { ValidationPipe } from "@nestjs/common";
+import { VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
@@ -25,13 +25,8 @@ async function bootstrap(): Promise<void> {
   const config = app.get<AppConfig>(APP_CONFIG);
 
   app.enableShutdownHooks();
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  app.setGlobalPrefix("api", { exclude: ["health/live", "health/ready"] });
+  app.enableVersioning({ type: VersioningType.URI });
   app.useGlobalFilters(app.get(HttpExceptionFilter));
 
   await app.listen({ host: config.host, port: config.port });

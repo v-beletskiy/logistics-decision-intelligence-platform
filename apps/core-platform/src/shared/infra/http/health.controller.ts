@@ -1,12 +1,19 @@
-import { Controller, Get, ServiceUnavailableException } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  ServiceUnavailableException,
+  VERSION_NEUTRAL,
+} from "@nestjs/common";
 
 import { PgDatabase } from "../persistence/pg-database";
+import { PublicRoute } from "../../access-control/authentication/public-route.decorator";
 
 export interface HealthResponse {
   readonly status: "live" | "ready";
 }
 
-@Controller("health")
+@Controller({ path: "health", version: VERSION_NEUTRAL })
+@PublicRoute()
 export class HealthController {
   constructor(private readonly database: PgDatabase) {}
 

@@ -11,9 +11,14 @@ import { UpdateDriverCertificationHandler } from "./commands/update-driver-certi
 import { RemoveDriverCertificationHandler } from "./commands/remove-driver-certification/remove-driver-certification.handler";
 import { SearchDriversHandler } from "./queries/search-drivers/search-drivers.handler";
 import { AccessControlModule } from "../../../shared/access-control/access-control.module";
+import { DepotPersistenceModule } from "../../domain-modules/depot/infra/persistence/depot-persistence.module";
 
 @Module({
-  imports: [AccessControlModule, DriverPersistenceModule],
+  imports: [
+    AccessControlModule,
+    DriverPersistenceModule,
+    DepotPersistenceModule,
+  ],
   providers: [
     RegisterDriverHandler,
     UpdateDriverDetailsHandler,

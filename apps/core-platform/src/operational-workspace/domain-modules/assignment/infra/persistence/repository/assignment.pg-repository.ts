@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../shared/app/exceptions/concurrency-conflict.exception";
+import { ConcurrencyConflictException } from "../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../shared/infra/persistence/pg-database";
 import { Assignment } from "../../../domain/assignment.aggregate";
 import { AssignmentId } from "../../../domain/assignment-id";

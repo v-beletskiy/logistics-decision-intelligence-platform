@@ -6,5 +6,6 @@ injectWorkspacePackages: true
 allowBuilds:
   "@bufbuild/buf": true
   "@scarf/scarf": false
+  argon2: true
   esbuild: true
   protobufjs: false

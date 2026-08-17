@@ -14,13 +14,12 @@ import {
   DriverReadStore,
   type DriverSearchCriteria,
 } from "./driver-read-store";
-import type {
-  DriverSearchFilters,
-  DriverSearch,
-  DriverSearchInput,
-} from "./driver-search";
+import type { DriverSearch } from "./driver-search";
 import { SearchDriversHandler } from "./search-drivers.handler";
-import { SearchDriversQuery } from "./search-drivers.query";
+import {
+  SearchDriversQuery,
+  type SearchDriversQueryInput,
+} from "./search-drivers.query";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 const identity: Identity = {
@@ -57,12 +56,11 @@ class RecordingDriverReadStore extends DriverReadStore {
 }
 
 function query(
-  search: DriverSearchInput = { mode: "page" },
-  filters: DriverSearchFilters = {},
+  input: SearchDriversQueryInput = { mode: "page" },
 ): ExecutionRequest<SearchDriversQuery> {
   return {
     context: ExecutionContext.fromIdentity(identity),
-    input: new SearchDriversQuery(filters, search),
+    input: new SearchDriversQuery(input),
   };
 }
 
@@ -108,15 +106,16 @@ test("Driver cursor search has its own default database id ordering", async () =
   });
 });
 
-test("Driver page search accepts independent directions in a supported field set", async () => {
+test("Driver page name search applies one stable direction to both fields", async () => {
   const drivers = new RecordingDriverReadStore();
-  const sort = {
-    by: "name",
-    lastNameDirection: "asc",
-    firstNameDirection: "desc",
-  } as const;
 
-  await handlerWith(drivers).exec(query({ mode: "page", sort }));
+  await handlerWith(drivers).exec(
+    query({
+      mode: "page",
+      sortBy: "name",
+      direction: "desc",
+    }),
+  );
 
   assert.deepEqual(drivers.calls[0]?.search, {
     mode: "page",
@@ -124,7 +123,7 @@ test("Driver page search accepts independent directions in a supported field set
     pageSize: 25,
     sort: {
       by: "name",
-      lastNameDirection: "asc",
+      lastNameDirection: "desc",
       firstNameDirection: "desc",
     },
   });
@@ -136,7 +135,8 @@ test("Driver cursor search uses one direction for its complete field set", async
   await handlerWith(drivers).exec(
     query({
       mode: "cursor",
-      sort: { by: "name", direction: "desc" },
+      sortBy: "name",
+      direction: "desc",
     }),
   );
 
@@ -152,19 +152,18 @@ test("Driver search scopes typed filters to the execution tenant", async () => {
   const drivers = new RecordingDriverReadStore();
 
   await handlerWith(drivers).exec(
-    query(
-      { mode: "page" },
-      {
-        status: DriverStatus.Available,
-        lastNamePrefix: "Do",
-        certificationType: "HAZMAT",
-      },
-    ),
+    query({
+      mode: "page",
+      status: DriverStatus.Available,
+      lastNamePrefix: "Do",
+      certificationType: "HAZMAT",
+    }),
   );
 
   assert.deepEqual(drivers.calls[0]?.criteria, {
     tenantId,
     status: "AVAILABLE",
+    depotId: undefined,
     lastNamePrefix: "Do",
     certificationType: "HAZMAT",
   });

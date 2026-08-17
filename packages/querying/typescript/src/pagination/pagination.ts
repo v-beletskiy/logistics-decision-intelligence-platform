@@ -1,6 +1,9 @@
+import { InvalidQueryError } from "../invalid-query.error";
+
 const DEFAULT_PAGE_SIZE = 25;
 const DEFAULT_MAX_PAGE_SIZE = 100;
 const DEFAULT_MAX_PAGE_NUMBER = 10_000;
+export const MAX_CURSOR_LENGTH = 2_048;
 
 export interface PagePaginationInput {
   readonly mode: "page";
@@ -52,12 +55,12 @@ export interface PaginationOptions {
   readonly defaultPageSize?: number;
   readonly maxPageSize?: number;
   readonly maxPageNumber?: number;
+  readonly maxCursorLength?: number;
 }
 
-export class InvalidPaginationError extends Error {
+export class InvalidPaginationError extends InvalidQueryError {
   constructor(message: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = new.target.name;
+    super(message, "query.pagination-invalid", options);
   }
 }
 
@@ -80,9 +83,11 @@ export function validatePagination(
   const defaultPageSize = options.defaultPageSize ?? DEFAULT_PAGE_SIZE;
   const maxPageSize = options.maxPageSize ?? DEFAULT_MAX_PAGE_SIZE;
   const maxPageNumber = options.maxPageNumber ?? DEFAULT_MAX_PAGE_NUMBER;
+  const maxCursorLength = options.maxCursorLength ?? MAX_CURSOR_LENGTH;
   assertPositiveInteger(defaultPageSize, "Default page size");
   assertPositiveInteger(maxPageSize, "Maximum page size");
   assertPositiveInteger(maxPageNumber, "Maximum page number");
+  assertPositiveInteger(maxCursorLength, "Maximum cursor length");
   if (defaultPageSize > maxPageSize) {
     throw new TypeError(
       "Default page size cannot exceed the maximum page size.",
@@ -102,6 +107,11 @@ export function validatePagination(
 
   if (input.mode === "cursor") {
     const cursor = input.cursor?.trim();
+    if (cursor !== undefined && cursor.length > maxCursorLength) {
+      throw new InvalidPaginationError(
+        `Cursor must not exceed ${maxCursorLength} characters.`,
+      );
+    }
     return { mode: "cursor", pageSize, cursor: cursor || undefined };
   }
 

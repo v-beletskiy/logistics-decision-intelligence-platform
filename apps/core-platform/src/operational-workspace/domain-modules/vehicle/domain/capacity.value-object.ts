@@ -6,7 +6,7 @@ import {
   Weight,
   type WeightProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/measurement";
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import { assertPropsObject } from "../../../../shared/domain/shared-kernel/validation/primitives/object/assert-props-object";
 import { ValueObject } from "../../../../shared/domain/shared-kernel/core/value-object";
 

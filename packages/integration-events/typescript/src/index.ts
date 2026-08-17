@@ -13,7 +13,7 @@ import { isUuid } from "@logistics-decision-intelligence/validation";
 import {
   SchemaRegistry,
   SchemaValidationError,
-  type SchemaDefinition,
+  type IdentifiedSchema,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
 export type { IntegrationEventContract } from "@logistics-decision-intelligence/integration-contracts";
@@ -128,12 +128,9 @@ export class IntegrationEventDecoder<
     }
 
     this.schemas = new SchemaRegistry([
-      toSchemaDefinition(
-        integrationEventEnvelopeV1Schema.$id,
-        integrationEventEnvelopeV1Schema,
-      ),
+      toValidationSchema(integrationEventEnvelopeV1Schema),
       ...contracts.map((contract) =>
-        toSchemaDefinition(contract.schemaId, contract.payloadSchema),
+        toValidationSchema(contract.payloadSchema),
       ),
     ]);
   }
@@ -185,12 +182,11 @@ export function eventTypesForContracts<
   return [...new Set(contracts.map((contract) => contract.eventType))];
 }
 
-function toSchemaDefinition(
-  id: string,
+function toValidationSchema(
   schema: Readonly<Record<string, unknown>>,
-): SchemaDefinition {
+): IdentifiedSchema {
   const { "x-event-type": _eventType, ...validationSchema } = schema;
-  return { id, schema: validationSchema as SchemaDefinition["schema"] };
+  return validationSchema as IdentifiedSchema;
 }
 
 function validationError(error: unknown): IntegrationEventValidationError {

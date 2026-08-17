@@ -1,3 +1,4 @@
+export { InvalidQueryError } from "./invalid-query.error";
 export {
   createCursorScope,
   decodeCursor,
@@ -6,6 +7,7 @@ export {
 } from "./pagination/cursor";
 export {
   InvalidPaginationError,
+  MAX_CURSOR_LENGTH,
   pageOffset,
   validatePagination,
   type CursorPageResult,

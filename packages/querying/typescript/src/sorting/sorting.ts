@@ -1,11 +1,12 @@
+import { InvalidQueryError } from "../invalid-query.error";
+
 export const SORT_DIRECTIONS = ["asc", "desc"] as const;
 
 export type SortDirection = (typeof SORT_DIRECTIONS)[number];
 
-export class InvalidSortError extends Error {
+export class InvalidSortError extends InvalidQueryError {
   constructor(message: string, options?: ErrorOptions) {
-    super(message, options);
-    this.name = new.target.name;
+    super(message, "query.sort-invalid", options);
   }
 }
 

@@ -1,4 +1,4 @@
-import { DomainException } from "../../exceptions/domain.exception";
+import { DomainException } from "../../domain.exceptions";
 import { requireValidDate } from "../../validation/primitives/date/require-valid-date";
 import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
 import { ValueObject } from "../../core/value-object";

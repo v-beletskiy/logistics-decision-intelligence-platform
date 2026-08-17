@@ -1,6 +1,6 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import { optionalTrimmedString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/optional-trimmed-string";
 import { requireNonBlankString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/require-non-blank-string";
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
@@ -15,6 +15,14 @@ import { DriverId } from "./driver-id";
 import { DepotId } from "../../depot/domain/depot-id";
 import { validatePersonFirstName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-first-name";
 import { validatePersonLastName } from "../../../../shared/domain/shared-kernel/validation/domain-fields/person-last-name";
+import {
+  DriverAlreadySuspendedException,
+  DriverCertificationLimitExceededException,
+  DriverCertificationNotFoundException,
+  DriverNotSuspendedException,
+  DuplicateDriverCertificationException,
+  SuspendedDriverAvailabilityChangeException,
+} from "./driver.exceptions";
 
 export enum DriverStatus {
   Available = "AVAILABLE",
@@ -23,6 +31,8 @@ export enum DriverStatus {
 }
 
 export const MAX_DRIVER_CERTIFICATIONS = 10;
+export const MAX_DRIVER_LICENSE_NUMBER_LENGTH = 100;
+export const MAX_DRIVER_PHONE_NUMBER_LENGTH = 32;
 
 export interface DriverDetails {
   readonly firstName: string;
@@ -118,13 +128,15 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
         "Driver first name",
       ),
       lastName: validatePersonLastName(details.lastName, "Driver last name"),
-      licenseNumber: requireNonBlankString(
-        details.licenseNumber,
+      licenseNumber: requireDriverString(
+        requireNonBlankString(details.licenseNumber, "Driver license number"),
+        MAX_DRIVER_LICENSE_NUMBER_LENGTH,
         "Driver license number",
       ),
       depotId: optionalDepotId(details.depotId),
-      phoneNumber: optionalTrimmedString(
-        details.phoneNumber,
+      phoneNumber: optionalLimitedString(
+        optionalTrimmedString(details.phoneNumber, "Driver phone number"),
+        MAX_DRIVER_PHONE_NUMBER_LENGTH,
         "Driver phone number",
       ),
     };
@@ -166,7 +178,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
 
   suspend(): void {
     if (this._status === DriverStatus.Suspended) {
-      throw new DomainException("A driver is already suspended.");
+      throw new DriverAlreadySuspendedException();
     }
     this._status = DriverStatus.Suspended;
     this.recordDomainEvent({
@@ -178,7 +190,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
 
   reinstate(): void {
     if (this._status !== DriverStatus.Suspended) {
-      throw new DomainException("Only a suspended driver can be reinstated.");
+      throw new DriverNotSuspendedException();
     }
     this._status = DriverStatus.Unavailable;
     this.recordDomainEvent({
@@ -231,9 +243,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
 
   private assertNotSuspended(): void {
     if (this._status === DriverStatus.Suspended) {
-      throw new DomainException(
-        "A suspended driver must be reinstated before availability can change.",
-      );
+      throw new SuspendedDriverAvailabilityChangeException();
     }
   }
 
@@ -242,9 +252,7 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
       certification.id.equals(id),
     );
     if (index === -1) {
-      throw new DomainException(
-        "The certification does not belong to this driver.",
-      );
+      throw new DriverCertificationNotFoundException();
     }
     return index;
   }
@@ -260,11 +268,32 @@ export class Driver extends Aggregate<DriverId, DriverEvent> {
         certification.credentialNumber === candidate.credentialNumber,
     );
     if (duplicate) {
-      throw new DomainException(
-        "A driver certification type and credential number must be unique.",
-      );
+      throw new DuplicateDriverCertificationException();
     }
   }
+}
+
+function optionalLimitedString(
+  value: string | undefined,
+  maxLength: number,
+  label: string,
+): string | undefined {
+  return value === undefined
+    ? undefined
+    : requireDriverString(value, maxLength, label);
+}
+
+function requireDriverString(
+  value: string,
+  maxLength: number,
+  label: string,
+): string {
+  if (value.length > maxLength) {
+    throw new DomainException(
+      `${label} must be at most ${maxLength} characters.`,
+    );
+  }
+  return value;
 }
 
 function optionalDepotId(value: DepotId | undefined): DepotId | undefined {
@@ -299,22 +328,31 @@ function copyAndValidateCertifications(
       "Driver certification identifiers must be unique.",
     );
   }
-  const credentials = certifications.map(
-    (certification) =>
-      `${certification.type}\u0000${certification.credentialNumber}`,
-  );
-  if (new Set(credentials).size !== credentials.length) {
-    throw new DomainException(
-      "A driver certification type and credential number must be unique.",
-    );
-  }
+  assertCertificationCredentialsAreUnique(certifications);
   return [...certifications];
+}
+
+function assertCertificationCredentialsAreUnique(
+  certifications: readonly DriverCertification[],
+): void {
+  const credentialNumbersByType = new Map<string, Set<string>>();
+  for (const certification of certifications) {
+    let credentialNumbers = credentialNumbersByType.get(certification.type);
+    if (credentialNumbers === undefined) {
+      credentialNumbers = new Set<string>();
+      credentialNumbersByType.set(certification.type, credentialNumbers);
+    }
+    if (credentialNumbers.has(certification.credentialNumber)) {
+      throw new DuplicateDriverCertificationException();
+    }
+    credentialNumbers.add(certification.credentialNumber);
+  }
 }
 
 function assertCertificationCount(count: number): void {
   if (count > MAX_DRIVER_CERTIFICATIONS) {
-    throw new DomainException(
-      `A driver cannot have more than ${MAX_DRIVER_CERTIFICATIONS} certifications.`,
+    throw new DriverCertificationLimitExceededException(
+      MAX_DRIVER_CERTIFICATIONS,
     );
   }
 }

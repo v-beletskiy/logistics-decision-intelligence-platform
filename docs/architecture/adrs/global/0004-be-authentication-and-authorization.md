@@ -70,6 +70,13 @@ Refresh Token persistence belongs to the Administration Bounded Context.
 
 Future versions may introduce device management and per-device logout.
 
+#### Version 1 implementation scope
+
+Users are provisioned by
+an authenticated administration workflow; until that workflow exists, the first
+tenant administrator is provisioned through a dedicated CLI. Public sign-up is
+not exposed.
+
 ---
 
 ### Identity
@@ -120,6 +127,12 @@ type = USER
 
 Permissions are **not** embedded inside JWTs.
 
+User access tokens are ES256 JWTs with explicit `typ = at+jwt` and
+contain `iss`, `aud`, `sub`, `tenantId`, `roles`, `type`, `iat`, `exp`, and
+`jti`. The API pins the algorithm and validates the signature, type, issuer,
+audience, required claims, expiry, and claim schema. Private and public PEM keys
+are supplied as base64-encoded environment secrets.
+
 ---
 
 ### Service JWT
@@ -150,6 +163,9 @@ Authorization is **deny-by-default**.
 Every authenticated Application use case must explicitly authorize the requested operation before executing business behavior.
 
 Authorization is performed before invoking Aggregate behavior.
+
+Role-to-permission mappings remain server-owned. A JWT never carries resolved
+permissions, and tenant context must match the authenticated identity.
 
 Example:
 

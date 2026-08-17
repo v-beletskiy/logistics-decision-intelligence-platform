@@ -1,6 +1,6 @@
 import { isNonBlankString } from '@logistics-decision-intelligence/validation';
 
-import { DomainException } from '../../../exceptions/domain.exception';
+import { DomainException } from '../../../domain.exceptions';
 
 /** Returns a trimmed required string or raises a domain-level validation error. */
 export function requireNonBlankString(value: unknown, label: string): string {

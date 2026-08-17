@@ -9,6 +9,7 @@
     "docker:down": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml down",
     "docker:db:migrate": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm --build core-platform-migrations",
     "docker:db:codegen": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm --no-deps -v \"$PWD/apps/core-platform/src:/workspace/apps/core-platform/src\" core-platform-api pnpm --filter @logistics-decision-intelligence/core-platform db:codegen",
+    "docker:admin:provision": "docker compose --env-file apps/core-platform/.env -f infrastructure/development/docker-compose.yml run --rm --build -e INITIAL_ADMIN_PASSWORD core-platform-migrations pnpm --filter @logistics-decision-intelligence/core-platform admin:provision --",
     "docker:build:core-platform": "docker build --target production --tag logistics-decision-intelligence/core-platform:local --file apps/core-platform/Dockerfile .",
     "build": "turbo run build",
     "c4:export": "likec4 export jpg --flat -o ./docs/architecture/c4/rendered-diagrams",

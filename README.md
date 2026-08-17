@@ -66,6 +66,40 @@ restarts Core Platform cleanly. Dependency manifests and Dockerfiles trigger ima
 `.env` is deliberately excluded from both the image and source synchronization.
 After changing it, recreate the relevant container so Docker reloads `env_file`.
 
+`JSON_SCHEMA_BASE_URI` is the stable HTTPS namespace for JSON Schema identities. Use
+an organization-owned domain in deployed environments and keep the value stable
+across environments once contracts are published.
+
+### Local authentication
+
+Core Platform signs short-lived access tokens with ES256. Generate a local key
+pair outside the repository, encode the PEM files as single-line base64 values,
+and set `JWT_PRIVATE_KEY` and `JWT_PUBLIC_KEY` in
+`apps/core-platform/.env`. Never commit private keys.
+
+```bash
+openssl ecparam -name prime256v1 -genkey -noout \
+  | openssl pkcs8 -topk8 -nocrypt -out /tmp/ldi-jwt-private.pem
+openssl pkey -in /tmp/ldi-jwt-private.pem -pubout \
+  -out /tmp/ldi-jwt-public.pem
+base64 < /tmp/ldi-jwt-private.pem | tr -d '\n'
+base64 < /tmp/ldi-jwt-public.pem | tr -d '\n'
+```
+
+After migrations complete, provision the first tenant administrator through the
+CLI. The password is passed through the environment rather than process
+arguments:
+
+```bash
+INITIAL_ADMIN_PASSWORD='use-a-local-secret-manager' \
+  pnpm docker:admin:provision -- \
+  --tenant-id 00000000-0000-4000-8000-000000000010 \
+  --email admin@example.com
+```
+
+Local login is `POST /api/v1/auth/tokens`. There is no public registration
+endpoint.
+
 Stop the stack without deleting development data:
 
 ```bash

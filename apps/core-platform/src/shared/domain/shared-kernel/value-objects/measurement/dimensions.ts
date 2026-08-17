@@ -1,6 +1,6 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../exceptions/domain.exception";
+import { DomainException } from "../../domain.exceptions";
 import { requirePositiveFiniteNumber } from "../../validation/primitives/number/require-positive-finite-number";
 import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
 import { ValueObject } from "../../core/value-object";

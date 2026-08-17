@@ -1,7 +1,7 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import { optionalValidDate } from "../../../../shared/domain/shared-kernel/validation/primitives/date/optional-valid-date";
 import { requireValidDate } from "../../../../shared/domain/shared-kernel/validation/primitives/date/require-valid-date";
 import { requirePositiveInteger } from "../../../../shared/domain/shared-kernel/validation/primitives/number/require-positive-integer";

@@ -41,9 +41,58 @@ once through the `@logistics-decision-intelligence/validation/json-schema`
 package entry point. This entry point is technical infrastructure - Domain and
 Application layers never depend on it.
 
-Validators reject unknown properties and do not implicitly coerce types, insert
-defaults, or remove fields. Any normalization must be explicit in the adapter
-or in a Domain Value Object with business meaning.
+Each schema declares one canonical `$id`; the registry derives its lookup key
+from that value rather than accepting a duplicate identifier. Core Platform
+HTTP schemas use the stable HTTPS namespace configured by `JSON_SCHEMA_BASE_URI`,
+followed by service, transport, resource, operation, and contract version. The
+configured namespace must not vary between environments after a contract is
+published.
+
+Every independently registered schema declares the canonical Draft-07 dialect
+through `JSON_SCHEMA_DRAFT_07`. Schema authors use the strict `Draft07Schema`
+and `IdentifiedSchema` types, which reject unknown standard-keyword spellings at
+compile time; Ajv strict mode remains the runtime defense for dynamically loaded
+or explicitly cast schemas.
+
+Validators reject unknown properties and never remove fields. Registries are
+strict by default. An adapter may opt into schema-declared defaults and Ajv type
+coercion when its wire grammar requires it; for example, HTTP query parameters
+arrive as strings even when the declared value is an integer. Business
+normalization remains in a Domain Value Object when it carries business meaning.
+
+HTTP controllers use the same compile-once Schema Registry and a thin Nest pipe;
+the global `class-validator` transformation pipeline is not used. Route
+parameters, query objects, request bodies, and authenticated JWT claims are all
+treated as untrusted input. Request bodies and claims remain non-coercing.
+Query-string primitive coercion is configured only on the query schema registry
+and is therefore declarative and local to that adapter. Defaults needed by the
+use case are still applied by the Application Layer, because JSON Schema
+`default` is an annotation rather than portable mutation behavior.
+
+HTTP request and response DTOs are transport-owned contracts. Controllers map
+requests explicitly to Application inputs and map Application results explicitly
+to response DTOs. Structural TypeScript compatibility is not used as an
+implicit architectural mapping, and Domain objects are never serialized
+directly.
+
+For TypeScript HTTP adapters, request, route-parameter, and query DTO types are
+derived from their literal JSON Schemas with `FromSchema`. This prevents the
+structural static contract from drifting from the runtime validator; it does
+not replace Ajv validation. TypeScript cannot represent every runtime predicate
+(such as formats and some cross-field rules), so Ajv remains authoritative.
+Response DTOs remain explicit TypeScript contracts because responses are mapped
+rather than schema-validated.
+
+Transport schemas set bounded string, array, cursor, and pagination sizes to
+protect resource usage. Optional means omitted; `null` is rejected unless an
+external contract explicitly assigns it meaning. Full replacement operations
+use omission as the documented clear operation for optional Driver fields.
+Schemas reject empty strings with `minLength`; Domain canonicalization still
+rejects values that become blank after trimming.
+
+Opaque cursors are limited to 2,048 base64url characters at both the HTTP and
+Application boundaries. This per-field bound complements, but does not replace,
+the infrastructure request-target limit.
 
 ---
 
@@ -93,6 +142,9 @@ Examples:
 Infrastructure validation never decides a business policy and never converts a
 technical failure into a Domain Exception. It returns or translates failures as
 technical/infrastructure errors.
+
+Process app configuration is also an Infrastructure boundary. It validates that object through a fixed,
+application-owned json schema.
 
 Inbound integration events validate a shared CloudEvents envelope and the
 producer-owned payload schema selected by its versioned event type before inbox

@@ -1,7 +1,11 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { validatePagination } from "./pagination";
+import {
+  InvalidPaginationError,
+  MAX_CURSOR_LENGTH,
+  validatePagination,
+} from "./pagination";
 
 test("validatePagination applies bounded defaults to page and cursor input", () => {
   assert.deepEqual(validatePagination({ mode: "page" }), {
@@ -24,5 +28,20 @@ test("validatePagination rejects abusive page sizes and offsets", () => {
   assert.throws(
     () => validatePagination({ mode: "page", page: 10_001 }),
     /Page must/,
+  );
+  assert.throws(
+    () =>
+      validatePagination({
+        mode: "cursor",
+        cursor: "x".repeat(MAX_CURSOR_LENGTH + 1),
+      }),
+    /Cursor must not exceed/,
+  );
+});
+
+test("InvalidPaginationError owns its stable machine code", () => {
+  assert.equal(
+    new InvalidPaginationError("Invalid pagination.").code,
+    "query.pagination-invalid",
   );
 });

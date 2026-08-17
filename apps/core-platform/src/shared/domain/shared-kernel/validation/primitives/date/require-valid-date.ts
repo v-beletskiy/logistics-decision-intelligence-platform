@@ -1,4 +1,4 @@
-import { DomainException } from '../../../exceptions/domain.exception';
+import { DomainException } from '../../../domain.exceptions';
 
 /** Returns a defensive copy of a valid Date or raises a domain error. */
 export function requireValidDate(value: unknown, label: string): Date {

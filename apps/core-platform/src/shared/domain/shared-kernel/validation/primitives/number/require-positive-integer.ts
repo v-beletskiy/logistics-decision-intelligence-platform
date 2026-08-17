@@ -1,6 +1,6 @@
 import { isPositiveInteger } from '@logistics-decision-intelligence/validation';
 
-import { DomainException } from '../../../exceptions/domain.exception';
+import { DomainException } from '../../../domain.exceptions';
 
 /** Returns a positive integer or raises a domain error. */
 export function requirePositiveInteger(value: unknown, label: string): number {

@@ -4,10 +4,30 @@ import Ajv, {
   type ValidateFunction,
 } from "ajv";
 import addFormats from "ajv-formats";
+import type { JSONSchema7 } from "json-schema";
 
-export interface SchemaDefinition {
-  readonly id: string;
-  readonly schema: AnySchemaObject;
+import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
+
+/** A self-identifying JSON Schema written in the Draft-07 dialect. */
+export type Draft07Schema = ReadonlyDeep<JSONSchema7>;
+
+export type IdentifiedSchema = Draft07Schema & {
+  readonly $id: string;
+  readonly $schema: typeof JSON_SCHEMA_DRAFT_07;
+};
+
+/** Allows `as const` schema literals without weakening Draft-07 keyword checks. */
+type ReadonlyDeep<T> = T extends (...arguments_: never[]) => unknown
+  ? T
+  : T extends readonly (infer TItem)[]
+    ? readonly ReadonlyDeep<TItem>[]
+    : T extends object
+      ? { readonly [TKey in keyof T]: ReadonlyDeep<T[TKey]> }
+      : T;
+
+export interface SchemaRegistryOptions {
+  readonly coerceTypes?: boolean;
+  readonly useDefaults?: boolean;
 }
 
 export interface ValidationIssue {
@@ -32,36 +52,36 @@ export class SchemaValidationError extends Error {
   }
 }
 
-/**
- * Compiles trusted, application-owned JSON Schemas. It deliberately rejects coercion, default insertion, and silent
- * removal of unknown fields so callers preserve wire-level input semantics.
- */
+/** Compiles trusted, application-owned JSON Schemas once at adapter startup. */
 export class SchemaRegistry {
   private readonly validators = new Map<string, ValidateFunction>();
 
-  constructor(definitions: readonly SchemaDefinition[]) {
+  constructor(
+    schemas: readonly IdentifiedSchema[],
+    options: SchemaRegistryOptions = {},
+  ) {
     const ajv = new Ajv({
       allErrors: false,
-      coerceTypes: false,
+      coerceTypes: options.coerceTypes ?? false,
       removeAdditional: false,
       strict: true,
-      useDefaults: false,
+      useDefaults: options.useDefaults ?? false,
       validateFormats: true,
     });
     addFormats(ajv);
 
     const ids = new Set<string>();
-    for (const definition of definitions) {
-      assertSchemaDefinition(definition, ids);
-      ajv.addSchema(definition.schema, definition.id);
+    for (const schema of schemas) {
+      assertSchema(schema, ids);
+      ajv.addSchema(schema as AnySchemaObject);
     }
 
-    for (const definition of definitions) {
-      const validator = ajv.getSchema(definition.id);
+    for (const schema of schemas) {
+      const validator = ajv.getSchema(schema.$id);
       if (validator === undefined) {
-        throw new Error(`Schema ${definition.id} did not compile.`);
+        throw new Error(`Schema ${schema.$id} did not compile.`);
       }
-      this.validators.set(definition.id, validator);
+      this.validators.set(schema.$id, validator);
     }
   }
 
@@ -85,22 +105,19 @@ export class SchemaRegistry {
   }
 }
 
-function assertSchemaDefinition(
-  definition: SchemaDefinition,
-  ids: Set<string>,
-): void {
-  if (definition.id.trim().length === 0) {
-    throw new Error("A schema identifier must be specified.");
-  }
-  if (ids.has(definition.id)) {
-    throw new Error(`Schema ${definition.id} is registered more than once.`);
-  }
-  if (definition.schema.$id !== definition.id) {
+function assertSchema(schema: IdentifiedSchema, ids: Set<string>): void {
+  if (schema.$schema !== JSON_SCHEMA_DRAFT_07) {
     throw new Error(
-      `Schema ${definition.id} must declare the same $id in its JSON Schema.`,
+      `Schemas must declare the ${JSON_SCHEMA_DRAFT_07} dialect.`,
     );
   }
-  ids.add(definition.id);
+  if (schema.$id.trim().length === 0 || !URL.canParse(schema.$id)) {
+    throw new Error("A schema identifier must be specified.");
+  }
+  if (ids.has(schema.$id)) {
+    throw new Error(`Schema ${schema.$id} is registered more than once.`);
+  }
+  ids.add(schema.$id);
 }
 
 function toValidationIssues(

@@ -1,5 +1,5 @@
 import { Entity } from "../../../../shared/domain/shared-kernel/core/entity";
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import {
   Dimensions,
   Weight,

@@ -1,7 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ConcurrencyConflictException } from "../../../../../../shared/app/exceptions/concurrency-conflict.exception";
+import { DriverLicenseNumberConflictException } from "../../../../../app/driver/driver.exceptions";
+import { ConcurrencyConflictException } from "../../../../../../shared/app/app.exceptions";
 import type { PgDatabase } from "../../../../../../shared/infra/persistence/pg-database";
 import { Driver, DriverStatus } from "../../../domain/driver.aggregate";
 import { DriverId } from "../../../domain/driver-id";
@@ -16,6 +17,7 @@ const tenantId = "00000000-0000-4000-8000-000000000010";
 
 function trackedDatabase(options: {
   readonly updateSucceeds?: boolean;
+  readonly insertError?: unknown;
 } = {}): {
   database: PgDatabase;
   calls: ReadonlyArray<{ statement: unknown; params: unknown }>;
@@ -24,7 +26,10 @@ function trackedDatabase(options: {
   const database = {
     exec: async (statement: unknown, params: unknown) => {
       calls.push({ statement, params });
-      if (statement === insertDriver) return [];
+      if (statement === insertDriver) {
+        if (options.insertError !== undefined) throw options.insertError;
+        return [];
+      }
       if (statement === updateDriver) {
         return options.updateSucceeds === false ? [] : [{ revision: "4" }];
       }
@@ -93,6 +98,30 @@ test("add inserts the root and reconciles all children", async () => {
     calls.map((call) => call.statement),
     [insertDriver, reconcileDriverCertifications],
   );
+});
+
+test("add translates only the known license uniqueness constraint", async () => {
+  const driver = Driver.register({
+    firstName: "Alex",
+    lastName: "Doe",
+    licenseNumber: "UA-DRIVER-001",
+  });
+  const conflict = {
+    code: "23505",
+    constraint: "drivers_tenant_license_number_unique",
+  };
+  const { database, calls } = trackedDatabase({ insertError: conflict });
+
+  await assert.rejects(
+    new PgDriverRepository(database).add(tenantId, driver),
+    (error: unknown) => {
+      assert.ok(error instanceof DriverLicenseNumberConflictException);
+      assert.equal(error.code, "driver.license-number-conflict");
+      assert.equal(error.cause, conflict);
+      return true;
+    },
+  );
+  assert.deepEqual(calls.map((call) => call.statement), [insertDriver]);
 });
 
 test("save uses the expected revision before reconciling children", async () => {

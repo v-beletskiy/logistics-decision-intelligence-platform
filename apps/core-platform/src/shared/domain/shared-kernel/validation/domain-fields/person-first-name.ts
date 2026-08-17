@@ -1,4 +1,4 @@
-import { DomainException } from "../../exceptions/domain.exception";
+import { DomainException } from "../../domain.exceptions";
 import { requireNonBlankString } from "../primitives/string/require-non-blank-string";
 
 export const PERSON_FIRST_NAME_MIN_LENGTH = 1;

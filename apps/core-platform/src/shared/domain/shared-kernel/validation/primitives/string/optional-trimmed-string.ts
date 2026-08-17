@@ -1,6 +1,6 @@
 import { trimBlankToUndefined } from '@logistics-decision-intelligence/validation';
 
-import { DomainException } from '../../../exceptions/domain.exception';
+import { DomainException } from '../../../domain.exceptions';
 
 /** Returns a trimmed optional string, treating blank text as absent. */
 export function optionalTrimmedString(value: unknown, label: string): string | undefined {

@@ -1,7 +1,7 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import { requirePositiveFiniteNumber } from "../../../../shared/domain/shared-kernel/validation/primitives/number/require-positive-finite-number";
 import { requireNonBlankString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/require-non-blank-string";
 import {
@@ -9,6 +9,10 @@ import {
   type AddressProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
 
+import {
+  DepotDriverCapacityExceededException,
+  DepotVehicleCapacityExceededException,
+} from "./depot.exceptions";
 import type { DepotEvent } from "./events/depot.domain-events";
 import { DepotId } from "./depot-id";
 
@@ -110,18 +114,15 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
     vehicleCapacity: number,
     driverCapacity: number,
   ): Depot {
-    const depot = new Depot(
-      DepotId.generate(),
-      {
-        name: details.name,
-        address: Address.create(details.address),
-        vehicleCapacity,
-        driverCapacity,
-        vehicleCount: 0,
-        driverCount: 0,
-        status: DepotStatus.Active,
-      },
-    );
+    const depot = new Depot(DepotId.generate(), {
+      name: details.name,
+      address: Address.create(details.address),
+      vehicleCapacity,
+      driverCapacity,
+      vehicleCount: 0,
+      driverCount: 0,
+      status: DepotStatus.Active,
+    });
     depot.raiseDomainEvent("DepotCreatedDomainEvent");
     return depot;
   }
@@ -149,21 +150,33 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
 
   updateVehicleCapacity(vehicleCapacity: number): void {
     this.assertNotClosed();
-    this._vehicleCapacity = requireDepotCapacity(
+    const validatedCapacity = requireDepotCapacity(
       vehicleCapacity,
       "Depot vehicle capacity",
     );
-    this.assertOccupancyWithinCapacity();
+    if (this._vehicleCount > validatedCapacity) {
+      throw new DepotVehicleCapacityExceededException(
+        this._vehicleCount,
+        validatedCapacity,
+      );
+    }
+    this._vehicleCapacity = validatedCapacity;
     this.raiseDomainEvent("DepotVehicleCapacityUpdatedDomainEvent");
   }
 
   updateDriverCapacity(driverCapacity: number): void {
     this.assertNotClosed();
-    this._driverCapacity = requireDepotCapacity(
+    const validatedCapacity = requireDepotCapacity(
       driverCapacity,
       "Depot driver capacity",
     );
-    this.assertOccupancyWithinCapacity();
+    if (this._driverCount > validatedCapacity) {
+      throw new DepotDriverCapacityExceededException(
+        this._driverCount,
+        validatedCapacity,
+      );
+    }
+    this._driverCapacity = validatedCapacity;
     this.raiseDomainEvent("DepotDriverCapacityUpdatedDomainEvent");
   }
 
@@ -247,13 +260,15 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
 
   private assertOccupancyWithinCapacity(): void {
     if (this._vehicleCount > this._vehicleCapacity) {
-      throw new DomainException(
-        "Depot vehicle occupancy cannot exceed its vehicle capacity.",
+      throw new DepotVehicleCapacityExceededException(
+        this._vehicleCount,
+        this._vehicleCapacity,
       );
     }
     if (this._driverCount > this._driverCapacity) {
-      throw new DomainException(
-        "Depot driver occupancy cannot exceed its driver capacity.",
+      throw new DepotDriverCapacityExceededException(
+        this._driverCount,
+        this._driverCapacity,
       );
     }
   }

@@ -1,6 +1,6 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../../shared/domain/shared-kernel/exceptions/domain.exception";
+import { DomainException } from "../../../../shared/domain/shared-kernel/domain.exceptions";
 import { optionalTrimmedString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/optional-trimmed-string";
 import { requireNonBlankString } from "../../../../shared/domain/shared-kernel/validation/primitives/string/require-non-blank-string";
 import { Aggregate } from "../../../../shared/domain/shared-kernel/core/aggregate";
