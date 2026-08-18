@@ -6,6 +6,8 @@ import type { ExecutionRequest } from "../../../../../shared/app/execution/execu
 import { AggregateNotFoundException } from "../../../../../shared/app/app.exceptions";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
+import { InternalApplicationEventBus } from "../../../../../shared/app/messaging/internal-application-event-bus";
+import { routeOptimizationInputChangedAppEvent } from "../../../../contracts/events/route-optimization-input-changed.application-event";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { AssignmentId } from "../../../../domain-modules/assignment/domain/assignment-id";
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
@@ -15,6 +17,7 @@ import { CancelAssignmentCommand } from "./cancel-assignment.command";
 export class CancelAssignmentHandler extends CommandHandler {
   constructor(
     private readonly assignmentRepository: AssignmentRepository,
+    private readonly internalApplicationEventBus: InternalApplicationEventBus,
     transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
@@ -26,7 +29,7 @@ export class CancelAssignmentHandler extends CommandHandler {
     request: ExecutionRequest<CancelAssignmentCommand>,
   ): Promise<void> {
     const { context, input: command } = request;
-    return this.execUseCaseTrx(async () => {
+    await this.execUseCaseTrx(async () => {
       const loadedAssignment = await this.assignmentRepository.findById(
         context.tenantId,
         AssignmentId.from(command.assignmentId),
@@ -37,7 +40,15 @@ export class CancelAssignmentHandler extends CommandHandler {
 
       assignment.cancel();
       await this.assignmentRepository.save(context.tenantId, loadedAssignment);
-      return { result: undefined, eventsFrom: [assignment] };
+
+      await this.internalApplicationEventBus.publish(
+        routeOptimizationInputChangedAppEvent({
+          routeId: assignment.routeId.value,
+          tenantId: context.tenantId,
+        }),
+      );
+
+      return { result: assignment.routeId.value, eventsFrom: [assignment] };
     });
   }
 }

@@ -356,8 +356,8 @@ test("Driver HTTP slice authenticates, validates, authorizes and executes every 
     );
 
     const reinstated = await app.inject({
-      method: "DELETE",
-      url: `/api/v1/drivers/${driverId}/suspension`,
+      method: "PUT",
+      url: `/api/v1/drivers/${driverId}/reinstatement`,
       headers: authorization,
     });
     assert.equal(reinstated.statusCode, 204);

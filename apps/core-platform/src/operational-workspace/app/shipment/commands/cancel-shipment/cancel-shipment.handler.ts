@@ -22,20 +22,17 @@ export class CancelShipmentHandler extends CommandHandler {
   }
 
   @Authorized(Permission.ShipmentManage)
-  async exec(
-    request: ExecutionRequest<CancelShipmentCommand>,
-  ): Promise<void> {
+  async exec(request: ExecutionRequest<CancelShipmentCommand>): Promise<void> {
     const { context, input: command } = request;
     return this.execUseCaseTrx(async () => {
-    const loadedShipment = await this.shipmentRepository.findById(
-      context.tenantId,
-      ShipmentId.from(command.shipmentId),
-    );
-    if (!loadedShipment) throw new AggregateNotFoundException("Shipment");
+      const loadedShipment = await this.shipmentRepository.findById(
+        context.tenantId,
+        ShipmentId.from(command.shipmentId),
+      );
+      if (!loadedShipment) throw new AggregateNotFoundException("Shipment");
 
-    const shipment = loadedShipment.aggregate;
-
-    shipment.cancel();
+      const shipment = loadedShipment.aggregate;
+      shipment.cancel();
       await this.shipmentRepository.save(context.tenantId, loadedShipment);
       return { result: undefined, eventsFrom: [shipment] };
     });

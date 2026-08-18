@@ -33,6 +33,15 @@ and must not contain bounded-context business rules. Helpers are grouped by
 value category, such as `validation/string/` and `validation/uuid/`, with one
 exported function per source file.
 
+## Schema Representation
+
+A Value Object that participates in an externally-validated transport contract
+(such as an HTTP request body) is represented by a corresponding shared JSON
+Schema in the Core Platform shared infrastructure, grouped by the same value
+category as the domain module (`location/`, `time/`, `measurement/`). Bounded
+contexts compose these shared schemas by `$ref`; they do not re-declare shared
+value grammar in boundary-local schemas.
+
 ## Value Objects
 
 ### Location

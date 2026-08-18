@@ -93,6 +93,7 @@ export const appConfigSchema = {
       if: {
         properties: {
           processRoles: {
+            type: "array",
             contains: { const: API_PROCESS_ROLE },
           },
         },

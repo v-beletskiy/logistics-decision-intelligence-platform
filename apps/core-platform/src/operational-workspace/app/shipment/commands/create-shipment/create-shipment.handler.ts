@@ -8,6 +8,7 @@ import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Shipment } from "../../../../domain-modules/shipment/domain/shipment.aggregate";
 import { ShipmentRepository } from "../../../../domain-modules/shipment/domain/shipment.repository";
+import { ShipmentInputMapper } from "../../mappers/shipment-input.mapper";
 import { CreateShipmentCommand } from "./create-shipment.command";
 
 @Injectable()
@@ -26,7 +27,9 @@ export class CreateShipmentHandler extends CommandHandler {
   ): Promise<string> {
     const { context, input: command } = request;
     return this.execUseCaseTrx(async () => {
-      const shipment = Shipment.create(command.details);
+      const shipment = Shipment.create(
+        ShipmentInputMapper.toDetails(command.details),
+      );
       await this.shipmentRepository.add(context.tenantId, shipment);
       return { result: shipment.id.value, eventsFrom: [shipment] };
     });

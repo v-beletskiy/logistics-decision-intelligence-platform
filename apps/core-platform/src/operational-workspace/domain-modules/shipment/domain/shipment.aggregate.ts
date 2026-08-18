@@ -9,6 +9,15 @@ import {
   type WeightProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/measurement";
 
+import {
+  ShipmentAlreadyCancelledException,
+  ShipmentCompletedCancellationException,
+  ShipmentDeliveryAlreadyCompletedException,
+  ShipmentDeliveryRequiresPickupException,
+  ShipmentExecutionNotAllowedException,
+  ShipmentModificationNotAllowedException,
+  ShipmentPickupAlreadyCompletedException,
+} from "./shipment.exceptions";
 import type { ShipmentEvent } from "./events/shipment.domain-events";
 import {
   ShipmentEndpoint,
@@ -24,7 +33,6 @@ export enum ShipmentStatus {
   Cancelled = "CANCELLED",
 }
 
-/** Business properties accepted when a shipment is created or updated. */
 export interface ShipmentDetails {
   readonly pickup: ShipmentEndpointProps;
   readonly delivery: ShipmentEndpointProps;
@@ -56,15 +64,10 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
   private constructor(id: ShipmentId, props: ShipmentProps) {
     super(id);
 
-    const validatedDetails = Shipment.validateDetails(props);
-    this._pickup = validatedDetails.pickup;
-    this._delivery = validatedDetails.delivery;
-    this._weight = validatedDetails.weight;
-    this._dimensions = validatedDetails.dimensions;
     this._pickup = requireShipmentEndpoint(props.pickup, "pickup");
     this._delivery = requireShipmentEndpoint(props.delivery, "delivery");
-    this._weight = Weight.create(props.weight);
-    this._dimensions = Dimensions.create(props.dimensions);
+    this._weight = requireShipmentWeight(props.weight);
+    this._dimensions = requireShipmentDimensions(props.dimensions);
     this._pickupCompleted = props.pickupCompleted;
     this._deliveryCompleted = props.deliveryCompleted;
     this._status = requireShipmentStatus(props.status);
@@ -100,18 +103,15 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
   }
 
   static create(details: ShipmentDetails): Shipment {
-    const shipment = new Shipment(
-      ShipmentId.generate(),
-      {
-        pickup: ShipmentEndpoint.create(details.pickup),
-        delivery: ShipmentEndpoint.create(details.delivery),
-        weight: Weight.create(details.weight),
-        dimensions: Dimensions.create(details.dimensions),
-        pickupCompleted: false,
-        deliveryCompleted: false,
-        status: ShipmentStatus.Created,
-      },
-    );
+    const shipment = new Shipment(ShipmentId.generate(), {
+      pickup: ShipmentEndpoint.create(details.pickup),
+      delivery: ShipmentEndpoint.create(details.delivery),
+      weight: Weight.create(details.weight),
+      dimensions: Dimensions.create(details.dimensions),
+      pickupCompleted: false,
+      deliveryCompleted: false,
+      status: ShipmentStatus.Created,
+    });
     shipment.raiseDomainEvent("ShipmentCreatedDomainEvent");
     return shipment;
   }
@@ -120,37 +120,19 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
     return new Shipment(id, props);
   }
 
-  private static validateDetails(
-    details: ShipmentDetails,
-  ): Pick<ShipmentProps, "pickup" | "delivery" | "weight" | "dimensions"> {
-    return {
-      pickup: requireShipmentEndpoint(
-        ShipmentEndpoint.create(details.pickup),
-        "pickup",
-      ),
-      delivery: requireShipmentEndpoint(
-        ShipmentEndpoint.create(details.delivery),
-        "delivery",
-      ),
-      weight: Weight.create(details.weight),
-      dimensions: Dimensions.create(details.dimensions),
-    };
-  }
-
   updateDetails(details: ShipmentDetails): void {
     this.assertMutable();
-    const validatedDetails = Shipment.validateDetails(details);
-    this._pickup = validatedDetails.pickup;
-    this._delivery = validatedDetails.delivery;
-    this._weight = validatedDetails.weight;
-    this._dimensions = validatedDetails.dimensions;
+    this._pickup = ShipmentEndpoint.create(details.pickup);
+    this._delivery = ShipmentEndpoint.create(details.delivery);
+    this._weight = Weight.create(details.weight);
+    this._dimensions = Dimensions.create(details.dimensions);
     this.raiseDomainEvent("ShipmentDetailsUpdatedDomainEvent");
   }
 
   completePickup(): void {
     this.assertExecutable();
     if (this._pickupCompleted) {
-      throw new DomainException("The shipment pickup is already completed.");
+      throw new ShipmentPickupAlreadyCompletedException();
     }
     this._pickupCompleted = true;
     this.raiseDomainEvent("PickupCompletedDomainEvent");
@@ -159,12 +141,10 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
   completeDelivery(): void {
     this.assertExecutable();
     if (this._deliveryCompleted) {
-      throw new DomainException("The shipment delivery is already completed.");
+      throw new ShipmentDeliveryAlreadyCompletedException();
     }
     if (!this._pickupCompleted) {
-      throw new DomainException(
-        "The shipment pickup must be completed before the delivery.",
-      );
+      throw new ShipmentDeliveryRequiresPickupException();
     }
     this._deliveryCompleted = true;
     this._status = ShipmentStatus.Completed;
@@ -173,10 +153,10 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
 
   cancel(): void {
     if (this._status === ShipmentStatus.Completed) {
-      throw new DomainException("A completed shipment cannot be cancelled.");
+      throw new ShipmentCompletedCancellationException();
     }
     if (this._status === ShipmentStatus.Cancelled) {
-      throw new DomainException("A shipment is already cancelled.");
+      throw new ShipmentAlreadyCancelledException();
     }
     this._status = ShipmentStatus.Cancelled;
     this.raiseDomainEvent("ShipmentCancelledDomainEvent");
@@ -184,27 +164,25 @@ export class Shipment extends Aggregate<ShipmentId, ShipmentEvent> {
 
   private assertMutable(): void {
     if (this._status === ShipmentStatus.Cancelled) {
-      throw new DomainException("A cancelled shipment cannot be modified.");
+      throw new ShipmentModificationNotAllowedException("cancelled");
     }
     if (this._status === ShipmentStatus.Completed) {
-      throw new DomainException("A completed shipment cannot be modified.");
+      throw new ShipmentModificationNotAllowedException("completed");
     }
   }
 
   private assertExecutable(): void {
     if (this._status === ShipmentStatus.Cancelled) {
-      throw new DomainException("A cancelled shipment cannot be executed.");
+      throw new ShipmentExecutionNotAllowedException("cancelled");
     }
     if (this._status === ShipmentStatus.Completed) {
-      throw new DomainException("A completed shipment cannot be executed.");
+      throw new ShipmentExecutionNotAllowedException("completed");
     }
   }
 
   private assertPickupPrecedesDelivery(): void {
     if (this._deliveryCompleted && !this._pickupCompleted) {
-      throw new DomainException(
-        "The shipment pickup must be completed before the delivery.",
-      );
+      throw new ShipmentDeliveryRequiresPickupException();
     }
   }
 
@@ -222,14 +200,40 @@ function requireShipmentEndpoint(
   label: string,
 ): ShipmentEndpoint {
   if (!(value instanceof ShipmentEndpoint)) {
-    throw new DomainException(`A shipment must have exactly one ${label}.`);
+    throw new DomainException(
+      `A shipment must have exactly one ${label}.`,
+      "shipment.endpoint-invalid",
+    );
+  }
+  return value;
+}
+
+function requireShipmentWeight(value: unknown): Weight {
+  if (!(value instanceof Weight)) {
+    throw new DomainException(
+      "A shipment weight is invalid.",
+      "shipment.weight-invalid",
+    );
+  }
+  return value;
+}
+
+function requireShipmentDimensions(value: unknown): Dimensions {
+  if (!(value instanceof Dimensions)) {
+    throw new DomainException(
+      "A shipment dimensions are invalid.",
+      "shipment.dimensions-invalid",
+    );
   }
   return value;
 }
 
 function requireShipmentStatus(value: unknown): ShipmentStatus {
   if (!isEnumValue(ShipmentStatus, value)) {
-    throw new DomainException("A shipment status is invalid.");
+    throw new DomainException(
+      "A shipment status is invalid.",
+      "shipment.invalid-status",
+    );
   }
   return value;
 }

@@ -48,6 +48,15 @@ followed by service, transport, resource, operation, and contract version. The
 configured namespace must not vary between environments after a contract is
 published.
 
+Shared Value Objects that cross an externally-validated transport boundary (for
+example, an HTTP request body) are represented by a corresponding shared JSON
+Schema in the Core Platform shared infrastructure, mirroring the grammar of the
+Domain Value Object they validate. Bounded contexts compose such shared schemas
+by `$ref` and must not re-declare a shared concept's grammar in a boundary-local
+schema, so a shared concept keeps exactly one versioned wire grammar. The shared
+schema remains paired with its Domain Value Object; both are kept in sync within
+the same versioned contract.
+
 Every independently registered schema declares the canonical Draft-07 dialect
 through `JSON_SCHEMA_DRAFT_07`. Schema authors use the strict `Draft07Schema`
 and `IdentifiedSchema` types, which reject unknown standard-keyword spellings at

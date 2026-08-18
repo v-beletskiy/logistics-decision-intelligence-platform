@@ -242,7 +242,9 @@ Implement only the requested feature.
 
 Avoid unrelated refactoring.
 
-Avoid introducing new abstractions unless explicitly required by existing ADRs.
+Avoid constructing complicated typings. Keep them simple.
+
+Avoid introducing new abstractions unless explicitly required by existing ADRs. If you see strong need in that, stop, suggest and ask for approval.
 
 When documentation is insufficient, stop and ask for clarification rather than making architectural decisions.
 

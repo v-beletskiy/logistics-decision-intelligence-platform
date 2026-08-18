@@ -12,6 +12,15 @@ import type { TimeWindowProps } from "../../../../shared/domain/shared-kernel/va
 
 import { Shipment, ShipmentStatus } from "./shipment.aggregate";
 import { ShipmentId } from "./shipment-id";
+import {
+  ShipmentAlreadyCancelledException,
+  ShipmentCompletedCancellationException,
+  ShipmentDeliveryAlreadyCompletedException,
+  ShipmentDeliveryRequiresPickupException,
+  ShipmentExecutionNotAllowedException,
+  ShipmentModificationNotAllowedException,
+  ShipmentPickupAlreadyCompletedException,
+} from "./shipment.exceptions";
 
 const address: AddressProps = {
   country: "UA",
@@ -185,5 +194,103 @@ test("Shipment updates details while mutable", () => {
   assert.deepEqual(
     shipment.pullDomainEvents().map((event) => event.type),
     ["ShipmentDetailsUpdatedDomainEvent"],
+  );
+});
+
+test("Shipment reports stable typed exceptions for lifecycle violations", () => {
+  const shipment = Shipment.create(details);
+
+  assert.throws(
+    () => shipment.completeDelivery(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentDeliveryRequiresPickupException);
+      assert.equal(exception.code, "shipment.delivery-requires-pickup");
+      return true;
+    },
+  );
+
+  shipment.completePickup();
+  assert.throws(
+    () => shipment.completePickup(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentPickupAlreadyCompletedException);
+      assert.equal(exception.code, "shipment.pickup-already-completed");
+      return true;
+    },
+  );
+});
+
+test("Shipment reports distinct cancellation and terminal-state failures", () => {
+  const completed = Shipment.create(details);
+  completed.completePickup();
+  completed.completeDelivery();
+  assert.throws(
+    () => completed.cancel(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentCompletedCancellationException);
+      assert.equal(exception.code, "shipment.cancellation-of-completed");
+      return true;
+    },
+  );
+  assert.throws(
+    () => completed.updateDetails(details),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentModificationNotAllowedException);
+      assert.equal(exception.code, "shipment.modification-not-allowed");
+      assert.deepEqual(exception.context, { reason: "completed" });
+      return true;
+    },
+  );
+  assert.throws(
+    () => completed.completePickup(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentExecutionNotAllowedException);
+      assert.equal(exception.code, "shipment.execution-not-allowed");
+      assert.deepEqual(exception.context, { reason: "completed" });
+      return true;
+    },
+  );
+
+  const cancelled = Shipment.create(details);
+  cancelled.cancel();
+  assert.throws(
+    () => cancelled.cancel(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentAlreadyCancelledException);
+      assert.equal(exception.code, "shipment.already-cancelled");
+      return true;
+    },
+  );
+  assert.throws(
+    () => cancelled.updateDetails(details),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentModificationNotAllowedException);
+      assert.equal(exception.code, "shipment.modification-not-allowed");
+      assert.deepEqual(exception.context, { reason: "cancelled" });
+      return true;
+    },
+  );
+});
+
+test("Shipment reports an already completed delivery outside terminal states", () => {
+  const fresh = Shipment.create(details);
+  const shipment = Shipment.reconstitute(ShipmentId.generate(), {
+    ...details,
+    pickup: fresh.pickup,
+    delivery: fresh.delivery,
+    weight: fresh.weight,
+    dimensions: fresh.dimensions,
+    pickupCompleted: true,
+    deliveryCompleted: true,
+    status: ShipmentStatus.InProgress,
+  });
+
+  assert.throws(
+    () => shipment.completeDelivery(),
+    (exception: unknown) => {
+      assert.ok(exception instanceof ShipmentDeliveryAlreadyCompletedException);
+      assert.equal(exception.code, "shipment.delivery-already-completed");
+      return true;
+    },
   );
 });

@@ -68,9 +68,15 @@ export class CreateAssignmentHandler extends CommandHandler {
         context.tenantId,
         route.id,
       );
-      const shipmentIds = [
-        ...new Set(routeStops.map((stop) => stop.aggregate.shipmentId)),
-      ].map((shipmentId) => ShipmentId.from(shipmentId));
+      const seenShipmentIds = new Set<string>();
+      const shipmentIds: ShipmentId[] = [];
+      for (const stop of routeStops) {
+        const shipmentId = stop.aggregate.shipmentId;
+        if (!seenShipmentIds.has(shipmentId.value)) {
+          seenShipmentIds.add(shipmentId.value);
+          shipmentIds.push(shipmentId);
+        }
+      }
       const routeShipments = await this.shipmentRepository.findByIds(
         context.tenantId,
         shipmentIds,

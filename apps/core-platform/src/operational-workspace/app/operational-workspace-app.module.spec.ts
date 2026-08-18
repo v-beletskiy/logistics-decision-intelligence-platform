@@ -6,6 +6,7 @@ import { NestFactory } from "@nestjs/core";
 
 import { APP_CONFIG, type AppConfig } from "../../shared/infra/config/app-config";
 import { DomainEventBus } from "../../shared/app/messaging/domain-event-bus";
+import { InternalApplicationEventBus } from "../../shared/app/messaging/internal-application-event-bus";
 import { PgDatabase } from "../../shared/infra/persistence/pg-database";
 import { PgTransactionManager } from "../../shared/infra/persistence/pg-transaction-manager";
 import { TransactionManager } from "../../shared/infra/persistence/transaction-manager";
@@ -55,8 +56,18 @@ const testConfig: AppConfig = {
       provide: DomainEventBus,
       useValue: { publish: async () => undefined },
     },
+    {
+      provide: InternalApplicationEventBus,
+      useValue: { publish: async () => undefined },
+    },
   ],
-  exports: [APP_CONFIG, PgDatabase, TransactionManager, DomainEventBus],
+  exports: [
+    APP_CONFIG,
+    PgDatabase,
+    TransactionManager,
+    DomainEventBus,
+    InternalApplicationEventBus,
+  ],
 })
 class OperationalWorkspaceDiInfrastructureModule {}
 

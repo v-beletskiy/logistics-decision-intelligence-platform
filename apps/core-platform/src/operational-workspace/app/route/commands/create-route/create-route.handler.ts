@@ -6,6 +6,8 @@ import type { ExecutionRequest } from "../../../../../shared/app/execution/execu
 import { AggregateNotFoundException } from "../../../../../shared/app/app.exceptions";
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
+import { InternalApplicationEventBus } from "../../../../../shared/app/messaging/internal-application-event-bus";
+import { routeOptimizationInputChangedAppEvent } from "../../../../contracts/events/route-optimization-input-changed.application-event";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Route } from "../../../../domain-modules/route/domain/route.aggregate";
 import { RouteStop } from "../../../../domain-modules/route/domain/route-stop.aggregate";
@@ -23,6 +25,7 @@ export class CreateRouteHandler extends CommandHandler {
     private readonly routeStopRepository: RouteStopRepository,
     private readonly shipmentRepository: ShipmentRepository,
     private readonly routePlanningPolicy: RoutePlanningPolicy,
+    private readonly internalApplicationEventBus: InternalApplicationEventBus,
     transactionManager: TransactionManager,
     domainEventBus: DomainEventBus,
   ) {
@@ -32,7 +35,7 @@ export class CreateRouteHandler extends CommandHandler {
   @Authorized(Permission.RouteUpdate)
   async exec(request: ExecutionRequest<CreateRouteCommand>): Promise<string> {
     const { context, input: command } = request;
-    return this.execUseCaseTrx(async () => {
+    const routeId = await this.execUseCaseTrx(async () => {
       const stopDetails = command.stops.map((stop) =>
         RouteInputMapper.toStopDetails(stop),
       );
@@ -63,7 +66,16 @@ export class CreateRouteHandler extends CommandHandler {
       await this.routeRepository.add(context.tenantId, route);
       await this.routeStopRepository.addMany(context.tenantId, stops);
 
+      await this.internalApplicationEventBus.publish(
+        routeOptimizationInputChangedAppEvent({
+          routeId: route.id.value,
+          tenantId: context.tenantId,
+        }),
+      );
+
       return { result: route.id.value, eventsFrom: [route] };
     });
+
+    return routeId;
   }
 }

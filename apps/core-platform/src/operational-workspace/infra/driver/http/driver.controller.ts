@@ -141,7 +141,7 @@ export class DriverController {
     });
   }
 
-  @Delete(":driverId/suspension")
+  @Put(":driverId/reinstatement")
   @HttpCode(HttpStatus.NO_CONTENT)
   reinstate(
     @CurrentExecutionContext() executionContext: ExecutionContext,
