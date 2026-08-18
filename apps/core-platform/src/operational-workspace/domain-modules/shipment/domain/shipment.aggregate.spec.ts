@@ -2,6 +2,7 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { AddressProps } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
+import type { GeoCoordinateProps } from "../../../../shared/domain/shared-kernel/value-objects/location/geo-coordinate";
 import {
   DimensionUnit,
   type DimensionsProps,
@@ -38,6 +39,16 @@ const deliveryAddress: AddressProps = {
   postalCode: "79000",
 };
 
+const location: GeoCoordinateProps = {
+  latitude: 50.4501,
+  longitude: 30.5234,
+};
+
+const deliveryLocation: GeoCoordinateProps = {
+  latitude: 49.8397,
+  longitude: 24.0297,
+};
+
 const timeWindow: TimeWindowProps = {
   start: new Date("2026-08-10T08:00:00.000Z"),
   end: new Date("2026-08-10T10:00:00.000Z"),
@@ -52,8 +63,8 @@ const dimensions: DimensionsProps = {
 };
 
 const details = {
-  pickup: { address, timeWindow },
-  delivery: { address: deliveryAddress, timeWindow },
+  pickup: { address, location, timeWindow },
+  delivery: { address: deliveryAddress, location: deliveryLocation, timeWindow },
   weight,
   dimensions,
 };
@@ -84,7 +95,7 @@ test("Shipment validates required endpoint, weight and dimensions", () => {
     () =>
       Shipment.create({
         ...details,
-        pickup: { address: { ...address, city: "" }, timeWindow },
+        pickup: { address: { ...address, city: "" }, location, timeWindow },
       }),
     /Address city must be specified/,
   );
@@ -92,7 +103,7 @@ test("Shipment validates required endpoint, weight and dimensions", () => {
     () =>
       Shipment.create({
         ...details,
-        pickup: { address, timeWindow: { start: timeWindow.end, end: timeWindow.start } },
+        pickup: { address, location, timeWindow: { start: timeWindow.end, end: timeWindow.start } },
       }),
     /time window start cannot be later/,
   );

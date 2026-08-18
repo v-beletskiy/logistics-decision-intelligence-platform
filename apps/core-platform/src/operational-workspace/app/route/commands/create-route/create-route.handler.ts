@@ -7,7 +7,7 @@ import { AggregateNotFoundException } from "../../../../../shared/app/app.except
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { InternalApplicationEventBus } from "../../../../../shared/app/messaging/internal-application-event-bus";
-import { routeOptimizationInputChangedAppEvent } from "../../../../contracts/events/route-optimization-input-changed.application-event";
+import { routeInputChangedAppEvent } from "../../../../contracts/events/route-input-changed.application-event";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { Route } from "../../../../domain-modules/route/domain/route.aggregate";
 import { RouteStop } from "../../../../domain-modules/route/domain/route-stop.aggregate";
@@ -67,7 +67,7 @@ export class CreateRouteHandler extends CommandHandler {
       await this.routeStopRepository.addMany(context.tenantId, stops);
 
       await this.internalApplicationEventBus.publish(
-        routeOptimizationInputChangedAppEvent({
+        routeInputChangedAppEvent({
           routeId: route.id.value,
           tenantId: context.tenantId,
         }),

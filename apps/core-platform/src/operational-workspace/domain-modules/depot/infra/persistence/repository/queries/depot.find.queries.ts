@@ -14,6 +14,8 @@ export interface IFindDepotsResult {
   driver_capacity: number;
   driver_count: number;
   id: string;
+  latitude: number;
+  longitude: number;
   name: string;
   postal_code: string;
   state_or_region: string | null;
@@ -29,12 +31,12 @@ export interface IFindDepotsQuery {
   result: IFindDepotsResult;
 }
 
-const findDepotsIR: any = {"usedParamSet":{"tenantId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":210,"b":219}]}],"statement":"SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count\nFROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\nORDER BY name"};
+const findDepotsIR: any = {"usedParamSet":{"tenantId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":231,"b":240}]}],"statement":"SELECT id, name, country, state_or_region, city, street, building_number, postal_code, latitude, longitude, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count\nFROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\nORDER BY name"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count
+ * SELECT id, name, country, state_or_region, city, street, building_number, postal_code, latitude, longitude, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count
  * FROM operational_workspace.depots
  * WHERE tenant_id = :tenantId!
  * ORDER BY name

@@ -14,6 +14,8 @@ export interface IFindShipmentsByIdsResult {
   delivery_completed: boolean;
   delivery_country: string;
   delivery_end_at: Date;
+  delivery_latitude: number;
+  delivery_longitude: number;
   delivery_postal_code: string;
   delivery_start_at: Date;
   delivery_state_or_region: string | null;
@@ -27,6 +29,8 @@ export interface IFindShipmentsByIdsResult {
   pickup_completed: boolean;
   pickup_country: string;
   pickup_end_at: Date;
+  pickup_latitude: number;
+  pickup_longitude: number;
   pickup_postal_code: string;
   pickup_start_at: Date;
   pickup_state_or_region: string | null;
@@ -43,16 +47,16 @@ export interface IFindShipmentsByIdsQuery {
   result: IFindShipmentsByIdsResult;
 }
 
-const findShipmentsByIdsIR: any = {"usedParamSet":{"tenantId":true,"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":539,"b":542}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":516,"b":525}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id IN :ids"};
+const findShipmentsByIdsIR: any = {"usedParamSet":{"tenantId":true,"ids":true},"params":[{"name":"ids","required":false,"transform":{"type":"array_spread"},"locs":[{"a":613,"b":616}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":590,"b":599}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_latitude, pickup_longitude, pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_latitude, delivery_longitude, delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id IN :ids"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT id, status, pickup_completed, delivery_completed,
  *        pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,
- *        pickup_start_at, pickup_end_at,
+ *        pickup_latitude, pickup_longitude, pickup_start_at, pickup_end_at,
  *        delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,
- *        delivery_start_at, delivery_end_at,
+ *        delivery_latitude, delivery_longitude, delivery_start_at, delivery_end_at,
  *        weight_value, weight_unit, length, width, height, dimension_unit
  * FROM operational_workspace.shipments
  * WHERE tenant_id = :tenantId!

@@ -16,6 +16,7 @@ export class ShipmentHttpMapper {
     return {
       pickup: {
         address: request.pickup.address,
+        location: request.pickup.location,
         timeWindow: {
           start: new Date(request.pickup.timeWindow.start),
           end: new Date(request.pickup.timeWindow.end),
@@ -23,6 +24,7 @@ export class ShipmentHttpMapper {
       },
       delivery: {
         address: request.delivery.address,
+        location: request.delivery.location,
         timeWindow: {
           start: new Date(request.delivery.timeWindow.start),
           end: new Date(request.delivery.timeWindow.end),

@@ -7,7 +7,7 @@ import { AggregateNotFoundException } from "../../../../../shared/app/app.except
 import { CommandHandler } from "../../../../../shared/app/handlers/command-handler";
 import { DomainEventBus } from "../../../../../shared/app/messaging/domain-event-bus";
 import { InternalApplicationEventBus } from "../../../../../shared/app/messaging/internal-application-event-bus";
-import { routeOptimizationInputChangedAppEvent } from "../../../../contracts/events/route-optimization-input-changed.application-event";
+import { routeInputChangedAppEvent } from "../../../../contracts/events/route-input-changed.application-event";
 import { TransactionManager } from "../../../../../shared/infra/persistence/transaction-manager";
 import { AssignmentId } from "../../../../domain-modules/assignment/domain/assignment-id";
 import { AssignmentRepository } from "../../../../domain-modules/assignment/domain/assignment.repository";
@@ -42,7 +42,7 @@ export class CancelAssignmentHandler extends CommandHandler {
       await this.assignmentRepository.save(context.tenantId, loadedAssignment);
 
       await this.internalApplicationEventBus.publish(
-        routeOptimizationInputChangedAppEvent({
+        routeInputChangedAppEvent({
           routeId: assignment.routeId.value,
           tenantId: context.tenantId,
         }),

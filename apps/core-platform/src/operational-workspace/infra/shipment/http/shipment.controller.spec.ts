@@ -47,6 +47,7 @@ const testConfig: AppConfig = {
   port: 3000,
   schemaBaseUri: "https://schemas.example.com",
   database: { url: "postgres://unused", poolMax: 1 },
+  grpc: { host: "127.0.0.1", port: 50051 },
   authentication: {
     issuer: "shipment-http-test",
     audience: "core-platform",
@@ -159,6 +160,7 @@ function createShipmentDetails() {
         buildingNumber: "12",
         postalCode: "02000",
       },
+      location: { latitude: 50.4501, longitude: 30.5234 },
       timeWindow: {
         start: "2026-08-10T08:00:00.000Z",
         end: "2026-08-10T10:00:00.000Z",
@@ -172,6 +174,7 @@ function createShipmentDetails() {
         buildingNumber: "8",
         postalCode: "79000",
       },
+      location: { latitude: 49.8397, longitude: 24.0297 },
       timeWindow: {
         start: "2026-08-10T14:00:00.000Z",
         end: "2026-08-10T16:00:00.000Z",

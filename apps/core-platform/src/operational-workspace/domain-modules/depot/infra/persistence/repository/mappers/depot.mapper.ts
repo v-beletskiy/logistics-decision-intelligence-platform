@@ -9,6 +9,10 @@ import {
   Address,
   type AddressProps,
 } from "../../../../../../../shared/domain/shared-kernel/value-objects/location/address";
+import {
+  GeoCoordinate,
+  type GeoCoordinateProps,
+} from "../../../../../../../shared/domain/shared-kernel/value-objects/location/geo-coordinate";
 import type { IInsertDepotParams } from "../queries/depot.insert.queries";
 
 export interface DepotPersistenceRow {
@@ -20,6 +24,8 @@ export interface DepotPersistenceRow {
   readonly street: string;
   readonly building_number: string;
   readonly postal_code: string;
+  readonly latitude: number;
+  readonly longitude: number;
   readonly status: string;
   readonly vehicle_capacity: number;
   readonly driver_capacity: number;
@@ -41,6 +47,10 @@ export class DepotMapper {
           buildingNumber: row.building_number,
           postalCode: row.postal_code,
         } satisfies AddressProps),
+        location: GeoCoordinate.create({
+          latitude: row.latitude,
+          longitude: row.longitude,
+        } satisfies GeoCoordinateProps),
         vehicleCapacity: row.vehicle_capacity,
         driverCapacity: row.driver_capacity,
         vehicleCount: row.vehicle_count,
@@ -62,6 +72,8 @@ export class DepotMapper {
       street: depot.address.street,
       buildingNumber: depot.address.buildingNumber,
       postalCode: depot.address.postalCode,
+      latitude: depot.location.latitude,
+      longitude: depot.location.longitude,
       status: depot.status,
       vehicleCapacity: depot.vehicleCapacity,
       driverCapacity: depot.driverCapacity,

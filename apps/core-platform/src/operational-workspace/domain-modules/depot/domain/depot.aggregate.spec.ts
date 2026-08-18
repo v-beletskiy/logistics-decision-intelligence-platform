@@ -2,6 +2,7 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
 import type { AddressProps } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
+import type { GeoCoordinateProps } from "../../../../shared/domain/shared-kernel/value-objects/location/geo-coordinate";
 
 import { Depot, DepotStatus } from "./depot.aggregate";
 import {
@@ -18,9 +19,15 @@ const address: AddressProps = {
   postalCode: "02000",
 };
 
+const location: GeoCoordinateProps = {
+  latitude: 50.4501,
+  longitude: 30.5234,
+};
+
 const details = {
   name: "Kyiv Hub",
   address,
+  location,
 };
 
 test("Depot registers active with empty occupancy and records creation", () => {
@@ -38,7 +45,7 @@ test("Depot registers active with empty occupancy and records creation", () => {
   );
 });
 
-test("Depot validates required name and address", () => {
+test("Depot validates required name, address and location", () => {
   assert.throws(
     () => Depot.create({ ...details, name: "" }, 10, 10),
     /Depot name must be specified/,
@@ -47,6 +54,15 @@ test("Depot validates required name and address", () => {
     () =>
       Depot.create({ ...details, address: { ...address, city: "" } }, 10, 10),
     /Address city must be specified/,
+  );
+  assert.throws(
+    () =>
+      Depot.create(
+        { ...details, location: { ...location, latitude: 91 } },
+        10,
+        10,
+      ),
+    /Latitude must be between -90 and 90/,
   );
 });
 
@@ -63,6 +79,7 @@ test("Depot rejects an unsupported status during reconstitution", () => {
       Depot.reconstitute(DepotId.generate(), {
         name: "Kyiv Hub",
         address: Depot.create(details, 10, 10).address,
+        location: Depot.create(details, 10, 10).location,
         vehicleCapacity: 10,
         driverCapacity: 10,
         vehicleCount: 0,
@@ -80,6 +97,7 @@ test("Depot rejects occupancy exceeding capacity during reconstitution", () => {
       Depot.reconstitute(DepotId.generate(), {
         name: "Kyiv Hub",
         address: depot.address,
+        location: depot.location,
         vehicleCapacity: 10,
         driverCapacity: 10,
         vehicleCount: 11,
@@ -93,6 +111,7 @@ test("Depot rejects occupancy exceeding capacity during reconstitution", () => {
       Depot.reconstitute(DepotId.generate(), {
         name: "Kyiv Hub",
         address: depot.address,
+        location: depot.location,
         vehicleCapacity: 10,
         driverCapacity: 10,
         vehicleCount: 0,
@@ -106,7 +125,7 @@ test("Depot rejects occupancy exceeding capacity during reconstitution", () => {
 test("Depot updates details and records the update event", () => {
   const depot = Depot.create(details, 10, 10);
   depot.pullDomainEvents();
-  depot.updateDetails({ name: "Kyiv Central", address });
+  depot.updateDetails({ name: "Kyiv Central", address, location });
 
   assert.equal(depot.name, "Kyiv Central");
   assert.equal(depot.vehicleCapacity, 10);

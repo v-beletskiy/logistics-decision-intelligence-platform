@@ -7,7 +7,7 @@ FROM node:${NODE_VERSION}-bookworm-slim AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH=${PNPM_HOME}:${PATH}
 
-RUN corepack enable
+RUN npm install --global pnpm@11.18.0
 
 WORKDIR /workspace
 

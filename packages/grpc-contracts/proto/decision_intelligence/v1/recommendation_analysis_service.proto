@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package decision_intelligence.v1;
+
+import "decision_intelligence/v1/recommendation_analysis_types.proto";
+
+// Read contract for the AI Platform to fetch the recommendation analysis input.
+// Decision Intelligence owns this service and maps its model at the boundary.
+service RecommendationAnalysisService {
+  rpc GetRecommendationAnalysisContext(GetRecommendationAnalysisContextRequest) returns (GetRecommendationAnalysisContextResponse);
+}
+
+message GetRecommendationAnalysisContextRequest {
+  string tenant_id = 1;
+  string recommendation_id = 2;
+}
+
+message GetRecommendationAnalysisContextResponse {
+  RecommendationContext recommendation = 1;
+}

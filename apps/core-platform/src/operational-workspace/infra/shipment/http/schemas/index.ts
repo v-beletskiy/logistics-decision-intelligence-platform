@@ -1,7 +1,7 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
 import { JsonSchemaPipe } from "../../../../../shared/infra/http/json-schema.pipe";
-import { addressSchema } from "../../../../../shared/infra/validation/value-objects/location";
+import { addressSchema, geoCoordinateSchema } from "../../../../../shared/infra/validation/value-objects/location";
 import {
   dimensionsSchema,
   weightSchema,
@@ -23,6 +23,7 @@ export {
 
 const shipmentSchemas = new SchemaRegistry([
   addressSchema,
+  geoCoordinateSchema,
   timeWindowSchema,
   weightSchema,
   dimensionsSchema,

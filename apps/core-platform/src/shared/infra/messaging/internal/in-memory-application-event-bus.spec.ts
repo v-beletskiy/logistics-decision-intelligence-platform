@@ -10,7 +10,7 @@ test("delivers a trusted internal application event to subscribed bounded-contex
   const eventEmitter = new EventEmitter2();
   const bus = new InMemoryApplicationEventBus(eventEmitter);
   const event: InternalApplicationEvent<{ readonly routeId: string }> = {
-    type: "operational-workspace.route-optimization-input-changed",
+    type: "operational-workspace.route-input-changed",
     payload: { routeId: "route-1" },
   };
   let received:

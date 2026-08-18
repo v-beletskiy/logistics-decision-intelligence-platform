@@ -1,6 +1,7 @@
 import type { FromSchema } from "json-schema-to-ts";
 
 import type { addressSchema } from "../../../../shared/infra/validation/value-objects/location";
+import type { geoCoordinateSchema } from "../../../../shared/infra/validation/value-objects/location";
 import type {
   dimensionsSchema,
   weightSchema,
@@ -20,6 +21,7 @@ export type CreateShipmentRequest = FromSchema<
   {
     references: [
       typeof addressSchema,
+      typeof geoCoordinateSchema,
       typeof timeWindowSchema,
       typeof shipmentEndpointSchema,
       typeof weightSchema,
@@ -33,6 +35,7 @@ export type UpdateShipmentDetailsRequest = FromSchema<
   {
     references: [
       typeof addressSchema,
+      typeof geoCoordinateSchema,
       typeof timeWindowSchema,
       typeof shipmentEndpointSchema,
       typeof weightSchema,

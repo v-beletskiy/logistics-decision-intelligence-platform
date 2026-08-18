@@ -12,6 +12,7 @@ export class DepotHttpMapper {
     return {
       name: request.details.name,
       address: request.details.address,
+      location: request.details.location,
     };
   }
 

@@ -4,6 +4,10 @@ import {
   type AddressProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
 import {
+  GeoCoordinate,
+  type GeoCoordinateProps,
+} from "../../../../shared/domain/shared-kernel/value-objects/location/geo-coordinate";
+import {
   TimeWindow,
   type TimeWindowProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/time";
@@ -11,18 +15,21 @@ import { assertPropsObject } from "../../../../shared/domain/shared-kernel/valid
 
 export interface ShipmentEndpointProps {
   readonly address: AddressProps;
+  readonly location: GeoCoordinateProps;
   readonly timeWindow: TimeWindowProps;
 }
 
 /** One pickup or delivery endpoint of a Shipment. */
 export class ShipmentEndpoint extends ValueObject<ShipmentEndpoint> {
   readonly address: Address;
+  readonly location: GeoCoordinate;
   readonly timeWindow: TimeWindow;
 
   private constructor(props: ShipmentEndpointProps) {
     super();
     assertPropsObject(props, "Shipment endpoint");
     this.address = Address.create(props.address);
+    this.location = GeoCoordinate.create(props.location);
     this.timeWindow = TimeWindow.create(props.timeWindow);
     Object.freeze(this);
   }
@@ -32,6 +39,6 @@ export class ShipmentEndpoint extends ValueObject<ShipmentEndpoint> {
   }
 
   protected equalityComponents(): readonly unknown[] {
-    return [this.address, this.timeWindow];
+    return [this.address, this.location, this.timeWindow];
   }
 }

@@ -57,6 +57,7 @@ const testConfig: AppConfig = {
   port: 3000,
   schemaBaseUri: "https://schemas.example.com",
   database: { url: "postgres://unused", poolMax: 1 },
+  grpc: { host: "127.0.0.1", port: 50051 },
   authentication: {
     issuer: "driver-http-test",
     audience: "core-platform",

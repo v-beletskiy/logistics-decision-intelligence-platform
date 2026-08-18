@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
-import { OptimizationRepository } from '../../domain/optimization.repository';
-import { PgOptimizationRepository } from './optimization.pg-repository';
+import { OptimizationRepository } from "../../domain/optimization.repository";
+import { PgOptimizationRepository } from "./optimization.pg-repository";
 
 @Module({
   providers: [

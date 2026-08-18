@@ -7,6 +7,7 @@ import { CancelRouteHandler } from "./commands/cancel-route/cancel-route.handler
 import { StartRouteStopHandler } from "./commands/start-route-stop/start-route-stop.handler";
 import { RecordRouteStopArrivalHandler } from "./commands/record-route-stop-arrival/record-route-stop-arrival.handler";
 import { RecordRouteStopDepartureHandler } from "./commands/record-route-stop-departure/record-route-stop-departure.handler";
+import { GetRouteAnalysisContextHandler } from "./queries/get-route-analysis-context/get-route-analysis-context.handler";
 import { RoutePersistenceModule } from "../../domain-modules/route/infra/persistence/route-persistence.module";
 import { ShipmentPersistenceModule } from "../../domain-modules/shipment/infra/persistence/shipment-persistence.module";
 import { AssignmentPersistenceModule } from "../../domain-modules/assignment/infra/persistence/assignment-persistence.module";
@@ -26,6 +27,7 @@ import { RoutePlanningPolicy } from "../../domain-modules/route/domain/policies/
     StartRouteStopHandler,
     RecordRouteStopArrivalHandler,
     RecordRouteStopDepartureHandler,
+    GetRouteAnalysisContextHandler,
     RoutePlanningPolicy,
   ],
   exports: [
@@ -36,6 +38,7 @@ import { RoutePlanningPolicy } from "../../domain-modules/route/domain/policies/
     StartRouteStopHandler,
     RecordRouteStopArrivalHandler,
     RecordRouteStopDepartureHandler,
+    GetRouteAnalysisContextHandler,
   ],
 })
 export class RouteAppModule {}

@@ -21,6 +21,10 @@ const testConfig: AppConfig = {
     url: "postgres://test:test@127.0.0.1:5432/test",
     poolMax: 1,
   },
+  grpc: {
+    host: "127.0.0.1",
+    port: 50051,
+  },
   authentication: {
     issuer: "test",
     audience: "test",

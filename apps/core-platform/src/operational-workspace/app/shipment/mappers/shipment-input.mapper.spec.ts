@@ -17,6 +17,7 @@ const input = {
       buildingNumber: "12",
       postalCode: "02000",
     },
+    location: { latitude: 50.4501, longitude: 30.5234 },
     timeWindow: {
       start: new Date("2026-08-10T08:00:00.000Z"),
       end: new Date("2026-08-10T10:00:00.000Z"),
@@ -30,6 +31,7 @@ const input = {
       buildingNumber: "8",
       postalCode: "79000",
     },
+    location: { latitude: 49.8397, longitude: 24.0297 },
     timeWindow: {
       start: new Date("2026-08-10T14:00:00.000Z"),
       end: new Date("2026-08-10T16:00:00.000Z"),

@@ -5,7 +5,10 @@ import {
 } from "@logistics-decision-intelligence/validation/json-schema";
 
 import { corePlatformSchemaId } from "../../../../../shared/infra/validation/schema-id";
-import { addressSchema } from "../../../../../shared/infra/validation/value-objects/location";
+import {
+  addressSchema,
+  geoCoordinateSchema,
+} from "../../../../../shared/infra/validation/value-objects/location";
 import {
   dimensionsSchema,
   weightSchema,
@@ -26,9 +29,10 @@ export const shipmentEndpointSchema = {
   $id: corePlatformSchemaId("http", "shipments", "shipment-endpoint", "v1"),
   type: "object",
   additionalProperties: false,
-  required: ["address", "timeWindow"],
+  required: ["address", "location", "timeWindow"],
   properties: {
     address: { $ref: addressSchema.$id },
+    location: { $ref: geoCoordinateSchema.$id },
     timeWindow: { $ref: timeWindowSchema.$id },
   },
 } as const satisfies IdentifiedSchema;

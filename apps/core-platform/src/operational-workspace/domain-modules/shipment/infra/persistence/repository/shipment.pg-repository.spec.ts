@@ -34,6 +34,8 @@ const shipmentRow = {
   pickup_street: "Halytska",
   pickup_building_number: "12",
   pickup_postal_code: "02000",
+  pickup_latitude: 50.4501,
+  pickup_longitude: 30.5234,
   pickup_start_at: new Date("2026-08-10T08:00:00.000Z"),
   pickup_end_at: new Date("2026-08-10T10:00:00.000Z"),
   delivery_country: "UA",
@@ -42,6 +44,8 @@ const shipmentRow = {
   delivery_street: "Horodotska",
   delivery_building_number: "8",
   delivery_postal_code: "79000",
+  delivery_latitude: 49.8397,
+  delivery_longitude: 24.0297,
   delivery_start_at: new Date("2026-08-10T14:00:00.000Z"),
   delivery_end_at: new Date("2026-08-10T16:00:00.000Z"),
   weight_value: 400,
@@ -94,6 +98,10 @@ function createLoadedShipment(): {
             buildingNumber: "12",
             postalCode: "02000",
           },
+          location: {
+            latitude: 50.4501,
+            longitude: 30.5234,
+          },
           timeWindow: {
             start: new Date("2026-08-10T08:00:00.000Z"),
             end: new Date("2026-08-10T10:00:00.000Z"),
@@ -106,6 +114,10 @@ function createLoadedShipment(): {
             street: "Horodotska",
             buildingNumber: "8",
             postalCode: "79000",
+          },
+          location: {
+            latitude: 49.8397,
+            longitude: 24.0297,
           },
           timeWindow: {
             start: new Date("2026-08-10T14:00:00.000Z"),

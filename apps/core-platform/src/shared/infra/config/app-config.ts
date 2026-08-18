@@ -24,6 +24,10 @@ export interface AppConfig {
     readonly url: string;
     readonly poolMax: number;
   };
+  readonly grpc: {
+    readonly host: string;
+    readonly port: number;
+  };
   readonly authentication: {
     readonly issuer: string;
     readonly audience: string;
@@ -77,6 +81,10 @@ export function createAppConfig(
       url: config.database.url,
       poolMax: config.database.poolMax,
     },
+    grpc: {
+      host: config.grpc.host,
+      port: config.grpc.port,
+    },
     authentication: {
       issuer: config.authentication.issuer,
       audience: config.authentication.audience,
@@ -116,6 +124,10 @@ function rawAppConfig(environment: NodeJS.ProcessEnv): object {
     database: {
       url: environment.DATABASE_URL,
       poolMax: environment.DATABASE_POOL_MAX ?? 10,
+    },
+    grpc: {
+      host: environment.GRPC_HOST ?? "0.0.0.0",
+      port: environment.GRPC_PORT ?? 50051,
     },
     authentication: {
       issuer: environment.JWT_ISSUER ?? "logistics-decision-intelligence",

@@ -1,7 +1,7 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
 import { JsonSchemaPipe } from "../../../../../shared/infra/http/json-schema.pipe";
-import { addressSchema } from "../../../../../shared/infra/validation/value-objects/location";
+import { addressSchema, geoCoordinateSchema } from "../../../../../shared/infra/validation/value-objects/location";
 import { createDepotRequestSchema } from "./create-depot.schema";
 import { depotRouteParamsSchema } from "./shared-depots.schema";
 import { updateDepotDetailsRequestSchema } from "./update-depot-details.schema";
@@ -18,6 +18,7 @@ export {
 
 const depotSchemas = new SchemaRegistry([
   addressSchema,
+  geoCoordinateSchema,
   depotRouteParamsSchema,
   createDepotRequestSchema,
   updateDepotDetailsRequestSchema,

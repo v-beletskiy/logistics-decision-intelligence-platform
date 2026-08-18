@@ -49,6 +49,7 @@ const testConfig: AppConfig = {
   port: 3000,
   schemaBaseUri: "https://schemas.example.com",
   database: { url: "postgres://unused", poolMax: 1 },
+  grpc: { host: "127.0.0.1", port: 50051 },
   authentication: {
     issuer: "depot-http-test",
     audience: "core-platform",
@@ -160,6 +161,7 @@ function createDepotRequest() {
         buildingNumber: "12",
         postalCode: "02000",
       },
+      location: { latitude: 50.4501, longitude: 30.5234 },
     },
     vehicleCapacity: 20,
     driverCapacity: 10,

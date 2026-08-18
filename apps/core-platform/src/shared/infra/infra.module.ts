@@ -11,6 +11,8 @@ import { IntegrationEventPublisher } from "../app/messaging/integration-event-pu
 import { InternalApplicationEventBus } from "../app/messaging/internal-application-event-bus";
 import type { ProcessRole } from "./config/app-config";
 import { GrpcClientFactory } from "./grpc/grpc-client.factory";
+import { GrpcServiceRegistry } from "./grpc/grpc-service-registry";
+import { GrpcServer } from "./grpc/grpc-server";
 import { HealthController } from "./http/health.controller";
 import { HttpExceptionFilter } from "./http/http-exception.filter";
 import { InboxProcessor } from "./messaging/integration/inbound/inbox/inbox-processor";
@@ -71,6 +73,8 @@ export class InfraModule {
       RabbitMqIntegrationEventConsumer,
       ...(isOutboxPublisher ? [RabbitMqOutboxPublisher] : []),
       GrpcClientFactory,
+      GrpcServiceRegistry,
+      ...(isApi ? [GrpcServer] : []),
     ];
 
     return {
@@ -89,6 +93,8 @@ export class InfraModule {
         RabbitMqConnection,
         RabbitMqIntegrationEventConsumer,
         GrpcClientFactory,
+        GrpcServiceRegistry,
+        ...(isApi ? [GrpcServer] : []),
       ],
     };
   }

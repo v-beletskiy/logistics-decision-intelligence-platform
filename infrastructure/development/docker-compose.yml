@@ -95,6 +95,7 @@ services:
       PROCESS_ROLES: api
     ports:
       - "127.0.0.1:${PORT}:3000"
+      - "127.0.0.1:${GRPC_PORT:-50051}:50051"
     healthcheck:
       test:
         - CMD

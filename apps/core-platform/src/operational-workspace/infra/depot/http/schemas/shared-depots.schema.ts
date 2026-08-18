@@ -5,7 +5,10 @@ import {
 } from "@logistics-decision-intelligence/validation/json-schema";
 
 import { corePlatformSchemaId } from "../../../../../shared/infra/validation/schema-id";
-import { addressSchema } from "../../../../../shared/infra/validation/value-objects/location";
+import {
+  addressSchema,
+  geoCoordinateSchema,
+} from "../../../../../shared/infra/validation/value-objects/location";
 
 export const depotRouteParamsSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,
@@ -19,9 +22,11 @@ export const depotRouteParamsSchema = {
 export const depotDetailsRequestFields = {
   name: { type: "string", minLength: 1, maxLength: 100 },
   address: { $ref: addressSchema.$id },
+  location: { $ref: geoCoordinateSchema.$id },
 } as const satisfies NonNullable<Draft07Schema["properties"]>;
 
 export const depotDetailsRequestRequiredFields = [
   "name",
   "address",
+  "location",
 ] as const satisfies readonly string[];

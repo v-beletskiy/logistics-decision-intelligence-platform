@@ -25,6 +25,7 @@ export const appConfigSchema = {
     "port",
     "schemaBaseUri",
     "database",
+    "grpc",
     "authentication",
     "messaging",
   ],
@@ -45,6 +46,15 @@ export const appConfigSchema = {
       properties: {
         url: { type: "string", format: "uri", minLength: 1 },
         poolMax: positiveSafeIntegerSchemaRef,
+      },
+    },
+    grpc: {
+      type: "object",
+      additionalProperties: false,
+      required: ["host", "port"],
+      properties: {
+        host: { type: "string", minLength: 1 },
+        port: positiveSafeIntegerSchemaRef,
       },
     },
     authentication: {

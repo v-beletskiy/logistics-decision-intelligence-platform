@@ -8,6 +8,10 @@ import {
   Address,
   type AddressProps,
 } from "../../../../shared/domain/shared-kernel/value-objects/location/address";
+import {
+  GeoCoordinate,
+  type GeoCoordinateProps,
+} from "../../../../shared/domain/shared-kernel/value-objects/location/geo-coordinate";
 
 import {
   DepotDriverCapacityExceededException,
@@ -26,11 +30,13 @@ export enum DepotStatus {
 export interface DepotDetails {
   readonly name: string;
   readonly address: AddressProps;
+  readonly location: GeoCoordinateProps;
 }
 
 /** Complete persisted Depot state, excluding its identity. */
 export interface DepotProps extends DepotDetails {
   readonly address: Address;
+  readonly location: GeoCoordinate;
   readonly vehicleCapacity: number;
   readonly driverCapacity: number;
   readonly vehicleCount: number;
@@ -42,6 +48,7 @@ export interface DepotProps extends DepotDetails {
 export class Depot extends Aggregate<DepotId, DepotEvent> {
   private _name: string;
   private _address: Address;
+  private _location: GeoCoordinate;
   private _vehicleCapacity: number;
   private _driverCapacity: number;
   private _vehicleCount: number;
@@ -54,6 +61,7 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
     const validatedDetails = Depot.validateDetails(props);
     this._name = validatedDetails.name;
     this._address = validatedDetails.address;
+    this._location = requireDepotLocation(props.location);
 
     this._vehicleCapacity = requireDepotCapacity(
       props.vehicleCapacity,
@@ -75,6 +83,10 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
 
   get address(): Address {
     return this._address;
+  }
+
+  get location(): GeoCoordinate {
+    return this._location;
   }
 
   get vehicleCapacity(): number {
@@ -117,6 +129,7 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
     const depot = new Depot(DepotId.generate(), {
       name: details.name,
       address: Address.create(details.address),
+      location: GeoCoordinate.create(details.location),
       vehicleCapacity,
       driverCapacity,
       vehicleCount: 0,
@@ -145,6 +158,7 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
     const validatedDetails = Depot.validateDetails(details);
     this._name = validatedDetails.name;
     this._address = validatedDetails.address;
+    this._location = requireDepotLocation(GeoCoordinate.create(details.location));
     this.raiseDomainEvent("DepotDetailsUpdatedDomainEvent");
   }
 
@@ -291,6 +305,13 @@ export class Depot extends Aggregate<DepotId, DepotEvent> {
 function requireDepotAddress(value: unknown): Address {
   if (!(value instanceof Address)) {
     throw new DomainException("A depot must have exactly one address.");
+  }
+  return value;
+}
+
+function requireDepotLocation(value: unknown): GeoCoordinate {
+  if (!(value instanceof GeoCoordinate)) {
+    throw new DomainException("A depot must have exactly one location.");
   }
   return value;
 }

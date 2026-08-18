@@ -1,5 +1,5 @@
 /* @name FindDepotById */
-SELECT id, name, country, state_or_region, city, street, building_number, postal_code, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count, revision
+SELECT id, name, country, state_or_region, city, street, building_number, postal_code, latitude, longitude, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count, revision
 FROM operational_workspace.depots
 WHERE tenant_id = :tenantId!
   AND id = :id!;

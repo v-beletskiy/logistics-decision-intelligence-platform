@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package decision_intelligence.v1;
+
+message RecommendationContext {
+  string id = 1;
+  string route_id = 2;
+  string type = 3;
+  string status = 4;
+  double score = 5;
+  repeated RecommendationFact facts = 6;
+}
+
+message RecommendationFact {
+  string metric = 1;
+  double baseline_value = 2;
+  double recommended_value = 3;
+  string unit = 4;
+  double improvement = 5;
+}
