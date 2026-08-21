@@ -47,6 +47,11 @@ export interface AppConfig {
     readonly outboxMaxBatchesPerDrain: number;
     readonly outboxProcessingLeaseMs: number;
   };
+  readonly optimization: {
+    readonly vroomUrl: string;
+    readonly osrmUrl: string;
+    readonly workerPrefetch: number;
+  };
 }
 
 type ValidatedAppConfig = FromSchema<
@@ -110,6 +115,11 @@ export function createAppConfig(
       outboxMaxBatchesPerDrain: config.messaging.outboxMaxBatchesPerDrain,
       outboxProcessingLeaseMs: config.messaging.outboxProcessingLeaseMs,
     },
+    optimization: {
+      vroomUrl: config.optimization.vroomUrl,
+      osrmUrl: config.optimization.osrmUrl,
+      workerPrefetch: config.optimization.workerPrefetch,
+    },
   };
 }
 
@@ -154,6 +164,11 @@ function rawAppConfig(environment: NodeJS.ProcessEnv): object {
       outboxMaxBatchesPerDrain: environment.OUTBOX_MAX_BATCHES_PER_DRAIN ?? 10,
       outboxProcessingLeaseMs:
         environment.OUTBOX_PROCESSING_LEASE_MS ?? 300_000,
+    },
+    optimization: {
+      vroomUrl: environment.VROOM_URL,
+      osrmUrl: environment.OSRM_URL,
+      workerPrefetch: environment.OPTIMIZATION_WORKER_PREFETCH ?? 2,
     },
   };
 }

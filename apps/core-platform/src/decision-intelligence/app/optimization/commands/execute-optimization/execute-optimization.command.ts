@@ -1,2 +1,6 @@
-/** Application command shell for the ExecuteOptimization use case. */
-export class ExecuteOptimizationCommand {}
+export class ExecuteOptimizationCommand {
+  constructor(
+    readonly tenantId: string,
+    readonly optimizationId: string,
+  ) {}
+}

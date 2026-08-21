@@ -13,7 +13,7 @@ import { TransactionManager } from "../../shared/infra/persistence/transaction-m
 import { OperationalWorkspaceAppModule } from "./operational-workspace-app.module";
 
 const testConfig: AppConfig = {
-  processRoles: ["outbox-publisher"],
+  processRoles: ["worker"],
   host: "127.0.0.1",
   port: 3000,
   schemaBaseUri: "https://schemas.example.com",
@@ -41,6 +41,11 @@ const testConfig: AppConfig = {
     outboxBatchSize: 1,
     outboxMaxBatchesPerDrain: 1,
     outboxProcessingLeaseMs: 1_000,
+  },
+  optimization: {
+    vroomUrl: "http://vroom:3000",
+    osrmUrl: "http://osrm:5000",
+    workerPrefetch: 1,
   },
 };
 

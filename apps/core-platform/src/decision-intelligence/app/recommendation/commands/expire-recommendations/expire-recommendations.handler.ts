@@ -5,7 +5,7 @@ import { ExpireRecommendationsCommand } from './expire-recommendations.command';
 
 @Injectable()
 export class ExpireRecommendationsHandler {
-  async execute(
+  async exec(
     _request: ExecutionRequest<ExpireRecommendationsCommand>,
   ): Promise<void> {
     // Orchestration is intentionally deferred.

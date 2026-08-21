@@ -14,8 +14,8 @@ test("registers only API infrastructure for the api role", () => {
   assert.equal(apiModule.providers?.includes(RabbitMqOutboxPublisher), false);
 });
 
-test("registers only background infrastructure for the outbox-publisher role", () => {
-  const workerModule = InfraModule.register(["outbox-publisher"]);
+test("registers only background infrastructure for the worker role", () => {
+  const workerModule = InfraModule.register(["worker"]);
 
   assert.deepEqual(workerModule.controllers, []);
   assert.equal(workerModule.providers?.includes(HttpExceptionFilter), false);

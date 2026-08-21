@@ -1,4 +1,4 @@
-export const PROCESS_ROLES = ["api", "outbox-publisher"] as const;
+export const PROCESS_ROLES = ["api", "worker"] as const;
 
 export const API_PROCESS_ROLE = "api" as const;
 

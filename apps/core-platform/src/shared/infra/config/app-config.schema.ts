@@ -28,6 +28,7 @@ export const appConfigSchema = {
     "grpc",
     "authentication",
     "messaging",
+    "optimization",
   ],
   properties: {
     processRoles: {
@@ -95,6 +96,16 @@ export const appConfigSchema = {
         outboxBatchSize: positiveSafeIntegerSchemaRef,
         outboxMaxBatchesPerDrain: positiveSafeIntegerSchemaRef,
         outboxProcessingLeaseMs: positiveSafeIntegerSchemaRef,
+      },
+    },
+    optimization: {
+      type: "object",
+      additionalProperties: false,
+      required: ["vroomUrl", "osrmUrl", "workerPrefetch"],
+      properties: {
+        vroomUrl: { type: "string", format: "uri", minLength: 1 },
+        osrmUrl: { type: "string", format: "uri", minLength: 1 },
+        workerPrefetch: positiveSafeIntegerSchemaRef,
       },
     },
   },

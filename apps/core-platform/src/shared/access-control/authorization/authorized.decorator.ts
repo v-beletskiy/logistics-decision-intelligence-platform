@@ -35,7 +35,7 @@ class AuthorizedInvocation<TInput, TResult> {
     private readonly contextFrom: AuthorizationContextFactory<TInput>,
   ) {}
 
-  async execute(request: ExecutionRequest<TInput>): Promise<TResult> {
+  async exec(request: ExecutionRequest<TInput>): Promise<TResult> {
     await this.access.authorize(
       request.context.identity,
       this.permission,
@@ -71,7 +71,7 @@ export function Authorized<TInput = unknown>(
         operation.bind(this),
         (contextFrom as AuthorizationContextFactory<unknown>) ??
           defaultAuthorizationContext,
-      ).execute(request);
+      ).exec(request);
     };
     return descriptor;
   };

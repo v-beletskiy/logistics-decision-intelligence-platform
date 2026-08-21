@@ -5,7 +5,7 @@ import { RejectRecommendationCommand } from './reject-recommendation.command';
 
 @Injectable()
 export class RejectRecommendationHandler {
-  async execute(
+  async exec(
     _request: ExecutionRequest<RejectRecommendationCommand>,
   ): Promise<void> {
     // Orchestration is intentionally deferred.

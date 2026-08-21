@@ -11,7 +11,9 @@ export interface IAddOptimizationParams {
 }
 
 /** 'AddOptimization' return type */
-export type IAddOptimizationResult = void;
+export interface IAddOptimizationResult {
+  id: string;
+}
 
 /** 'AddOptimization' query type */
 export interface IAddOptimizationQuery {
@@ -19,7 +21,7 @@ export interface IAddOptimizationQuery {
   result: IAddOptimizationResult;
 }
 
-const addOptimizationIR: any = {"usedParamSet":{"tenantId":true,"id":true,"routeId":true,"status":true,"inputVersion":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":132,"b":141}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":146,"b":149}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":154,"b":162}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":167,"b":174}]},{"name":"inputVersion","required":false,"transform":{"type":"scalar"},"locs":[{"a":179,"b":191}]}],"statement":"INSERT INTO decision_intelligence.optimizations (\n  tenant_id,\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\n)\nVALUES (\n  :tenantId!,\n  :id!,\n  :routeId!,\n  :status!,\n  :inputVersion,\n  1\n)"};
+const addOptimizationIR: any = {"usedParamSet":{"tenantId":true,"id":true,"routeId":true,"status":true,"inputVersion":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":132,"b":141}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":146,"b":149}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":154,"b":162}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":167,"b":174}]},{"name":"inputVersion","required":false,"transform":{"type":"scalar"},"locs":[{"a":179,"b":191}]}],"statement":"INSERT INTO decision_intelligence.optimizations (\n  tenant_id,\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\n)\nVALUES (\n  :tenantId!,\n  :id!,\n  :routeId!,\n  :status!,\n  :inputVersion,\n  1\n)\nON CONFLICT (tenant_id, route_id)\nWHERE status IN ('QUEUED', 'RUNNING')\nDO NOTHING\nRETURNING id"};
 
 /**
  * Query generated from SQL:
@@ -40,6 +42,10 @@ const addOptimizationIR: any = {"usedParamSet":{"tenantId":true,"id":true,"route
  *   :inputVersion,
  *   1
  * )
+ * ON CONFLICT (tenant_id, route_id)
+ * WHERE status IN ('QUEUED', 'RUNNING')
+ * DO NOTHING
+ * RETURNING id
  * ```
  */
 export const addOptimization = new PreparedQuery<IAddOptimizationParams,IAddOptimizationResult>(addOptimizationIR);

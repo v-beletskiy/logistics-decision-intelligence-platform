@@ -6,7 +6,7 @@ import type { GetRecommendationResult } from './get-recommendation.result';
 
 @Injectable()
 export class GetRecommendationHandler {
-  async execute(
+  async exec(
     _request: ExecutionRequest<GetRecommendationQuery>,
   ): Promise<GetRecommendationResult> {
     // Read-model access is intentionally deferred.

@@ -5,7 +5,7 @@ import { CompleteRecommendationAnalysisCommand } from './complete-recommendation
 
 @Injectable()
 export class CompleteRecommendationAnalysisHandler {
-  async execute(
+  async exec(
     _request: ExecutionRequest<CompleteRecommendationAnalysisCommand>,
   ): Promise<void> {
     // Orchestration is intentionally deferred.

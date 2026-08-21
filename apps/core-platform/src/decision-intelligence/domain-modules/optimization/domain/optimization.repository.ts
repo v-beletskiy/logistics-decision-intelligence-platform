@@ -16,7 +16,14 @@ export abstract class OptimizationRepository {
     tenantId: string,
     routeId: RouteId,
   ): Promise<LoadedOptimization | null>;
-  abstract add(tenantId: string, optimization: Optimization): Promise<void>;
+  /**
+   * Persists a newly queued optimization, enforcing the invariant that a route
+   * has at most one active optimization. Returns whether it was accepted.
+   */
+  abstract add(
+    tenantId: string,
+    optimization: Optimization,
+  ): Promise<boolean>;
   abstract save(
     tenantId: string,
     loadedOptimization: LoadedOptimization,

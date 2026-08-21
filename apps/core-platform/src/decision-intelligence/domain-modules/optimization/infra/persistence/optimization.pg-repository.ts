@@ -54,11 +54,12 @@ export class PgOptimizationRepository extends OptimizationRepository {
       : null;
   }
 
-  async add(tenantId: string, optimization: Optimization): Promise<void> {
-    await this.database.exec(
+  async add(tenantId: string, optimization: Optimization): Promise<boolean> {
+    const [row] = await this.database.exec(
       addOptimization,
       OptimizationMapper.toPersistence(tenantId, optimization),
     );
+    return row !== undefined;
   }
 
   async save(

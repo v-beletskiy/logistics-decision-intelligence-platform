@@ -111,7 +111,10 @@ services:
   core-platform-background-processing:
     <<: *core-platform-development
     environment:
-      PROCESS_ROLES: outbox-publisher
+      PROCESS_ROLES: worker
+    depends_on:
+      - vroom
+      - osrm
 
   postgres:
     image: postgres:18
@@ -153,6 +156,28 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend
+    command: osrm-routed --algorithm mld /data/france-latest.osrm
+    volumes:
+      - osrm-data:/data
+    ports:
+      - "127.0.0.1:${OSRM_PORT:-5000}:5000"
+    restart: unless-stopped
+
+  vroom:
+    image: ghcr.io/vroom-project/vroom-docker:v1.15.0
+    environment:
+      VROOM_ROUTER: osrm
+    volumes:
+      - ./vroom-conf:/conf
+    depends_on:
+      - osrm
+    ports:
+      - "127.0.0.1:${VROOM_PORT:-3000}:3000"
+    restart: unless-stopped
+
 volumes:
   postgres-data:
   rabbitmq-data:
+  osrm-data:

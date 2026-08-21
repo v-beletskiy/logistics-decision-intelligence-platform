@@ -146,8 +146,6 @@ Only generic, reusable functionality that is independent of any application or b
 
 Do not move code into shared libraries prematurely.
 
-Prefer duplication over incorrect abstractions.
-
 ---
 
 # Development Workflow

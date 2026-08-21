@@ -25,6 +25,10 @@ CREATE INDEX IF NOT EXISTS optimizations_tenant_active_route_idx ON decision_int
 WHERE
   status IN ('QUEUED', 'RUNNING');
 
+CREATE UNIQUE INDEX IF NOT EXISTS optimizations_tenant_active_route_uniq
+  ON decision_intelligence.optimizations (tenant_id, route_id)
+  WHERE status IN ('QUEUED', 'RUNNING');
+
 CREATE TABLE
   IF NOT EXISTS decision_intelligence.recommendations (
     id uuid PRIMARY KEY,

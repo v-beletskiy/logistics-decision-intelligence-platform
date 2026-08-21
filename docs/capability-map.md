@@ -33,7 +33,7 @@
 ## AI Platform
 
 - Operational Q&A
-- Decision Explanation
+- Decision ranker and explanation
 - Analytics Assistant
 
 ## Developer Platform

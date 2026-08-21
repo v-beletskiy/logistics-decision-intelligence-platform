@@ -14,4 +14,8 @@ VALUES (
   :status!,
   :inputVersion,
   1
-);
+)
+ON CONFLICT (tenant_id, route_id)
+WHERE status IN ('QUEUED', 'RUNNING')
+DO NOTHING
+RETURNING id;

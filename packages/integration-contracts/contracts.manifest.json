@@ -1,4 +1,8 @@
 {
+  "optimizationJobEnqueuedV1": {
+    "eventType": "decision-intelligence.optimization-job-enqueued.v1",
+    "schemaId": "urn:logistics-decision-intelligence:core-platform:decision-intelligence:optimization-job-enqueued:v1"
+  },
   "recommendationAnalysisCompletedV1": {
     "eventType": "recommendation-analysis.completed.v1",
     "schemaId": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v1"

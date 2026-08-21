@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:logistics-decision-intelligence:core-platform:decision-intelligence:optimization-job-enqueued:v1",
+  "x-event-type": "decision-intelligence.optimization-job-enqueued.v1",
+  "title": "OptimizationJobEnqueuedV1Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["optimizationId", "tenantId"],
+  "properties": {
+    "optimizationId": { "type": "string", "format": "uuid" },
+    "tenantId": { "type": "string", "format": "uuid" }
+  }
+}

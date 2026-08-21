@@ -10,6 +10,15 @@ export const recommendationAnalysisCompletedV1 = defineContract<RecommendationAn
   recommendationAnalysisCompletedV1Schema,
 );
 
+import optimizationJobEnqueuedV1Schema from "../../../schemas/core-platform/decision-intelligence/optimization-job-enqueued/v1.schema.json";
+import type { OptimizationJobEnqueuedV1Payload } from "./core-platform/decision-intelligence/optimization-job-enqueued/v1";
+export type { OptimizationJobEnqueuedV1Payload } from "./core-platform/decision-intelligence/optimization-job-enqueued/v1";
+
+export const optimizationJobEnqueuedV1 = defineContract<OptimizationJobEnqueuedV1Payload>()(
+  "decision-intelligence.optimization-job-enqueued.v1",
+  optimizationJobEnqueuedV1Schema,
+);
+
 import recommendationAnalysisRequestedV1Schema from "../../../schemas/core-platform/decision-intelligence/recommendation-analysis-requested/v1.schema.json";
 import type { RecommendationAnalysisRequestedV1Payload } from "./core-platform/decision-intelligence/recommendation-analysis-requested/v1";
 export type { RecommendationAnalysisRequestedV1Payload } from "./core-platform/decision-intelligence/recommendation-analysis-requested/v1";

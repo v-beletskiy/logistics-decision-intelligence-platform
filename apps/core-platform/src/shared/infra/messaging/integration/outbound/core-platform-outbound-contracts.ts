@@ -1,6 +1,10 @@
-import { recommendationAnalysisRequestedV1 } from "@logistics-decision-intelligence/integration-contracts";
+import {
+  optimizationJobEnqueuedV1,
+  recommendationAnalysisRequestedV1,
+} from "@logistics-decision-intelligence/integration-contracts";
 
 /** Integration contracts owned and publishable by the Core Platform. */
 export const corePlatformOutboundContracts = [
   recommendationAnalysisRequestedV1,
+  optimizationJobEnqueuedV1,
 ] as const;

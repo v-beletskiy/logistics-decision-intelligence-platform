@@ -6,6 +6,8 @@ import { AppConfigurationError, createAppConfig } from "./app-config";
 const validEnvironment: NodeJS.ProcessEnv = {
   DATABASE_URL: "postgres://postgres:postgres@localhost:5432/core_platform",
   RABBITMQ_URL: "amqp://logistics:logistics@localhost:5672",
+  VROOM_URL: "http://vroom:3000",
+  OSRM_URL: "http://osrm:5000",
   JWT_PRIVATE_KEY: "cHJpdmF0ZSBrZXk=",
   JWT_PUBLIC_KEY: "cHVibGljIGtleQ==",
 };
@@ -26,10 +28,10 @@ test("uses declared configuration defaults and coerces numeric environment value
 test("normalizes process-role separators before AJV validates the role set", () => {
   const config = createAppConfig({
     ...validEnvironment,
-    PROCESS_ROLES: "api, outbox-publisher",
+    PROCESS_ROLES: "api, worker",
   });
 
-  assert.deepEqual(config.processRoles, ["api", "outbox-publisher"]);
+  assert.deepEqual(config.processRoles, ["api", "worker"]);
 });
 
 test("rejects unsupported and duplicate process roles declaratively", () => {
@@ -55,7 +57,9 @@ test("requires JWT keys only for an API process", () => {
   const config = createAppConfig({
     DATABASE_URL: validEnvironment.DATABASE_URL,
     RABBITMQ_URL: validEnvironment.RABBITMQ_URL,
-    PROCESS_ROLES: "outbox-publisher",
+    VROOM_URL: validEnvironment.VROOM_URL,
+    OSRM_URL: validEnvironment.OSRM_URL,
+    PROCESS_ROLES: "worker",
   });
   assert.equal(config.authentication.privateKeyPem, undefined);
   assert.equal(config.authentication.publicKeyPem, undefined);

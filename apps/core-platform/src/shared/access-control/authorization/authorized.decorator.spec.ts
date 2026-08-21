@@ -29,7 +29,7 @@ class FakeAccessManager {
 
 class AuthorizedHandler {
   @Authorized(Permission.VehicleManage)
-  async execute(_request: ExecutionRequest<void>): Promise<string> {
+  async exec(_request: ExecutionRequest<void>): Promise<string> {
     return "executed";
   }
 }
@@ -77,7 +77,7 @@ test("authorizes through AccessManager injected into the wrapper", async () => {
     logger: false,
   });
   try {
-    await app.get(AuthorizedHandler).execute(request());
+    await app.get(AuthorizedHandler).exec(request());
   } finally {
     await app.close();
   }
@@ -90,12 +90,12 @@ test("authorizes through AccessManager injected into the wrapper", async () => {
 test("executes the original method when authorization succeeds", async () => {
   const handler = handlerWith(new FakeAccessManager());
 
-  const result = await handler.execute(request());
+  const result = await handler.exec(request());
 
   assert.equal(result, "executed");
 });
 
-test("does not execute the original method when authorization is denied", async () => {
+test("does not exec the original method when authorization is denied", async () => {
   const access = new FakeAccessManager();
   access.authorize = async () => {
     throw new AuthorizationDeniedException("Denied.");
@@ -103,7 +103,7 @@ test("does not execute the original method when authorization is denied", async 
   const handler = handlerWith(access);
 
   await assert.rejects(
-    () => handler.execute(request()),
+    () => handler.exec(request()),
     AuthorizationDeniedException,
   );
 });

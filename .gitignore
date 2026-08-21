@@ -14,5 +14,8 @@
 # Environment Variables & Secrets
 .env
 
+# Runtime artifacts
+infrastructure/development/vroom-conf/access.log
+
 # Generated gRPC client and server stubs
 apps/core-platform/src/shared/infra/grpc/generated/

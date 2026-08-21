@@ -36,7 +36,7 @@ import { TransactionManager } from "./persistence/transaction-manager";
 export class InfraModule {
   static register(processRoles: readonly ProcessRole[]): DynamicModule {
     const isApi = processRoles.includes("api");
-    const isOutboxPublisher = processRoles.includes("outbox-publisher");
+    const isWorker = processRoles.includes("worker");
     const providers: Provider[] = [
       PgDatabase,
       ...(isApi ? [HttpExceptionFilter] : []),
@@ -71,7 +71,7 @@ export class InfraModule {
       RabbitMqConnection,
       RabbitMqTopologyProvisioner,
       RabbitMqIntegrationEventConsumer,
-      ...(isOutboxPublisher ? [RabbitMqOutboxPublisher] : []),
+      ...(isWorker ? [RabbitMqOutboxPublisher] : []),
       GrpcClientFactory,
       GrpcServiceRegistry,
       ...(isApi ? [GrpcServer] : []),

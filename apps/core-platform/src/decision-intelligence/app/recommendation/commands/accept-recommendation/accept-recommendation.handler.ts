@@ -5,7 +5,7 @@ import { AcceptRecommendationCommand } from './accept-recommendation.command';
 
 @Injectable()
 export class AcceptRecommendationHandler {
-  async execute(
+  async exec(
     _request: ExecutionRequest<AcceptRecommendationCommand>,
   ): Promise<void> {
     // Orchestration is intentionally deferred.

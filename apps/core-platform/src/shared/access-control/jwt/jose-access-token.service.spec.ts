@@ -41,6 +41,11 @@ function config(audience = "core-platform"): AppConfig {
       outboxMaxBatchesPerDrain: 1,
       outboxProcessingLeaseMs: 1,
     },
+    optimization: {
+      vroomUrl: "http://vroom:3000",
+      osrmUrl: "http://osrm:5000",
+      workerPrefetch: 1,
+    },
   };
 }
 
