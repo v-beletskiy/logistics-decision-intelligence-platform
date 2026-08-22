@@ -11,8 +11,8 @@ import { InvalidQueryError } from "@logistics-decision-intelligence/querying";
 import {
   DomainConflictException,
   DomainException,
-} from "../../domain/shared-kernel/domain.exceptions";
-import { AuthorizationDeniedException } from "../../access-control/authorization/authorization.exceptions";
+} from "../../domain/domain.exceptions";
+import { AuthorizationDeniedException } from "../../modules/access-control/app/authorization/authorization.exceptions";
 import {
   AggregateNotFoundException,
   ApplicationConflictException,
@@ -21,12 +21,12 @@ import {
 import {
   AuthenticationException,
   InvalidCredentialsException,
-} from "../../access-control/authentication/authentication.exception";
+} from "../../modules/access-control/app/authentication/authentication.exceptions";
 import {
   problem,
   type ProblemDetails,
   composeValidationProblem,
-} from "./err-problem-details";
+} from "./problem-details";
 
 interface HttpRequestContext {
   readonly id?: string;

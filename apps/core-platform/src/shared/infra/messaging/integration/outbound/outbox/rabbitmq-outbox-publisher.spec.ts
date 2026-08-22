@@ -23,7 +23,7 @@ test("claims consecutive PostgreSQL batches and confirms each RabbitMQ batch onc
   const publisher = new RabbitMqOutboxPublisher(
     config(),
     {
-      enqueue: async () => undefined,
+      enqueueMany: async () => undefined,
       claimPendingBatch: async (limit: number) => {
         claimLimits.push(limit);
         return pages.shift() ?? [];
@@ -77,7 +77,7 @@ test("reschedules the claimed batch and stops draining when confirms fail", asyn
   const publisher = new RabbitMqOutboxPublisher(
     config(),
     {
-      enqueue: async () => undefined,
+      enqueueMany: async () => undefined,
       claimPendingBatch: async () => {
         loads += 1;
         return pages.shift() ?? [];
@@ -116,7 +116,7 @@ test("continues immediately when a bounded drain ends with a full batch", async 
   const publisher = new RabbitMqOutboxPublisher(
     config(1),
     {
-      enqueue: async () => undefined,
+      enqueueMany: async () => undefined,
       claimPendingBatch: async () => {
         loads += 1;
         return pages.shift() ?? [];

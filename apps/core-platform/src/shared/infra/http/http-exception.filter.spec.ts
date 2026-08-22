@@ -18,9 +18,15 @@ import {
   IdempotencyViolationException,
 } from "../../app/app.exceptions";
 import {
+  defineErrorCodes,
   DomainConflictException,
   DomainException,
-} from "../../domain/shared-kernel/domain.exceptions";
+} from "../../domain/domain.exceptions";
+
+const TEST_DOMAIN_ERROR_CODES = defineErrorCodes("test", {
+  alreadyInState: "already-in-state",
+  invalidBusinessValue: "invalid-business-value",
+});
 
 interface CapturedResponse {
   readonly statusCode: number;
@@ -106,7 +112,10 @@ test("maps IdempotencyViolationException to 409", () => {
   const result = run(new IdempotencyViolationException("Duplicate command."));
 
   assert.equal(result.statusCode, 409);
-  assert.equal((result.body as { detail: string }).detail, "Duplicate command.");
+  assert.equal(
+    (result.body as { detail: string }).detail,
+    "Duplicate command.",
+  );
 });
 
 test("maps an application input failure to 422", () => {
@@ -152,7 +161,10 @@ test("maps InvalidPaginationError to 422", () => {
     (result.body as { type: string }).type,
     "urn:problem:logistics:query.pagination-invalid",
   );
-  assert.equal((result.body as { detail: string }).detail, "Cursor is invalid.");
+  assert.equal(
+    (result.body as { detail: string }).detail,
+    "Cursor is invalid.",
+  );
 });
 
 test("maps InvalidSortError to 422", () => {
@@ -166,7 +178,9 @@ test("maps InvalidSortError to 422", () => {
 });
 
 test("query errors expose their source-owned category", () => {
-  assert.ok(new InvalidPaginationError("Invalid.") instanceof InvalidQueryError);
+  assert.ok(
+    new InvalidPaginationError("Invalid.") instanceof InvalidQueryError,
+  );
   assert.ok(new InvalidSortError("Invalid.") instanceof InvalidQueryError);
 });
 
@@ -174,7 +188,7 @@ test("maps a domain conflict by semantic category rather than code", () => {
   const result = run(
     new DomainConflictException(
       "The aggregate is already in that state.",
-      "test.already-in-state",
+      TEST_DOMAIN_ERROR_CODES.alreadyInState,
     ),
   );
 
@@ -190,7 +204,12 @@ test("maps a domain conflict by semantic category rather than code", () => {
 });
 
 test("maps a generic domain rule violation to 422", () => {
-  const result = run(new DomainException("A business value is invalid."));
+  const result = run(
+    new DomainException(
+      "A business value is invalid.",
+      TEST_DOMAIN_ERROR_CODES.invalidBusinessValue,
+    ),
+  );
 
   assert.equal(result.statusCode, 422);
   assert.equal(

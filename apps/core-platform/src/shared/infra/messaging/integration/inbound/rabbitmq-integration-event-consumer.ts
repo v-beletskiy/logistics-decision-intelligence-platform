@@ -7,10 +7,7 @@ import {
 import type { ConfirmChannel, ConsumeMessage } from "amqplib";
 
 import { APP_CONFIG, type AppConfig } from "../../../config/app-config";
-import {
-  inboxConsumerId,
-  type InboxConsumerId,
-} from "./inbox/inbox-message";
+import { inboxConsumerId, type InboxConsumerId } from "./inbox/inbox-message";
 import { InboxProcessor } from "./inbox/inbox-processor";
 import type {
   CloudEvent,
@@ -28,15 +25,14 @@ import { IntegrationTopology } from "../rabbitmq/topology";
 import { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
 import {
   rabbitMqQueueName,
+  type IntegrationSubscription,
   type RabbitMqQueueName,
-} from "./subscription-identity";
+} from "./integration-subscription";
 
 export interface RabbitMqSubscription<
-  TContracts extends readonly IntegrationEventContract[] = readonly IntegrationEventContract[],
-> {
-  readonly consumerId: InboxConsumerId;
-  readonly queue: RabbitMqQueueName;
-  readonly eventContracts: TContracts;
+  TContracts extends readonly IntegrationEventContract[] =
+    readonly IntegrationEventContract[],
+> extends IntegrationSubscription<TContracts> {
   readonly handle: (event: IntegrationEventsOf<TContracts>) => Promise<void>;
 }
 
@@ -72,9 +68,9 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
     private readonly topologyProvisioner: RabbitMqTopologyProvisioner,
   ) {}
 
-  async subscribe<
-    const TContracts extends readonly IntegrationEventContract[],
-  >(subscription: RabbitMqSubscription<TContracts>): Promise<void> {
+  async subscribe<const TContracts extends readonly IntegrationEventContract[]>(
+    subscription: RabbitMqSubscription<TContracts>,
+  ): Promise<void> {
     inboxConsumerId(subscription.consumerId);
     rabbitMqQueueName(subscription.queue);
     if (this.stopping) {
@@ -98,14 +94,14 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
     const runtimeSubscription: RuntimeSubscription = {
       consumerId: subscription.consumerId,
       queue: subscription.queue,
-      eventContracts: subscription.eventContracts,
+      eventContracts: subscription.contracts,
       handle: (event) =>
         subscription.handle(event as IntegrationEventsOf<TContracts>),
     };
 
     const state: SubscriptionState = {
       subscription: runtimeSubscription,
-      validator: new IntegrationEventValidator(subscription.eventContracts),
+      validator: new IntegrationEventValidator(subscription.contracts),
       registered: false,
     };
     this.subscriptions.set(subscription.queue, state);
@@ -292,9 +288,7 @@ export class RabbitMqIntegrationEventConsumer implements OnModuleDestroy {
 
   private parseEvent(
     message: ConsumeMessage,
-    validator: IntegrationEventValidator<
-      readonly IntegrationEventContract[]
-    >,
+    validator: IntegrationEventValidator<readonly IntegrationEventContract[]>,
   ): CloudEvent {
     try {
       return validator.parse(JSON.parse(message.content.toString("utf8")));

@@ -3,7 +3,7 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { WeightUnit } from "../../../../domain/shared-kernel/value-objects/measurement";
+import { WeightUnit } from "../../../../domain/value-objects/measurement";
 import { corePlatformSchemaId } from "../../schema-id";
 
 export const weightSchema = {

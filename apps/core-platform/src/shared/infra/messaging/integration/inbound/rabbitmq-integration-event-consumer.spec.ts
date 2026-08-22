@@ -2,7 +2,7 @@ import * as assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
 import { test } from "node:test";
 import type { ConfirmChannel, ConsumeMessage } from "amqplib";
-import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-contracts";
+import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
 import type { AppConfig } from "../../../config/app-config";
 import { inboxConsumerId } from "./inbox/inbox-message";
@@ -11,7 +11,7 @@ import type { RabbitMqConnection } from "../rabbitmq/connection";
 import { IntegrationTopology } from "../rabbitmq/topology";
 import { RabbitMqIntegrationEventConsumer } from "./rabbitmq-integration-event-consumer";
 import type { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
-import { rabbitMqQueueName } from "./subscription-identity";
+import { rabbitMqQueueName } from "./integration-subscription";
 
 test("restores a subscription on a new dedicated channel after channel closure", async () => {
   const channels: ConfirmChannel[] = [];
@@ -37,7 +37,7 @@ test("restores a subscription on a new dedicated channel after channel closure",
     queue: rabbitMqQueueName(
       "core-platform.decision-intelligence.recommendation-analysis",
     ),
-    eventContracts: [recommendationAnalysisCompletedV1],
+    contracts: [recommendationAnalysisCompletedV1],
     handle: async (event) => {
       const eventType: "recommendation-analysis.completed.v1" = event.type;
       const analysis: string = event.data.analysis;
@@ -94,7 +94,7 @@ test("dead-letters oversized integration messages without scheduling a retry", a
     queue: rabbitMqQueueName(
       "core-platform.decision-intelligence.recommendation-analysis-completed",
     ),
-    eventContracts: [recommendationAnalysisCompletedV1],
+    contracts: [recommendationAnalysisCompletedV1],
     handle: async () => undefined,
   });
   if (onMessage === undefined) throw new Error("Consumer was not registered.");
@@ -178,7 +178,7 @@ test("schedules a retry only on the originating subscription's retry queue", asy
       "core-platform.decision-intelligence.recommendation-analysis-completed.v1",
     ),
     queue,
-    eventContracts: [recommendationAnalysisCompletedV1],
+    contracts: [recommendationAnalysisCompletedV1],
     handle: async () => undefined,
   });
   if (onMessage === undefined) throw new Error("Consumer was not registered.");
@@ -219,7 +219,7 @@ test("rejects duplicate logical consumer and queue identities", async () => {
   await consumer.subscribe({
     consumerId,
     queue: primaryQueue,
-    eventContracts: [recommendationAnalysisCompletedV1],
+    contracts: [recommendationAnalysisCompletedV1],
     handle: async () => undefined,
   });
   await assert.rejects(
@@ -228,7 +228,7 @@ test("rejects duplicate logical consumer and queue identities", async () => {
       queue: rabbitMqQueueName(
         "core-platform.decision-intelligence.analysis-secondary",
       ),
-      eventContracts: [recommendationAnalysisCompletedV1],
+      contracts: [recommendationAnalysisCompletedV1],
       handle: async () => undefined,
     }),
     /already subscribed/,
@@ -239,7 +239,7 @@ test("rejects duplicate logical consumer and queue identities", async () => {
         "core-platform.analytics.recommendation-analysis-completed.v1",
       ),
       queue: primaryQueue,
-      eventContracts: [recommendationAnalysisCompletedV1],
+      contracts: [recommendationAnalysisCompletedV1],
       handle: async () => undefined,
     }),
     /already subscribed/,

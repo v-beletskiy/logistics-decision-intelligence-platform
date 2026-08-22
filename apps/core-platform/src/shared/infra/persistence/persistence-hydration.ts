@@ -19,9 +19,13 @@ export function hydratePersistenceData<T>(
 }
 
 /** Converts PostgreSQL JSON timestamp text without accepting JS epoch coercion. */
-export function hydrateTimestamp(value: unknown): Date {
+export function parsePersistedTimestamp(value: unknown): Date {
   if (typeof value !== "string") {
     throw new TypeError("Expected a timestamp string.");
   }
-  return new Date(value);
+  const timestamp = new Date(value);
+  if (!Number.isFinite(timestamp.getTime())) {
+    throw new TypeError("Expected a valid timestamp string.");
+  }
+  return timestamp;
 }

@@ -14,7 +14,7 @@ import {
   type OnApplicationShutdown,
 } from "@nestjs/common";
 
-import { APP_CONFIG, type AppConfig } from "../config/app-config";
+import { APP_CONFIG, type ApiAppConfig } from "../config/app-config";
 import { toGrpcStatus } from "./grpc-error-mapper";
 import { GrpcServiceRegistry } from "./grpc-service-registry";
 
@@ -26,7 +26,7 @@ export class GrpcServer
   private readonly server = new Server();
 
   constructor(
-    @Inject(APP_CONFIG) private readonly config: AppConfig,
+    @Inject(APP_CONFIG) private readonly config: ApiAppConfig,
     private readonly registry: GrpcServiceRegistry,
   ) {}
 

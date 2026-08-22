@@ -1,4 +1,4 @@
-import type { DomainEvent } from "../../domain/shared-kernel/events/domain-event";
+import type { DomainEvent } from "../../domain/domain-event";
 
 /** Dispatches domain events after their aggregate changes are committed. */
 export abstract class DomainEventBus {

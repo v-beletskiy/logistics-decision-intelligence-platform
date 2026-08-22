@@ -1,10 +1,7 @@
 import * as assert from "node:assert/strict";
 import { afterEach, beforeEach, test } from "node:test";
 
-import {
-  FetchHttpClient,
-  HttpStatusError,
-} from "./http-client";
+import { FetchHttpClient, HttpStatusError } from "./http-client";
 
 const originalFetch = globalThis.fetch;
 
@@ -45,14 +42,16 @@ test("post sends a JSON body", async () => {
   };
 
   const client = new FetchHttpClient();
-  assert.deepEqual(await client.post("http://example.test/optimize", { jobs: [] }), {
-    code: "Ok",
-  });
+  assert.deepEqual(
+    await client.post("http://example.test/optimize", { jobs: [] }),
+    {
+      code: "Ok",
+    },
+  );
 });
 
 test("throws HttpStatusError on a non-OK response", async () => {
-  globalThis.fetch = async () =>
-    new Response("nope", { status: 500 });
+  globalThis.fetch = async () => new Response("nope", { status: 500 });
 
   const client = new FetchHttpClient();
   await assert.rejects(

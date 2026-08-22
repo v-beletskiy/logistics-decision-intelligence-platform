@@ -1,9 +1,9 @@
 import { NestFactory } from "@nestjs/core";
 import { env } from "node:process";
 
-import { ProvisionTenantAdministratorCommand } from "../administration/app/user/commands/provision-tenant-administrator/provision-tenant-administrator.command";
-import { ProvisionTenantAdministratorHandler } from "../administration/app/user/commands/provision-tenant-administrator/provision-tenant-administrator.handler";
-import { AdministrationCliModule } from "./administration-cli.module";
+import { ProvisionTenantAdministratorCommand } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.command";
+import { ProvisionTenantAdministratorHandler } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.handler";
+import { AdministrationCliCompositionModule } from "../composition/administration-cli-composition.module";
 
 async function provision(): Promise<void> {
   const tenantId = requiredArgument("--tenant-id");
@@ -14,12 +14,12 @@ async function provision(): Promise<void> {
   }
 
   const app = await NestFactory.createApplicationContext(
-    AdministrationCliModule,
+    AdministrationCliCompositionModule,
   );
   try {
-    const id = await app.get(ProvisionTenantAdministratorHandler).exec(
-      new ProvisionTenantAdministratorCommand(tenantId, email, password),
-    );
+    const id = await app
+      .get(ProvisionTenantAdministratorHandler)
+      .exec(new ProvisionTenantAdministratorCommand(tenantId, email, password));
     process.stdout.write(`Provisioned tenant administrator ${id}.\n`);
   } finally {
     await app.close();

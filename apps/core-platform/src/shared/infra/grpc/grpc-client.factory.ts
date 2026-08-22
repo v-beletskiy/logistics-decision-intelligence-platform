@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import * as grpc from '@grpc/grpc-js';
+import { Injectable } from "@nestjs/common";
+import * as grpc from "@grpc/grpc-js";
 
 export interface GrpcClientConstructor<TClient> {
   new (

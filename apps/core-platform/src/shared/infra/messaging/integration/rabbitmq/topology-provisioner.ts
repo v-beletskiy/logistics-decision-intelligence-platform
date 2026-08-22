@@ -41,8 +41,7 @@ export class RabbitMqTopologyProvisioner {
     const mainQueue = await channel.assertQueue(subscription.queueName, {
       durable: true,
       arguments: {
-        "x-dead-letter-exchange":
-          IntegrationTopology.exchanges.deadLetter.name,
+        "x-dead-letter-exchange": IntegrationTopology.exchanges.deadLetter.name,
         "x-dead-letter-routing-key": deadLetterRoutingKey,
       },
     });

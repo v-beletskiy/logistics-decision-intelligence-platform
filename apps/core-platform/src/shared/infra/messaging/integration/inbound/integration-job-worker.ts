@@ -1,6 +1,6 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
 
-import type { AppConfig } from "../../../config/app-config";
+import type { WorkerAppConfig } from "../../../config/app-config";
 
 /**
  * Base for background-job consumers: subscribes only when running in the
@@ -8,12 +8,9 @@ import type { AppConfig } from "../../../config/app-config";
  */
 @Injectable()
 export abstract class IntegrationJobWorker implements OnModuleInit {
-  protected constructor(protected readonly config: AppConfig) {}
+  protected constructor(protected readonly config: WorkerAppConfig) {}
 
   async onModuleInit(): Promise<void> {
-    if (!this.config.processRoles.includes("worker")) {
-      return;
-    }
     await this.subscribe();
   }
 

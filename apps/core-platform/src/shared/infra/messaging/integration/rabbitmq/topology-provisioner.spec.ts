@@ -89,8 +89,7 @@ test("isolates each subscription's retry and dead-letter queues", async () => {
       ([queue, exchange, routingKey]) =>
         queue === IntegrationTopology.deadLetterQueueName(firstQueueName) &&
         exchange === IntegrationTopology.exchanges.deadLetter.name &&
-        routingKey ===
-          IntegrationTopology.deadLetterRoutingKey(firstQueueName),
+        routingKey === IntegrationTopology.deadLetterRoutingKey(firstQueueName),
     ),
   );
   assert.equal(

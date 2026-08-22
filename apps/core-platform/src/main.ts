@@ -5,31 +5,36 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AppModule } from "./app.module";
-import { APP_CONFIG, type AppConfig } from "./shared/infra/config/app-config";
+import { ApiCompositionModule } from "./composition/api-composition.module";
+import { WorkerCompositionModule } from "./composition/worker-composition.module";
+import {
+  APP_CONFIG,
+  type ApiAppConfig,
+} from "./shared/infra/config/app-config";
 import { appConfig } from "./shared/infra/config/app-config.module";
 import { HttpExceptionFilter } from "./shared/infra/http/http-exception.filter";
 
 async function bootstrap(): Promise<void> {
-  const isNotApi = !appConfig.processRoles.includes("api");
-  if (isNotApi) {
-    const app = await NestFactory.createApplicationContext(AppModule);
+  if (appConfig.processRole === "worker") {
+    const app = await NestFactory.createApplicationContext(
+      WorkerCompositionModule,
+    );
     app.enableShutdownHooks();
     return;
   }
 
   const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
+    ApiCompositionModule,
     new FastifyAdapter(),
   );
-  const config = app.get<AppConfig>(APP_CONFIG);
+  const config = app.get<ApiAppConfig>(APP_CONFIG);
 
   app.enableShutdownHooks();
   app.setGlobalPrefix("api", { exclude: ["health/live", "health/ready"] });
   app.enableVersioning({ type: VersioningType.URI });
   app.useGlobalFilters(app.get(HttpExceptionFilter));
 
-  await app.listen({ host: config.host, port: config.port });
+  await app.listen({ host: config.http.host, port: config.http.port });
 }
 
 void bootstrap();

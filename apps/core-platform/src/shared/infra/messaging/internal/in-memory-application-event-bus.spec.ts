@@ -14,8 +14,7 @@ test("delivers a trusted internal application event to subscribed bounded-contex
     payload: { routeId: "route-1" },
   };
   let received:
-    | InternalApplicationEvent<{ readonly routeId: string }>
-    | undefined;
+    InternalApplicationEvent<{ readonly routeId: string }> | undefined;
 
   eventEmitter.on(event.type, async (receivedEvent: typeof event) => {
     received = receivedEvent;

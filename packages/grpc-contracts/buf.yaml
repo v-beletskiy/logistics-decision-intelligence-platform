@@ -4,6 +4,9 @@ modules:
 lint:
   use:
     - STANDARD
+  ignore_only:
+    SERVICE_SUFFIX:
+      - proto/decision_intelligence/v1/recommendation_analysis_service.proto
 breaking:
   use:
     - FILE

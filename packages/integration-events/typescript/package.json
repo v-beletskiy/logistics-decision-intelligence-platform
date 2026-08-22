@@ -16,11 +16,11 @@
     "dist"
   ],
   "dependencies": {
-    "@logistics-decision-intelligence/integration-contracts": "workspace:*",
+    "@logistics-decision-intelligence/integration-event-contracts": "workspace:*",
     "@logistics-decision-intelligence/validation": "workspace:*"
   },
   "scripts": {
-    "build": "pnpm --filter @logistics-decision-intelligence/integration-contracts build && pnpm --filter @logistics-decision-intelligence/validation build && node ../../../scripts/clean-package-dist.js dist && tsc -p tsconfig.json",
+    "build": "pnpm --filter @logistics-decision-intelligence/integration-event-contracts build && pnpm --filter @logistics-decision-intelligence/validation build && node ../../../scripts/clean-package-dist.js dist && tsc -p tsconfig.json",
     "lint": "tsc --noEmit",
     "test": "node --test 'dist/**/*.spec.js'",
     "typecheck": "tsc --noEmit"

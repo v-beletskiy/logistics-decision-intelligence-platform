@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 
 import { PgDatabase } from "../persistence/pg-database";
-import { PublicRoute } from "../../access-control/authentication/public-route.decorator";
+import { PublicRoute } from "../../modules/access-control/infra/authentication/public-route.decorator";
 
 export interface HealthResponse {
   readonly status: "live" | "ready";

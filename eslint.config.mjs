@@ -24,15 +24,33 @@ export default tseslint.config(
   },
   {
     files: ["apps/core-platform/src/**/app/**/*.ts"],
+    ignores: ["**/*.module.ts", "**/*.module.spec.ts"],
     rules: {
       "no-restricted-imports": [
         "error",
         {
           patterns: [
             {
-              group: ["**/shared/infra/messaging/**"],
+              group: ["**/infra/**"],
               message:
-                "Application code must depend on messaging ports under shared/app, not infrastructure adapters.",
+                "Application code must depend on inward-facing ports, not infrastructure adapters.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ["apps/core-platform/src/**/domain/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/app/**", "**/infra/**", "**/public-api/**"],
+              message:
+                "Domain code must not depend on application, infrastructure, or public transport contracts.",
             },
           ],
         },

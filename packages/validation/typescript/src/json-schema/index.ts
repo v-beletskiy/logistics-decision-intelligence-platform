@@ -12,5 +12,5 @@ export {
   type IdentifiedSchema,
   type ValidationIssue,
   type ValidationResult,
-} from './schema-registry';
-export { createSchemaId } from './schema-id';
+} from "./schema-registry";
+export { createSchemaId } from "./schema-id";

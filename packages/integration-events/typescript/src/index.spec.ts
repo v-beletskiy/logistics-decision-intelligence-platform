@@ -5,7 +5,7 @@ import {
   integrationEventEnvelopeV1Schema,
   recommendationAnalysisCompletedV1,
   recommendationAnalysisRequestedV1,
-} from "@logistics-decision-intelligence/integration-contracts";
+} from "@logistics-decision-intelligence/integration-event-contracts";
 
 import {
   IntegrationEventDecoder,

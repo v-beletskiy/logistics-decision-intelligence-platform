@@ -2,6 +2,11 @@ import { env } from "node:process";
 import type { FromSchema } from "json-schema-to-ts";
 
 import {
+  parseUrl,
+  type ParseUrlOptions,
+  type UrlParseFailureReason,
+} from "@logistics-decision-intelligence/validation";
+import {
   createSchemaId,
   jsonSchemaPrimitives,
   SchemaRegistry,
@@ -10,49 +15,64 @@ import {
 
 import { DEFAULT_SCHEMA_BASE_URI } from "../validation/schema-id";
 import { APP_CONFIG_SCHEMA_ID, appConfigSchema } from "./app-config.schema";
-import { API_PROCESS_ROLE, type ProcessRole } from "./app-config.types";
+import {
+  API_PROCESS_ROLE,
+  SUPPORTED_PROCESS_ROLES,
+  type ProcessRole,
+  WORKER_PROCESS_ROLE,
+} from "./app-config.types";
 
 export const APP_CONFIG = Symbol("APP_CONFIG");
 export type { ProcessRole } from "./app-config.types";
 
-export interface AppConfig {
-  readonly processRoles: readonly ProcessRole[];
-  readonly host: string;
-  readonly port: number;
+export interface DatabaseConfig {
+  readonly url: string;
+  readonly maxConnections: number;
+}
+
+export interface MessagingConfig {
+  readonly rabbitMqUrl: string;
+  readonly reconnectDelayMs: number;
+  readonly retryBaseDelayMs: number;
+  readonly maxDeliveryAttempts: number;
+  readonly maxIncomingMessageBytes: number;
+  readonly maxOutgoingMessageBytes: number;
+  readonly outboxPollIntervalMs: number;
+  readonly outboxBatchSize: number;
+  readonly outboxMaxBatchesPerDrain: number;
+  readonly outboxProcessingLeaseMs: number;
+}
+
+interface BaseAppConfig {
+  readonly processRole: ProcessRole;
   readonly schemaBaseUri: string;
-  readonly database: {
-    readonly url: string;
-    readonly poolMax: number;
-  };
-  readonly grpc: {
-    readonly host: string;
-    readonly port: number;
-  };
+  readonly database: DatabaseConfig;
+  readonly messaging: MessagingConfig;
+}
+
+export interface ApiAppConfig extends BaseAppConfig {
+  readonly processRole: typeof API_PROCESS_ROLE;
+  readonly http: { readonly host: string; readonly port: number };
+  readonly grpc: { readonly host: string; readonly port: number };
   readonly authentication: {
     readonly issuer: string;
     readonly audience: string;
     readonly accessTokenTtlSeconds: number;
-    readonly privateKeyPem?: string;
-    readonly publicKeyPem?: string;
+    readonly privateKeyPem: string;
+    readonly publicKeyPem: string;
   };
-  readonly messaging: {
-    readonly rabbitMqUrl: string;
-    readonly reconnectDelayMs: number;
-    readonly retryBaseDelayMs: number;
-    readonly maxDeliveryAttempts: number;
-    readonly maxIncomingMessageBytes: number;
-    readonly maxOutgoingMessageBytes: number;
-    readonly outboxPollIntervalMs: number;
-    readonly outboxBatchSize: number;
-    readonly outboxMaxBatchesPerDrain: number;
-    readonly outboxProcessingLeaseMs: number;
-  };
+}
+
+export interface WorkerAppConfig extends BaseAppConfig {
+  readonly processRole: typeof WORKER_PROCESS_ROLE;
   readonly optimization: {
-    readonly vroomUrl: string;
-    readonly osrmUrl: string;
+    readonly vroomBaseUrl: string;
+    readonly osrmBaseUrl: string;
     readonly workerPrefetch: number;
   };
 }
+
+export type AppConfig = ApiAppConfig | WorkerAppConfig;
 
 type ValidatedAppConfig = FromSchema<
   typeof appConfigSchema,
@@ -61,9 +81,7 @@ type ValidatedAppConfig = FromSchema<
 
 const appConfigRegistry = new SchemaRegistry(
   [jsonSchemaPrimitives, appConfigSchema],
-  {
-    coerceTypes: true,
-  },
+  { coerceTypes: true },
 );
 
 export class AppConfigurationError extends Error {
@@ -73,82 +91,103 @@ export class AppConfigurationError extends Error {
   }
 }
 
+export function readProcessRole(
+  environment: NodeJS.ProcessEnv = env,
+): ProcessRole {
+  const value = environment.PROCESS_ROLE;
+  if (value === undefined) {
+    throw new AppConfigurationError("PROCESS_ROLE must be configured.");
+  }
+  if (!SUPPORTED_PROCESS_ROLES.includes(value as ProcessRole)) {
+    throw new AppConfigurationError(
+      `PROCESS_ROLE must be one of: ${SUPPORTED_PROCESS_ROLES.join(", ")}.`,
+    );
+  }
+  return value as ProcessRole;
+}
+
 export function createAppConfig(
   environment: NodeJS.ProcessEnv = env,
 ): AppConfig {
-  const config = validate(rawAppConfig(environment));
-  return {
-    processRoles: config.processRoles,
-    host: config.host,
-    port: config.port,
+  const processRole = readProcessRole(environment);
+  const config = validate(rawAppConfig(environment, processRole));
+  const base = {
+    processRole,
     schemaBaseUri: validateSchemaBaseUri(config.schemaBaseUri),
     database: {
-      url: config.database.url,
-      poolMax: config.database.poolMax,
-    },
-    grpc: {
-      host: config.grpc.host,
-      port: config.grpc.port,
-    },
-    authentication: {
-      issuer: config.authentication.issuer,
-      audience: config.authentication.audience,
-      accessTokenTtlSeconds: config.authentication.accessTokenTtlSeconds,
-      privateKeyPem: decodeBase64EncodedText(
-        config.authentication.privateKeyBase64,
-        "JWT_PRIVATE_KEY",
-      ),
-      publicKeyPem: decodeBase64EncodedText(
-        config.authentication.publicKeyBase64,
-        "JWT_PUBLIC_KEY",
-      ),
+      url: requireConfigUrl(config.database.url, "DATABASE_URL", [
+        "postgres:",
+        "postgresql:",
+      ]),
+      maxConnections: config.database.maxConnections,
     },
     messaging: {
-      rabbitMqUrl: config.messaging.rabbitMqUrl,
-      reconnectDelayMs: config.messaging.reconnectDelayMs,
-      retryBaseDelayMs: config.messaging.retryBaseDelayMs,
-      maxDeliveryAttempts: config.messaging.maxDeliveryAttempts,
-      maxIncomingMessageBytes: config.messaging.maxIncomingMessageBytes,
-      maxOutgoingMessageBytes: config.messaging.maxOutgoingMessageBytes,
-      outboxPollIntervalMs: config.messaging.outboxPollIntervalMs,
-      outboxBatchSize: config.messaging.outboxBatchSize,
-      outboxMaxBatchesPerDrain: config.messaging.outboxMaxBatchesPerDrain,
-      outboxProcessingLeaseMs: config.messaging.outboxProcessingLeaseMs,
+      ...config.messaging,
+      rabbitMqUrl: requireConfigUrl(config.messaging.rabbitMqUrl, "RABBITMQ_URL", [
+        "amqp:",
+        "amqps:",
+      ]),
     },
+  };
+
+  if (processRole === API_PROCESS_ROLE) {
+    assertApiConfigSections(config);
+    return {
+      ...base,
+      processRole,
+      http: config.http,
+      grpc: config.grpc,
+      authentication: {
+        issuer: config.authentication.issuer,
+        audience: config.authentication.audience,
+        accessTokenTtlSeconds: config.authentication.accessTokenTtlSeconds,
+        privateKeyPem: decodeBase64EncodedText(
+          config.authentication.privateKeyBase64,
+          "JWT_PRIVATE_KEY",
+        ),
+        publicKeyPem: decodeBase64EncodedText(
+          config.authentication.publicKeyBase64,
+          "JWT_PUBLIC_KEY",
+        ),
+      },
+    };
+  }
+
+  if (!config.optimization) {
+    throw new AppConfigurationError(
+      "Worker optimization configuration is missing.",
+    );
+  }
+  return {
+    ...base,
+    processRole,
     optimization: {
-      vroomUrl: config.optimization.vroomUrl,
-      osrmUrl: config.optimization.osrmUrl,
+      vroomBaseUrl: requireConfigBaseUrl(
+        config.optimization.vroomBaseUrl,
+        "VROOM_URL",
+      ),
+      osrmBaseUrl: requireConfigBaseUrl(
+        config.optimization.osrmBaseUrl,
+        "OSRM_URL",
+      ),
       workerPrefetch: config.optimization.workerPrefetch,
     },
   };
 }
 
-function rawAppConfig(environment: NodeJS.ProcessEnv): object {
+function rawAppConfig(
+  environment: NodeJS.ProcessEnv,
+  processRole: ProcessRole,
+): object {
   return {
-    processRoles: (environment.PROCESS_ROLES ?? API_PROCESS_ROLE)
-      .split(",")
-      .map((role) => role.trim()),
-    host: environment.HOST ?? "0.0.0.0",
-    port: environment.PORT ?? 3000,
+    processRole,
     schemaBaseUri: environment.JSON_SCHEMA_BASE_URI ?? DEFAULT_SCHEMA_BASE_URI,
     database: {
       url: environment.DATABASE_URL,
-      poolMax: environment.DATABASE_POOL_MAX ?? 10,
-    },
-    grpc: {
-      host: environment.GRPC_HOST ?? "0.0.0.0",
-      port: environment.GRPC_PORT ?? 50051,
-    },
-    authentication: {
-      issuer: environment.JWT_ISSUER ?? "logistics-decision-intelligence",
-      audience: environment.JWT_AUDIENCE ?? "core-platform",
-      accessTokenTtlSeconds: environment.JWT_ACCESS_TOKEN_TTL_SECONDS ?? 900,
-      ...(environment.JWT_PRIVATE_KEY === undefined
-        ? {}
-        : { privateKeyBase64: environment.JWT_PRIVATE_KEY }),
-      ...(environment.JWT_PUBLIC_KEY === undefined
-        ? {}
-        : { publicKeyBase64: environment.JWT_PUBLIC_KEY }),
+      maxConnections:
+        environment.DATABASE_MAX_CONNECTIONS ??
+        environment.DATABASE_POOL_MAX ??
+        10,
     },
     messaging: {
       rabbitMqUrl: environment.RABBITMQ_URL,
@@ -165,11 +204,32 @@ function rawAppConfig(environment: NodeJS.ProcessEnv): object {
       outboxProcessingLeaseMs:
         environment.OUTBOX_PROCESSING_LEASE_MS ?? 300_000,
     },
-    optimization: {
-      vroomUrl: environment.VROOM_URL,
-      osrmUrl: environment.OSRM_URL,
-      workerPrefetch: environment.OPTIMIZATION_WORKER_PREFETCH ?? 2,
-    },
+    ...(processRole === API_PROCESS_ROLE
+      ? {
+          http: {
+            host: environment.HOST ?? "0.0.0.0",
+            port: environment.PORT ?? 3_000,
+          },
+          grpc: {
+            host: environment.GRPC_HOST ?? "0.0.0.0",
+            port: environment.GRPC_PORT ?? 50_051,
+          },
+          authentication: {
+            issuer: environment.JWT_ISSUER ?? "logistics-decision-intelligence",
+            audience: environment.JWT_AUDIENCE ?? "core-platform",
+            accessTokenTtlSeconds:
+              environment.JWT_ACCESS_TOKEN_TTL_SECONDS ?? 900,
+            privateKeyBase64: environment.JWT_PRIVATE_KEY,
+            publicKeyBase64: environment.JWT_PUBLIC_KEY,
+          },
+        }
+      : {
+          optimization: {
+            vroomBaseUrl: environment.VROOM_URL,
+            osrmBaseUrl: environment.OSRM_URL,
+            workerPrefetch: environment.OPTIMIZATION_WORKER_PREFETCH ?? 2,
+          },
+        }),
   };
 }
 
@@ -182,7 +242,9 @@ function validate(value: object): ValidatedAppConfig {
   } catch (error: unknown) {
     if (error instanceof SchemaValidationError) {
       throw new AppConfigurationError(
-        `Application configuration is invalid: ${formatIssues(error)}.`,
+        `Application configuration is invalid: ${error.issues
+          .map((issue) => `${issue.pointer || "/"} ${issue.message}`)
+          .join("; ")}.`,
         { cause: error },
       );
     }
@@ -190,10 +252,16 @@ function validate(value: object): ValidatedAppConfig {
   }
 }
 
-function formatIssues(error: SchemaValidationError): string {
-  return error.issues
-    .map((issue) => `${issue.pointer || "/"} ${issue.message}`)
-    .join("; ");
+function assertApiConfigSections(
+  config: ValidatedAppConfig,
+): asserts config is ValidatedAppConfig & {
+  readonly http: NonNullable<ValidatedAppConfig["http"]>;
+  readonly grpc: NonNullable<ValidatedAppConfig["grpc"]>;
+  readonly authentication: NonNullable<ValidatedAppConfig["authentication"]>;
+} {
+  if (!config.http || !config.grpc || !config.authentication) {
+    throw new AppConfigurationError("API configuration sections are missing.");
+  }
 }
 
 function validateSchemaBaseUri(value: string): string {
@@ -208,11 +276,57 @@ function validateSchemaBaseUri(value: string): string {
   return value;
 }
 
-function decodeBase64EncodedText(
-  value: string | undefined,
+function requireConfigBaseUrl(value: string, variableName: string): string {
+  const url = parseConfigUrl(value, variableName, {
+    allowedProtocols: ["http:", "https:"],
+    forbidCredentials: true,
+    forbidQuery: true,
+    forbidFragment: true,
+  });
+  return url.toString().replace(/\/$/, "");
+}
+
+function requireConfigUrl(
+  value: string,
   variableName: string,
-): string | undefined {
-  if (value === undefined) return undefined;
+  allowedProtocols: readonly string[],
+): string {
+  parseConfigUrl(value, variableName, { allowedProtocols });
+  return value;
+}
+
+function parseConfigUrl(
+  value: string,
+  variableName: string,
+  options: ParseUrlOptions,
+): URL {
+  const result = parseUrl(value, options);
+  if (result.ok) return result.value;
+
+  throw new AppConfigurationError(
+    configUrlFailureMessage(variableName, options, result.reason),
+  );
+}
+
+function configUrlFailureMessage(
+  variableName: string,
+  options: ParseUrlOptions,
+  reason: UrlParseFailureReason,
+): string {
+  if (reason === "invalid") return `${variableName} must be a valid URL.`;
+  if (reason === "protocol-not-allowed") {
+    return `${variableName} must use ${options.allowedProtocols?.join(" or ") ?? "an allowed protocol"}.`;
+  }
+  if (reason === "credentials-not-allowed") {
+    return `${variableName} must not contain credentials.`;
+  }
+  if (reason === "query-not-allowed") {
+    return `${variableName} must not contain a query.`;
+  }
+  return `${variableName} must not contain a fragment.`;
+}
+
+function decodeBase64EncodedText(value: string, variableName: string): string {
   const decoded = Buffer.from(value, "base64").toString("utf8");
   if (decoded.trim().length === 0) {
     throw new AppConfigurationError(

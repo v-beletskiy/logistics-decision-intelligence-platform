@@ -25,7 +25,7 @@ export class PgDatabase implements OnModuleDestroy {
   constructor(@Inject(APP_CONFIG) config: AppConfig) {
     this.pool = new Pool({
       connectionString: config.database.url,
-      max: config.database.poolMax,
+      max: config.database.maxConnections,
     });
   }
 

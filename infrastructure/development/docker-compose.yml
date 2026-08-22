@@ -92,7 +92,7 @@ services:
   core-platform-api:
     <<: *core-platform-development
     environment:
-      PROCESS_ROLES: api
+      PROCESS_ROLE: api
     ports:
       - "127.0.0.1:${PORT}:3000"
       - "127.0.0.1:${GRPC_PORT:-50051}:50051"
@@ -111,7 +111,7 @@ services:
   core-platform-background-processing:
     <<: *core-platform-development
     environment:
-      PROCESS_ROLES: worker
+      PROCESS_ROLE: worker
     depends_on:
       - vroom
       - osrm

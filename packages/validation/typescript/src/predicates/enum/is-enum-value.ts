@@ -11,5 +11,7 @@ export function isEnumValue<TEnum extends StringEnum>(
   enumeration: TEnum,
   value: unknown,
 ): value is TEnum[keyof TEnum] {
-  return typeof value === 'string' && Object.values(enumeration).includes(value);
+  return (
+    typeof value === "string" && Object.values(enumeration).includes(value)
+  );
 }

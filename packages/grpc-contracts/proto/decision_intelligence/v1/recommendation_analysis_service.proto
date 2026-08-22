@@ -6,7 +6,7 @@ import "decision_intelligence/v1/recommendation_analysis_types.proto";
 
 // Read contract for the AI Platform to fetch the recommendation analysis input.
 // Decision Intelligence owns this service and maps its model at the boundary.
-service RecommendationAnalysisService {
+service RecommendationAnalysis {
   rpc GetRecommendationAnalysisContext(GetRecommendationAnalysisContextRequest) returns (GetRecommendationAnalysisContextResponse);
 }
 

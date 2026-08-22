@@ -9,8 +9,8 @@ export class HttpStatusError extends Error {
 }
 
 export abstract class HttpClient {
-  abstract get<T>(url: string): Promise<T>;
-  abstract post<T>(url: string, body: unknown): Promise<T>;
+  abstract get(url: string): Promise<unknown>;
+  abstract post(url: string, body: unknown): Promise<unknown>;
 }
 
 /** Minimal JSON HTTP client over the platform's fetch with a request timeout. */
@@ -19,19 +19,19 @@ export class FetchHttpClient extends HttpClient {
     super();
   }
 
-  async get<T>(url: string): Promise<T> {
-    return this.request<T>("GET", url, undefined);
+  async get(url: string): Promise<unknown> {
+    return this.request("GET", url, undefined);
   }
 
-  async post<T>(url: string, body: unknown): Promise<T> {
-    return this.request<T>("POST", url, body);
+  async post(url: string, body: unknown): Promise<unknown> {
+    return this.request("POST", url, body);
   }
 
-  private async request<T>(
+  private async request(
     method: "GET" | "POST",
     url: string,
     body: unknown,
-  ): Promise<T> {
+  ): Promise<unknown> {
     const response = await fetch(url, {
       method,
       headers:
@@ -42,6 +42,6 @@ export class FetchHttpClient extends HttpClient {
     if (!response.ok) {
       throw new HttpStatusError(method, url, response.status);
     }
-    return (await response.json()) as T;
+    return response.json();
   }
 }

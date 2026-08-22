@@ -1,20 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
 
 import type { CloudEvent } from "@logistics-decision-intelligence/integration-events";
-import { TransactionManager } from "../../../../persistence/transaction-manager";
+import { TrxManager } from "../../../../../app/trx/trx-manager";
 import { NonRetryableMessageException } from "../../errors";
 import { InboxStore } from "./inbox-store";
-import {
-  toInboxMessage,
-  type InboxConsumerId,
-} from "./inbox-message";
+import { toInboxMessage, type InboxConsumerId } from "./inbox-message";
 
 @Injectable()
 export class InboxProcessor {
   private readonly logger = new Logger(InboxProcessor.name);
 
   constructor(
-    private readonly transactionManager: TransactionManager,
+    private readonly trxManager: TrxManager,
     private readonly inboxStore: InboxStore,
   ) {}
 
@@ -23,7 +20,7 @@ export class InboxProcessor {
     event: TEvent,
     handler: (event: TEvent) => Promise<void>,
   ): Promise<void> {
-    await this.transactionManager.run(async () => {
+    await this.trxManager.run(async () => {
       const message = toInboxMessage(consumerId, event);
       const started = await this.inboxStore.tryStart(message);
       if (!started) return;

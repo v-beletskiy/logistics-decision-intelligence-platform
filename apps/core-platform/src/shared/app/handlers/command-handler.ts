@@ -1,6 +1,6 @@
-import type { DomainEvent } from "../../domain/shared-kernel/events/domain-event";
+import type { DomainEvent } from "../../domain/domain-event";
 import { DomainEventBus } from "../messaging/domain-event-bus";
-import { TransactionManager } from "../../infra/persistence/transaction-manager";
+import { TrxManager } from "../trx/trx-manager";
 
 export interface DomainEventsSource {
   pullDomainEvents(): readonly DomainEvent[];
@@ -13,7 +13,7 @@ export interface TransactionalCommandResult<TResult> {
 
 export abstract class CommandHandler {
   protected constructor(
-    protected readonly transactionManager: TransactionManager,
+    protected readonly trxManager: TrxManager,
     protected readonly domainEventBus: DomainEventBus,
   ) {}
 
@@ -21,7 +21,7 @@ export abstract class CommandHandler {
   protected async execUseCaseTrx<TResult>(
     operation: () => Promise<TransactionalCommandResult<TResult>>,
   ): Promise<TResult> {
-    return this.transactionManager.run(async () => {
+    return this.trxManager.run(async () => {
       const { result, eventsFrom } = await operation();
       for (const aggregate of eventsFrom) {
         for (const event of aggregate.pullDomainEvents()) {

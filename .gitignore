@@ -2,6 +2,7 @@
 **/dist/
 **/build/
 **/*.tsbuildinfo
+.DS_Store
 /tmp
 /.temp
 /.likec4

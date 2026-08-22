@@ -1,0 +1,196 @@
+import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes";
+import { isEnumValue } from "@logistics-decision-intelligence/validation";
+
+import type { RouteReference } from "../../../domain/route-reference";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import {
+  DomainConflictException,
+  DomainException,
+} from "../../../../../shared/domain/domain.exceptions";
+import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number";
+import { OptimizationId } from "../../optimization/domain/optimization-id";
+import { RecommendationType } from "../../../domain/recommendation-type.enum";
+import { RecommendationFact } from "../../../domain/recommendation-fact.entity";
+import type { RecommendationEvent } from "./recommendation.events";
+import { RecommendationAnalysis } from "./recommendation-analysis.value-object";
+import { RecommendationId } from "./recommendation-id";
+import { RecommendationStatus } from "./recommendation.enums";
+
+export interface CreateRecommendationParams {
+  readonly routeId: RouteReference;
+  readonly optimizationId: OptimizationId;
+  readonly type: RecommendationType;
+  readonly facts: readonly RecommendationFact[];
+  readonly score: number;
+}
+
+export interface RecommendationProps extends CreateRecommendationParams {
+  readonly status: RecommendationStatus;
+  readonly analysis?: RecommendationAnalysis;
+}
+
+/** An actionable optimization outcome generated for a specific Route version. */
+export class Recommendation extends Aggregate<
+  RecommendationId,
+  RecommendationEvent
+> {
+  private readonly _routeId: RouteReference;
+  private readonly _optimizationId: OptimizationId;
+  private readonly _type: RecommendationType;
+  private readonly _score: number;
+  private _status: RecommendationStatus;
+  private readonly _facts: readonly RecommendationFact[];
+  private _analysis?: RecommendationAnalysis;
+
+  private constructor(id: RecommendationId, props: RecommendationProps) {
+    super(id);
+    if (!isEnumValue(RecommendationType, props.type)) {
+      throw new DomainException(
+        "A recommendation type is invalid.",
+        RECOMMENDATION_ERROR_CODES.recommendationTypeIsInvalid,
+      );
+    }
+    if (!isEnumValue(RecommendationStatus, props.status)) {
+      throw new DomainException(
+        "A recommendation status is invalid.",
+        RECOMMENDATION_ERROR_CODES.recommendationStatusIsInvalid,
+      );
+    }
+    if (
+      !Array.isArray(props.facts) ||
+      !props.facts.every((fact) => fact instanceof RecommendationFact)
+    ) {
+      throw new DomainException(
+        "Recommendation facts must be valid recommendation facts.",
+        RECOMMENDATION_ERROR_CODES.recommendationFactsMustBeValidRecommendationFacts,
+      );
+    }
+    this._routeId = props.routeId;
+    this._optimizationId = props.optimizationId;
+    this._type = props.type;
+    this._score = requireFiniteNumber(props.score, "Recommendation score");
+    this._status = props.status;
+    this._facts = [...props.facts];
+    this._analysis = props.analysis;
+  }
+
+  get routeId(): RouteReference {
+    return this._routeId;
+  }
+
+  get optimizationId(): OptimizationId {
+    return this._optimizationId;
+  }
+
+  get type(): RecommendationType {
+    return this._type;
+  }
+
+  get score(): number {
+    return this._score;
+  }
+
+  get status(): RecommendationStatus {
+    return this._status;
+  }
+
+  get facts(): readonly RecommendationFact[] {
+    return [...this._facts];
+  }
+
+  get analysis(): RecommendationAnalysis | undefined {
+    return this._analysis;
+  }
+
+  static create(details: CreateRecommendationParams): Recommendation {
+    const recommendation = new Recommendation(RecommendationId.generate(), {
+      ...details,
+      status: RecommendationStatus.Pending,
+    });
+    recommendation.raiseDomainEvent("RecommendationCreatedDomainEvent");
+    return recommendation;
+  }
+
+  static reconstitute(
+    id: RecommendationId,
+    props: RecommendationProps,
+  ): Recommendation {
+    return new Recommendation(id, props);
+  }
+
+  accept(): void {
+    if (this._status === RecommendationStatus.Accepted) {
+      throw new DomainConflictException(
+        "A recommendation has already been accepted.",
+        RECOMMENDATION_ERROR_CODES.recommendationHasAlreadyBeenAccepted,
+      );
+    }
+    if (this._status === RecommendationStatus.Rejected) {
+      throw new DomainConflictException(
+        "A rejected recommendation cannot be accepted.",
+        RECOMMENDATION_ERROR_CODES.rejectedRecommendationCannotBeAccepted,
+      );
+    }
+    if (this._status === RecommendationStatus.Expired) {
+      throw new DomainConflictException(
+        "An expired recommendation cannot be accepted.",
+        RECOMMENDATION_ERROR_CODES.expiredRecommendationCannotBeAccepted,
+      );
+    }
+    this._status = RecommendationStatus.Accepted;
+    this.raiseDomainEvent("RecommendationAcceptedDomainEvent");
+  }
+
+  reject(): void {
+    if (this._status === RecommendationStatus.Accepted) {
+      throw new DomainConflictException(
+        "An accepted recommendation cannot be rejected.",
+        RECOMMENDATION_ERROR_CODES.acceptedRecommendationCannotBeRejected,
+      );
+    }
+    if (this._status === RecommendationStatus.Rejected) {
+      throw new DomainConflictException(
+        "A recommendation has already been rejected.",
+        RECOMMENDATION_ERROR_CODES.recommendationHasAlreadyBeenRejected,
+      );
+    }
+    this._status = RecommendationStatus.Rejected;
+    this.raiseDomainEvent("RecommendationRejectedDomainEvent");
+  }
+
+  expire(): void {
+    if (this._status !== RecommendationStatus.Pending) {
+      throw new DomainConflictException(
+        "Only a pending recommendation can be expired.",
+        RECOMMENDATION_ERROR_CODES.onlyAPendingRecommendationCanBeExpired,
+      );
+    }
+    this._status = RecommendationStatus.Expired;
+    this.raiseDomainEvent("RecommendationExpiredDomainEvent");
+  }
+
+  attachAnalysis(analysis: RecommendationAnalysis): void {
+    if (!(analysis instanceof RecommendationAnalysis)) {
+      throw new DomainException(
+        "Recommendation analysis must be valid.",
+        RECOMMENDATION_ERROR_CODES.recommendationAnalysisMustBeValid,
+      );
+    }
+    if (this._status !== RecommendationStatus.Pending) {
+      throw new DomainConflictException(
+        "Analysis can only be attached to a pending recommendation.",
+        RECOMMENDATION_ERROR_CODES.analysisCanOnlyBeAttachedToAPendingRecommendation,
+      );
+    }
+    this._analysis = analysis;
+    this.raiseDomainEvent("RecommendationAnalysisAttachedDomainEvent");
+  }
+
+  private raiseDomainEvent(type: RecommendationEvent["type"]): void {
+    this.recordDomainEvent({
+      aggregateId: this.id.value,
+      occurredAt: new Date(),
+      type,
+    } satisfies RecommendationEvent);
+  }
+}

@@ -1,9 +1,11 @@
 import * as assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import { test } from "node:test";
+import { integrationEventId } from "@logistics-decision-intelligence/integration-events";
 
 import type { AppConfig } from "../../../../config/app-config";
 import type { PgDatabase } from "../../../../persistence/pg-database";
-import type { TransactionManager } from "../../../../persistence/transaction-manager";
+import type { TrxManager } from "../../../../../app/trx/trx-manager";
 import { PgOutboxStore } from "./pg-outbox-store";
 
 test("claims events with a lease token and uses it for state transitions - happy path scenario with the same token", async () => {
@@ -46,7 +48,7 @@ test("claims events with a lease token and uses it for state transitions - happy
   const store = new PgOutboxStore(
     { messaging: { outboxProcessingLeaseMs: 300_000 } } as AppConfig,
     database,
-    immediateTransactionManager(),
+    immediateTrxManager(),
   );
 
   const [claim] = await store.claimPendingBatch(10);
@@ -60,7 +62,10 @@ test("claims events with a lease token and uses it for state transitions - happy
     new Date("2026-08-01T00:01:00.000Z"),
     new Error("broker unavailable"),
   );
-  await store.enqueue(claim.event);
+  await store.enqueueMany([
+    claim.event,
+    { ...claim.event, id: integrationEventId(randomUUID()) },
+  ]);
 
   assert.equal(claim.lockToken, "5ce7767c-b162-4b8a-8ce7-e7e9cf6bdc9f");
   assert.equal(markedPublished, true);
@@ -78,17 +83,15 @@ test("claims events with a lease token and uses it for state transitions - happy
     claim.lockToken,
     "broker unavailable",
   ]);
-  assert.match(queries[3]?.text ?? "", /event_id, occurred_at, event/);
-  assert.deepEqual(queries[3]?.values, [
-    claim.event.id,
-    claim.event.time,
-    JSON.stringify(claim.event),
-  ]);
+  assert.match(queries[3]?.text ?? "", /jsonb_array_elements\(\$1::jsonb\)/);
+  assert.equal(queries[3]?.values.length, 1);
+  const batch = JSON.parse(String(queries[3]?.values[0])) as unknown[];
+  assert.equal(batch.length, 2);
 });
 
-function immediateTransactionManager(): TransactionManager {
+function immediateTrxManager(): TrxManager {
   return {
     run: async <TResult>(operation: () => Promise<TResult>): Promise<TResult> =>
       operation(),
-  } as TransactionManager;
+  } as TrxManager;
 }

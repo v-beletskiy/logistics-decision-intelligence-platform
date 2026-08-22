@@ -3,12 +3,12 @@ import { randomUUIDv7 } from "node:crypto";
 import {
   integrationEventEnvelopeV1Schema,
   type IntegrationEventEnvelopeV1,
-} from "@logistics-decision-intelligence/integration-contracts";
+} from "@logistics-decision-intelligence/integration-event-contracts";
 import type {
   IntegrationEventContract,
   IntegrationEventPayloadOf,
   IntegrationEventTypeOf,
-} from "@logistics-decision-intelligence/integration-contracts";
+} from "@logistics-decision-intelligence/integration-event-contracts";
 import { isUuid } from "@logistics-decision-intelligence/validation";
 import {
   SchemaRegistry,
@@ -16,7 +16,7 @@ import {
   type IdentifiedSchema,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-export type { IntegrationEventContract } from "@logistics-decision-intelligence/integration-contracts";
+export type { IntegrationEventContract } from "@logistics-decision-intelligence/integration-event-contracts";
 
 declare const integrationEventIdBrand: unique symbol;
 

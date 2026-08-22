@@ -1,0 +1,26 @@
+import { defineErrorCodes } from "./domain.exceptions";
+
+export const SHARED_DOMAIN_ERROR_CODES = defineErrorCodes("shared", {
+  textTooShort: "text-too-short",
+  textTooLong: "text-too-long",
+  invalidUuid: "invalid-uuid",
+  invalidTimeWindowOrder: "invalid-time-window-order",
+  invalidText: "invalid-text",
+  requiredValue: "required-value",
+  invalidDurationUnit: "invalid-duration-unit",
+  invalidOptionalText: "invalid-optional-text",
+  invalidScheduleOrder: "invalid-schedule-order",
+  requiredProperties: "required-properties",
+  latitudeOutOfRange: "latitude-out-of-range",
+  longitudeOutOfRange: "longitude-out-of-range",
+  invalidFiniteNumber: "invalid-finite-number",
+  negativeNumber: "negative-number",
+  invalidDimensionEnvelope: "invalid-dimension-envelope",
+  invalidDimensionUnit: "invalid-dimension-unit",
+  invalidVolumeUnit: "invalid-volume-unit",
+  invalidDistanceUnit: "invalid-distance-unit",
+  invalidPositiveSafeInteger: "invalid-positive-safe-integer",
+  invalidWeightUnit: "invalid-weight-unit",
+  nonPositiveNumber: "non-positive-number",
+  invalidDate: "invalid-date",
+});

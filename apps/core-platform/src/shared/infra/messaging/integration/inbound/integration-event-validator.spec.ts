@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-contracts";
+import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
 import {
   IntegrationEventValidator,

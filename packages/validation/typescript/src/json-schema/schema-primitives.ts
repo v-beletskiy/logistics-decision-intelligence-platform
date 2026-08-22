@@ -3,10 +3,8 @@ import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
 export const JSON_SCHEMA_PRIMITIVES_SCHEMA_ID =
   "https://schemas.logistics-decision-intelligence.invalid/shared/json-schema/primitives/v1" as const;
 
-const POSITIVE_SAFE_INTEGER_SCHEMA_REFERENCE: `${typeof JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/positiveSafeInteger` =
-  `${JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/positiveSafeInteger`;
-const BASE64_ENCODED_TEXT_SCHEMA_REFERENCE: `${typeof JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/base64EncodedText` =
-  `${JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/base64EncodedText`;
+const POSITIVE_SAFE_INTEGER_SCHEMA_REFERENCE: `${typeof JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/positiveSafeInteger` = `${JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/positiveSafeInteger`;
+const BASE64_ENCODED_TEXT_SCHEMA_REFERENCE: `${typeof JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/base64EncodedText` = `${JSON_SCHEMA_PRIMITIVES_SCHEMA_ID}#/definitions/base64EncodedText`;
 
 /**
  * Versioned generic schemas registered automatically by SchemaRegistry.

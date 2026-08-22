@@ -1,52 +1,46 @@
 import {
   base64EncodedTextSchemaRef,
   JSON_SCHEMA_DRAFT_07,
-  positiveSafeIntegerSchemaRef,
   type IdentifiedSchema,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { API_PROCESS_ROLE, PROCESS_ROLES } from "./app-config.types";
+import {
+  API_PROCESS_ROLE,
+  SUPPORTED_PROCESS_ROLES,
+  WORKER_PROCESS_ROLE,
+} from "./app-config.types";
 
 export const APP_CONFIG_SCHEMA_ID =
   "https://schemas.logistics-decision-intelligence.com/core-platform/configuration/app-config/v1";
 
-/**
- * Process configuration is an infrastructure boundary. Its identifier is fixed
- * because JSON_SCHEMA_BASE_URI is one of the values validated by this schema.
- */
+const port = { type: "integer", minimum: 1, maximum: 65_535 } as const;
+const positiveInteger = { type: "integer", minimum: 1 } as const;
+
 export const appConfigSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,
   $id: APP_CONFIG_SCHEMA_ID,
   type: "object",
   additionalProperties: false,
-  required: [
-    "processRoles",
-    "host",
-    "port",
-    "schemaBaseUri",
-    "database",
-    "grpc",
-    "authentication",
-    "messaging",
-    "optimization",
-  ],
+  required: ["processRole", "schemaBaseUri", "database", "messaging"],
   properties: {
-    processRoles: {
-      type: "array",
-      minItems: 1,
-      uniqueItems: true,
-      items: { enum: PROCESS_ROLES },
-    },
-    host: { type: "string", minLength: 1 },
-    port: positiveSafeIntegerSchemaRef,
+    processRole: { enum: SUPPORTED_PROCESS_ROLES },
     schemaBaseUri: { type: "string", format: "uri", minLength: 1 },
+    http: {
+      type: "object",
+      additionalProperties: false,
+      required: ["host", "port"],
+      properties: {
+        host: { type: "string", minLength: 1 },
+        port,
+      },
+    },
     database: {
       type: "object",
       additionalProperties: false,
-      required: ["url", "poolMax"],
+      required: ["url", "maxConnections"],
       properties: {
         url: { type: "string", format: "uri", minLength: 1 },
-        poolMax: positiveSafeIntegerSchemaRef,
+        maxConnections: { ...positiveInteger, maximum: 1_000 },
       },
     },
     grpc: {
@@ -55,17 +49,23 @@ export const appConfigSchema = {
       required: ["host", "port"],
       properties: {
         host: { type: "string", minLength: 1 },
-        port: positiveSafeIntegerSchemaRef,
+        port,
       },
     },
     authentication: {
       type: "object",
       additionalProperties: false,
-      required: ["issuer", "audience", "accessTokenTtlSeconds"],
+      required: [
+        "issuer",
+        "audience",
+        "accessTokenTtlSeconds",
+        "privateKeyBase64",
+        "publicKeyBase64",
+      ],
       properties: {
-        issuer: { type: "string", minLength: 1 },
-        audience: { type: "string", minLength: 1 },
-        accessTokenTtlSeconds: positiveSafeIntegerSchemaRef,
+        issuer: { type: "string", minLength: 1, maxLength: 512 },
+        audience: { type: "string", minLength: 1, maxLength: 512 },
+        accessTokenTtlSeconds: { ...positiveInteger, maximum: 86_400 },
         privateKeyBase64: base64EncodedTextSchemaRef,
         publicKeyBase64: base64EncodedTextSchemaRef,
       },
@@ -87,50 +87,41 @@ export const appConfigSchema = {
       ],
       properties: {
         rabbitMqUrl: { type: "string", format: "uri", minLength: 1 },
-        reconnectDelayMs: positiveSafeIntegerSchemaRef,
-        retryBaseDelayMs: positiveSafeIntegerSchemaRef,
-        maxDeliveryAttempts: positiveSafeIntegerSchemaRef,
-        maxIncomingMessageBytes: positiveSafeIntegerSchemaRef,
-        maxOutgoingMessageBytes: positiveSafeIntegerSchemaRef,
-        outboxPollIntervalMs: positiveSafeIntegerSchemaRef,
-        outboxBatchSize: positiveSafeIntegerSchemaRef,
-        outboxMaxBatchesPerDrain: positiveSafeIntegerSchemaRef,
-        outboxProcessingLeaseMs: positiveSafeIntegerSchemaRef,
+        reconnectDelayMs: { ...positiveInteger, maximum: 300_000 },
+        retryBaseDelayMs: { ...positiveInteger, maximum: 300_000 },
+        maxDeliveryAttempts: { ...positiveInteger, maximum: 100 },
+        maxIncomingMessageBytes: { ...positiveInteger, maximum: 100_000_000 },
+        maxOutgoingMessageBytes: { ...positiveInteger, maximum: 100_000_000 },
+        outboxPollIntervalMs: { ...positiveInteger, maximum: 300_000 },
+        outboxBatchSize: { ...positiveInteger, maximum: 10_000 },
+        outboxMaxBatchesPerDrain: { ...positiveInteger, maximum: 10_000 },
+        outboxProcessingLeaseMs: { ...positiveInteger, maximum: 3_600_000 },
       },
     },
     optimization: {
       type: "object",
       additionalProperties: false,
-      required: ["vroomUrl", "osrmUrl", "workerPrefetch"],
+      required: ["vroomBaseUrl", "osrmBaseUrl", "workerPrefetch"],
       properties: {
-        vroomUrl: { type: "string", format: "uri", minLength: 1 },
-        osrmUrl: { type: "string", format: "uri", minLength: 1 },
-        workerPrefetch: positiveSafeIntegerSchemaRef,
+        vroomBaseUrl: { type: "string", format: "uri", minLength: 1 },
+        osrmBaseUrl: { type: "string", format: "uri", minLength: 1 },
+        workerPrefetch: { ...positiveInteger, maximum: 1_000 },
       },
     },
   },
   allOf: [
     {
-      if: {
-        properties: {
-          processRoles: {
-            type: "array",
-            contains: { const: API_PROCESS_ROLE },
-          },
-        },
-      },
+      if: { properties: { processRole: { const: API_PROCESS_ROLE } } },
       then: {
-        type: "object",
-        properties: {
-          authentication: {
-            type: "object",
-            properties: {
-              privateKeyBase64: base64EncodedTextSchemaRef,
-              publicKeyBase64: base64EncodedTextSchemaRef,
-            },
-            required: ["privateKeyBase64", "publicKeyBase64"],
-          },
-        },
+        properties: { http: {}, grpc: {}, authentication: {} },
+        required: ["http", "grpc", "authentication"],
+      },
+    },
+    {
+      if: { properties: { processRole: { const: WORKER_PROCESS_ROLE } } },
+      then: {
+        properties: { optimization: {} },
+        required: ["optimization"],
       },
     },
   ],

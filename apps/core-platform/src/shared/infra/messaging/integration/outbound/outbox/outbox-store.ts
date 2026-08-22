@@ -7,7 +7,8 @@ export interface ClaimedOutboxEvent {
 
 /** Persistence port used by the reliable outbound integration-event flow. */
 export abstract class OutboxStore {
-  abstract enqueue(event: CloudEvent): Promise<void>;
+  /** Persists a producer batch using one atomic database statement. */
+  abstract enqueueMany(events: readonly CloudEvent[]): Promise<void>;
   abstract claimPendingBatch(
     limit: number,
   ): Promise<readonly ClaimedOutboxEvent[]>;

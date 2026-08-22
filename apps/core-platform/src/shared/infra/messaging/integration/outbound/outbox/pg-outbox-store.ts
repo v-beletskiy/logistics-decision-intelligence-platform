@@ -3,7 +3,7 @@ import type { CloudEvent } from "@logistics-decision-intelligence/integration-ev
 
 import { APP_CONFIG, type AppConfig } from "../../../../config/app-config";
 import { PgDatabase } from "../../../../persistence/pg-database";
-import { TransactionManager } from "../../../../persistence/transaction-manager";
+import { TrxManager } from "../../../../../app/trx/trx-manager";
 import { type ClaimedOutboxEvent, OutboxStore } from "./outbox-store";
 
 interface OutboxRow {
@@ -16,30 +16,32 @@ export class PgOutboxStore extends OutboxStore {
   constructor(
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     private readonly database: PgDatabase,
-    private readonly transactionManager: TransactionManager,
+    private readonly trxManager: TrxManager,
   ) {
     super();
   }
 
-  async enqueue(event: CloudEvent): Promise<void> {
+  async enqueueMany(events: readonly CloudEvent[]): Promise<void> {
+    if (events.length === 0) return;
     await this.database.query(
       `
         INSERT INTO shared.integration_outbox (
           event_id, occurred_at, event
-        ) VALUES ($1, $2, $3::jsonb)
+        )
+        SELECT
+          (item ->> 'id')::uuid,
+          (item ->> 'time')::timestamptz,
+          item
+        FROM jsonb_array_elements($1::jsonb) AS batch(item)
       `,
-      [
-        event.id,
-        event.time,
-        JSON.stringify(event),
-      ],
+      [JSON.stringify(events)],
     );
   }
 
   async claimPendingBatch(
     limit: number,
   ): Promise<readonly ClaimedOutboxEvent[]> {
-    return this.transactionManager.run(async () => {
+    return this.trxManager.run(async () => {
       const result = await this.database.query<OutboxRow>(
         `
           WITH candidates AS (

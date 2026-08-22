@@ -5,7 +5,7 @@ import {
   integrationEventId,
   type CloudEvent,
 } from "@logistics-decision-intelligence/integration-events";
-import type { TransactionManager } from "../../../../persistence/transaction-manager";
+import type { TrxManager } from "../../../../../app/trx/trx-manager";
 import { NonRetryableMessageException } from "../../errors";
 import { InboxProcessor } from "./inbox-processor";
 import type { InboxStore } from "./inbox-store";
@@ -30,7 +30,7 @@ const event: CloudEvent = {
 test("does not invoke a handler when the inbox already completed the event", async () => {
   let handled = false;
   const processor = new InboxProcessor(
-    immediateTransactionManager(),
+    immediateTrxManager(),
     fakeInboxStore(false),
   );
 
@@ -47,7 +47,7 @@ test("does not invoke a handler when the inbox already completed the event", asy
 
 test("acknowledges a deterministic consumer failure by completing the inbox record", async () => {
   const completed: string[] = [];
-  const processor = new InboxProcessor(immediateTransactionManager(), {
+  const processor = new InboxProcessor(immediateTrxManager(), {
     tryStart: async () => true,
     markCompleted: async (message: InboxMessageKey) => {
       completed.push(message.eventId);
@@ -69,7 +69,7 @@ test("acknowledges a deterministic consumer failure by completing the inbox reco
 
 test("uses the consumer name as part of the idempotency identity", async () => {
   const started: string[] = [];
-  const processor = new InboxProcessor(immediateTransactionManager(), {
+  const processor = new InboxProcessor(immediateTrxManager(), {
     tryStart: async (message: InboxMessage) => {
       started.push(message.consumerId);
       return true;
@@ -100,11 +100,11 @@ test("uses the consumer name as part of the idempotency identity", async () => {
   ]);
 });
 
-function immediateTransactionManager(): TransactionManager {
+function immediateTrxManager(): TrxManager {
   return {
     run: async <TResult>(operation: () => Promise<TResult>): Promise<TResult> =>
       operation(),
-  } as TransactionManager;
+  } as TrxManager;
 }
 
 function fakeInboxStore(started: boolean): InboxStore {

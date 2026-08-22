@@ -26,16 +26,20 @@ export class TransactionalOutboxIntegrationEventPublisher extends IntegrationEve
     super();
   }
 
-  async publish(event: CloudEvent): Promise<void> {
-    this.decoder.assert(event);
-    if (
-      Buffer.byteLength(JSON.stringify(event)) >
-      this.config.messaging.maxOutgoingMessageBytes
-    ) {
-      throw new Error(
-        "Integration event exceeds the configured outgoing message size limit.",
-      );
+  async publishMany(events: readonly CloudEvent[]): Promise<void> {
+    for (const event of events) {
+      this.decoder.assert(event);
     }
-    await this.outboxStore.enqueue(event);
+    for (const event of events) {
+      if (
+        Buffer.byteLength(JSON.stringify(event)) >
+        this.config.messaging.maxOutgoingMessageBytes
+      ) {
+        throw new Error(
+          "Integration event exceeds the configured outgoing message size limit.",
+        );
+      }
+    }
+    await this.outboxStore.enqueueMany(events);
   }
 }

@@ -1,0 +1,17 @@
+import { randomUUIDv7 } from "node:crypto";
+
+import { UuidIdentifier } from "../../../../../shared/domain/core/uuid-identifier";
+
+export class DriverCertificationId extends UuidIdentifier<DriverCertificationId> {
+  private constructor(value: unknown) {
+    super(value, "Driver certification identifier");
+  }
+
+  static generate(): DriverCertificationId {
+    return new DriverCertificationId(randomUUIDv7());
+  }
+
+  static from(value: unknown): DriverCertificationId {
+    return new DriverCertificationId(value);
+  }
+}

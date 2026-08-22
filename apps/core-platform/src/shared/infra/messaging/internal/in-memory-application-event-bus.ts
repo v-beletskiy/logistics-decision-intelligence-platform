@@ -12,8 +12,8 @@ export class InMemoryApplicationEventBus extends InternalApplicationEventBus {
     super();
   }
 
-  async publish<TPayload>(
-    event: InternalApplicationEvent<TPayload>,
+  async publish<TPayload, TType extends string>(
+    event: InternalApplicationEvent<TPayload, TType>,
   ): Promise<void> {
     await this.eventEmitter.emitAsync(event.type, event);
   }
