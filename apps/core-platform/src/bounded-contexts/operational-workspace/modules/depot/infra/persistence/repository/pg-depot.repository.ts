@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Depot } from "../../../domain/depot.aggregate";
 import { DepotId } from "../../../domain/depot-id";
 import {
@@ -43,15 +43,14 @@ export class PgDepotRepository extends DepotRepository {
   }
 
   async save(tenantId: string, loadedDepot: LoadedDepot): Promise<string> {
-    const [row] = await this.database.exec(updateDepot, {
-      ...DepotMapper.toPersistence(tenantId, loadedDepot.aggregate),
-      expectedRevision: loadedDepot.expectedRevision,
+    return execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateDepot,
+      params: {
+        ...DepotMapper.toPersistence(tenantId, loadedDepot.aggregate),
+        expectedRevision: loadedDepot.expectedRevision,
+      },
+      options: { aggregateName: "Depot" },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Depot was changed or removed by another operation.",
-      );
-    }
-    return row.revision;
   }
 }

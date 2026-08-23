@@ -1,7 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
+import { VehicleRegistrationNumberConflictException } from "../../../app/vehicle.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import {
+  execAndTranslatePgConstraintViolations,
+  execRevisionedPgUpdate,
+  type PgConstraintViolationTranslation,
+} from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Vehicle, VehicleStatus } from "../../../domain/vehicle.aggregate";
 import { VehicleId } from "../../../domain/vehicle-id";
 import {
@@ -14,6 +20,17 @@ import { findVehicleById } from "./queries/vehicle.find-by-id.queries";
 import { insertVehicle } from "./queries/vehicle.insert.queries";
 import { reconcileVehicleCompartments } from "./queries/vehicle.reconcile-compartments.queries";
 import { updateVehicle } from "./queries/vehicle.update.queries";
+
+const VEHICLE_REGISTRATION_NUMBER_UNIQUE_CONSTRAINT =
+  "vehicles_tenant_registration_number_unique";
+const VEHICLE_WRITE_CONSTRAINT_TRANSLATIONS = [
+  {
+    sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
+    constraint: VEHICLE_REGISTRATION_NUMBER_UNIQUE_CONSTRAINT,
+    toError: (cause: unknown) =>
+      new VehicleRegistrationNumberConflictException({ cause }),
+  },
+] satisfies readonly PgConstraintViolationTranslation[];
 
 @Injectable()
 export class PgVehicleRepository extends VehicleRepository {
@@ -47,7 +64,12 @@ export class PgVehicleRepository extends VehicleRepository {
 
   async add(tenantId: string, vehicle: Vehicle): Promise<void> {
     const persistence = VehicleMapper.toPersistence(tenantId, vehicle);
-    await this.database.exec(insertVehicle, persistence.root);
+    await execAndTranslatePgConstraintViolations({
+      database: this.database,
+      statement: insertVehicle,
+      params: persistence.root,
+      options: { translations: VEHICLE_WRITE_CONSTRAINT_TRANSLATIONS },
+    });
     await this.database.exec(
       reconcileVehicleCompartments,
       persistence.compartments,
@@ -59,19 +81,22 @@ export class PgVehicleRepository extends VehicleRepository {
       tenantId,
       loadedVehicle.aggregate,
     );
-    const [row] = await this.database.exec(updateVehicle, {
-      ...persistence.root,
-      expectedRevision: loadedVehicle.expectedRevision,
+    const revision = await execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateVehicle,
+      params: {
+        ...persistence.root,
+        expectedRevision: loadedVehicle.expectedRevision,
+      },
+      options: {
+        aggregateName: "Vehicle",
+        constraintTranslations: VEHICLE_WRITE_CONSTRAINT_TRANSLATIONS,
+      },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Vehicle was changed or removed by another operation.",
-      );
-    }
     await this.database.exec(
       reconcileVehicleCompartments,
       persistence.compartments,
     );
-    return row.revision;
+    return revision;
   }
 }

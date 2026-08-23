@@ -16,3 +16,7 @@ version instead.
 
 Consumers import contracts only from
 `@logistics-decision-intelligence/integration-event-contracts`.
+
+This package owns immutable wire contracts only. CloudEvent creation, decoding,
+and runtime types belong to
+`@logistics-decision-intelligence/integration-events`.

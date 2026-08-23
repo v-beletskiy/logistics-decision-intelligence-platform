@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
 
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import type { RouteReference } from "../../../../../domain/route-reference";
 import type { Recommendation } from "../../../domain/recommendation.aggregate";
 import { RecommendationId } from "../../../domain/recommendation-id";
-import { RecommendationRepository } from "../../../domain/recommendation.repository";
+import {
+  RecommendationRepository,
+  type LoadedRecommendation,
+} from "../../../domain/recommendation.repository";
 import { RecommendationMapper } from "./mappers/recommendation.mapper";
 import { deleteRecommendation } from "./queries/recommendation.delete.queries";
 import { findRecommendationById } from "./queries/recommendation.find-by-id.queries";
@@ -12,8 +16,9 @@ import { findRecommendationsPendingByRouteId } from "./queries/recommendation.fi
 import { findRecommendationsPending } from "./queries/recommendation.find-pending.queries";
 import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries";
 import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries";
-import { saveRecommendation } from "./queries/recommendation.save.queries";
-import { saveRecommendations } from "./queries/recommendation.save-many.queries";
+import { addRecommendation } from "./queries/recommendation.add.queries";
+import { addRecommendations } from "./queries/recommendation.add-many.queries";
+import { updateRecommendation } from "./queries/recommendation.update.queries";
 
 @Injectable()
 export class PgRecommendationRepository extends RecommendationRepository {
@@ -24,12 +29,17 @@ export class PgRecommendationRepository extends RecommendationRepository {
   async findById(
     tenantId: string,
     id: RecommendationId,
-  ): Promise<Recommendation | null> {
+  ): Promise<LoadedRecommendation | null> {
     const [row] = await this.database.exec(findRecommendationById, {
       tenantId,
       id: id.value,
     });
-    return row ? RecommendationMapper.toDomain(row) : null;
+    return row
+      ? {
+          aggregate: RecommendationMapper.toDomain(row),
+          expectedRevision: row.revision,
+        }
+      : null;
   }
 
   async findPendingByRouteId(
@@ -54,50 +64,61 @@ export class PgRecommendationRepository extends RecommendationRepository {
     return rows.map(RecommendationMapper.toDomain);
   }
 
-  async save(tenantId: string, recommendation: Recommendation): Promise<void> {
-    await this.database.runInTransaction(async () => {
-      await this.database.exec(
-        saveRecommendation,
-        RecommendationMapper.toPersistence(tenantId, recommendation),
-      );
-      await this.database.exec(
-        reconcileRecommendationFacts,
-        RecommendationMapper.toReconcileFactsParams(tenantId, [recommendation]),
-      );
-      await this.database.exec(
-        reconcileRecommendationFindings,
-        RecommendationMapper.toReconcileFindingsParams(tenantId, [
-          recommendation,
-        ]),
-      );
-    });
+  async add(tenantId: string, recommendation: Recommendation): Promise<void> {
+    await this.database.exec(
+      addRecommendation,
+      RecommendationMapper.toPersistence(tenantId, recommendation),
+    );
+    await this.reconcileChildren(tenantId, [recommendation]);
   }
 
-  async saveMany(
+  async addMany(
     tenantId: string,
     recommendations: readonly Recommendation[],
   ): Promise<void> {
     if (recommendations.length === 0) return;
-    await this.database.runInTransaction(async () => {
-      await this.database.exec(
-        saveRecommendations,
-        RecommendationMapper.toSaveManyPersistence(tenantId, recommendations),
-      );
-      await this.database.exec(
-        reconcileRecommendationFacts,
-        RecommendationMapper.toReconcileFactsParams(tenantId, recommendations),
-      );
-      await this.database.exec(
-        reconcileRecommendationFindings,
-        RecommendationMapper.toReconcileFindingsParams(
+    await this.database.exec(
+      addRecommendations,
+      RecommendationMapper.toAddManyPersistence(tenantId, recommendations),
+    );
+    await this.reconcileChildren(tenantId, recommendations);
+  }
+
+  async save(
+    tenantId: string,
+    loadedRecommendation: LoadedRecommendation,
+  ): Promise<string> {
+    const revision = await execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateRecommendation,
+      params: {
+        ...RecommendationMapper.toPersistence(
           tenantId,
-          recommendations,
+          loadedRecommendation.aggregate,
         ),
-      );
+        expectedRevision: loadedRecommendation.expectedRevision,
+      },
+      options: { aggregateName: "Recommendation" },
     });
+    await this.reconcileChildren(tenantId, [loadedRecommendation.aggregate]);
+    return revision;
   }
 
   async delete(tenantId: string, id: RecommendationId): Promise<void> {
     await this.database.exec(deleteRecommendation, { tenantId, id: id.value });
+  }
+
+  private async reconcileChildren(
+    tenantId: string,
+    recommendations: readonly Recommendation[],
+  ): Promise<void> {
+    await this.database.exec(
+      reconcileRecommendationFacts,
+      RecommendationMapper.toReconcileFactsParams(tenantId, recommendations),
+    );
+    await this.database.exec(
+      reconcileRecommendationFindings,
+      RecommendationMapper.toReconcileFindingsParams(tenantId, recommendations),
+    );
   }
 }

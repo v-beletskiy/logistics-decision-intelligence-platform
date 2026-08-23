@@ -123,7 +123,7 @@ export class ExecuteOptimizationHandler extends CommandHandler {
           score: recommendation.score,
         }),
       ];
-      await this.recommendationRepository.saveMany(
+      await this.recommendationRepository.addMany(
         command.tenantId,
         recommendations,
       );

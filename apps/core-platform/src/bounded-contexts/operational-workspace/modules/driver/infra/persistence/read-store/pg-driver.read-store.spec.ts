@@ -7,7 +7,7 @@ import type { PgDatabase } from "../../../../../../../shared/infra/persistence/p
 import type {
   DriverCursorSort,
   DriverPageSort,
-} from "../../../app/queries/search-drivers/driver-search";
+} from "../../../app/queries/search-drivers/driver-search-options";
 import { DriverStatus } from "../../../domain/driver.aggregate";
 import {
   searchDriversCursor,

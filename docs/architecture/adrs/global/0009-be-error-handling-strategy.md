@@ -105,6 +105,12 @@ serialized automatically. Specific exception types are introduced when a
 failure has distinct business meaning or handling; a class per message is not
 required.
 
+The code is mandatory. Each module or bounded-context scope owns a typed catalog
+created with `defineErrorCodes`; ad hoc string literals are not passed to
+exceptions. Catalog existence rejects malformed or locally duplicated values,
+and one repository-wide test verifies global uniqueness. A single runtime
+registry of every code is not introduced to avoid unneeded coupling.
+
 Semantic base types classify failures without transport knowledge. A
 `DomainConflictException` represents a rule failure caused by current aggregate
 state; other `DomainException` failures represent invalid business values or
@@ -124,6 +130,11 @@ Examples:
 - Optimistic concurrency conflict.
 
 Application errors represent orchestration failures rather than business rule violations.
+
+An Infrastructure repository adapter may translate an exact, recognized
+database constraint into an Application conflict because the constraint is the
+atomic enforcement of an Application precondition. It never creates a Domain
+exception, and unrelated database failures remain technical failures.
 
 `ApplicationException` is an abstract base. Application failures use semantic
 subtypes such as `ApplicationInputException`, `ApplicationConflictException`,
@@ -299,6 +310,7 @@ Retries should use exponential backoff where supported.
 - Technical failures are recoverable where appropriate.
 - Infrastructure failures are never represented as Domain Exceptions.
 - Authorization follows deny-by-default.
+- Error codes are stable and globally unique.
 
 ---
 

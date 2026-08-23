@@ -13,10 +13,10 @@ export abstract class OptimizationRepository {
     id: OptimizationId,
   ): Promise<LoadedOptimization | null>;
   /**
-   * Serializes replacement decisions for the Route and returns its active
+   * Serializes active-Optimization changes for the Route and returns its active
    * Optimization, if any. Must be called inside the use-case transaction.
    */
-  abstract findActiveByRouteIdForReplacement(
+  abstract findActiveByRouteIdForUpdate(
     tenantId: string,
     routeId: RouteReference,
   ): Promise<LoadedOptimization | null>;

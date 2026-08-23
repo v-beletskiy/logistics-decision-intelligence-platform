@@ -23,8 +23,7 @@ apps/core-platform/
 │   ├── migrations/
 │   └── seeds/
 └── src/
-    ├── operational-workspace/
-    ├── decision-intelligence/
+    ├── bounded-contexts/
     └── shared/
 ```
 
@@ -73,8 +72,9 @@ driver/
 │   └── driver.repository.ts
 └── infra/
     └── persistence/
+        ├── driver-persistence.module.ts
         ├── repository/
-        │   ├── driver.pg-repository.ts
+        │   ├── pg-driver.repository.ts
         │   ├── mappers/driver.mapper.ts
         │   └── queries/
         │       ├── driver.find-by-id.sql
@@ -83,12 +83,23 @@ driver/
         │       ├── driver.update.sql
         │       └── driver.reconcile-certifications.sql
         └── read-store/
-            ├── driver.pg-read-store.ts
+            ├── pg-driver.read-store.ts
             ├── mappers/driver-search.mapper.ts
             └── queries/driver.search.sql
 ```
 
 Repositories are responsible for aggregate persistence. Read stores are responsible for query projections. Both depend on the PostgreSQL client, generated query bindings, and their own mapper; neither exposes persistence rows outside infrastructure.
+
+A read-store port and implementation are named for their stable queried concept,
+not for the first handler that uses them: for example, `RouteReadStore` and
+`PgRouteReadStore`. One cohesive read store may expose several Route projections.
+Create a separate read store only for a distinct read model, data source, or
+ownership boundary. The Application port belongs in the feature's `app/ports/`;
+the individual query input and its normalized options belong in that query's
+folder. PostgreSQL projection mapping belongs in `read-store/mappers/`.
+
+Register read stores in the module's existing persistence module alongside its
+repositories.
 
 ### Mapping and reconstitution
 
@@ -114,9 +125,10 @@ This keeps pgtyped row types, SQL aliases, and JSON payload shapes outside the d
 #### Mapper-owned persistence-row types
 
 Each aggregate mapper declares the narrow structural `<Aggregate>PersistenceRow`
-required by `toDomain`; nested JSON children use equally focused persistence-data
-types where needed. This is the mapper's canonical read contract, not a database
-entity or a type derived from write-statement parameters.
+required by `toDomain`; a loader that aggregates relational children as JSON uses
+equally focused persistence-data types in that mapper. This is the mapper's
+canonical read contract, not a database entity or a type derived from
+write-statement parameters. Do not mirror relational tables as JSON Schemas.
 
 The repository passes the generated pgtyped result to the mapper directly.
 TypeScript then verifies that the statement projection supplies every field the
@@ -141,6 +153,22 @@ Saving a bounded aggregate maps its complete current state. Child rows are recon
 
 In terms of aggregate children this pattern works for a limited number of children. For cases with considerable number of children reconsider aggregate boundaries and extract into a separate aggregate to avoid performance issues.
 
+#### Canonical methods and constraint translation
+
+Aggregate `add` uses an insert, never an upsert. Recognized constraint failures
+are translated by the shared `execAndTranslatePgConstraintViolations` utility;
+unknown PostgreSQL failures propagate unchanged. Translation matches both the
+SQLSTATE and the explicit schema-owned constraint name.
+
+Aggregate `save` uses `execRevisionedPgUpdate`. The utility translates configured
+constraints, requires an updated row, and returns its revision; no updated row
+is an Application concurrency conflict. Bounded children are reconciled only
+after the root write succeeds.
+
+Module repositories own the mapping from their constraint names to
+Application exceptions. Generic PostgreSQL inspection and concurrency handling
+remain in shared Infrastructure rather than repository-local helper functions.
+
 ### Concurrency
 
 Aggregate roots have a positive revision. Revision columns use `BIGINT` for frequently updated aggregates.
@@ -160,9 +188,19 @@ save() → UPDATE ... WHERE revision = :expectedRevision
 new revision or concurrency conflict
 ```
 
+Repository ports name this pair `Loaded<Aggregate>` (for example,
+`LoadedRecommendation`). It is a repository-read result, not a Domain object:
+it pairs the reconstituted Aggregate with `expectedRevision` captured
+by that read. Read methods return it; Save methods receive it unchanged. Used for **optimistic concurrentcy during future saves**. The
+revision is never supplied by a transport client or manufactured by an
+application use case.
+
 `save` increments in the same transaction and returns the revision. A root update that affects no row is an application-level concurrency conflict.
 
 Repositories also provide `findByIdForUpdate` for use cases requiring pessimistic coordination. It loads the same complete aggregate projection and locks the root row with `FOR UPDATE`; the use case then saves within the shared transaction.
+
+Repository methods describe Aggregate retrieval and consistency, not a caller's
+business process.
 
 ### Transactions
 

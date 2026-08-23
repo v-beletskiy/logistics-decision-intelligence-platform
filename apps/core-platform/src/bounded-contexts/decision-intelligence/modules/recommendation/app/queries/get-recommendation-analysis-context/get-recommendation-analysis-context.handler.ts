@@ -15,13 +15,14 @@ export class GetRecommendationAnalysisContextHandler {
   async exec(
     query: GetRecommendationAnalysisContextQuery,
   ): Promise<RecommendationAnalysisContextResult> {
-    const recommendation = await this.recommendationRepository.findById(
+    const loadedRecommendation = await this.recommendationRepository.findById(
       query.tenantId,
       RecommendationId.from(query.recommendationId),
     );
-    if (!recommendation) {
+    if (!loadedRecommendation) {
       throw new AggregateNotFoundException("Recommendation");
     }
+    const recommendation = loadedRecommendation.aggregate;
 
     return {
       recommendationId: recommendation.id.value,

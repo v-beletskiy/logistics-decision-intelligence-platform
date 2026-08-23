@@ -1,20 +1,10 @@
 import { Module } from "@nestjs/common";
 
-import { PasswordHasher } from "../bounded-contexts/administration/modules/authentication/app/password-hasher";
-import { ProvisionTenantAdministratorHandler } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.handler";
-import { UserAccountRepository } from "../bounded-contexts/administration/modules/user/domain/user-account.repository";
-import { PgUserAccountRepository } from "../bounded-contexts/administration/modules/user/infra/persistence/repository/pg-user-account.repository";
-import { Argon2PasswordHasher } from "../bounded-contexts/administration/modules/authentication/infra/argon2-password-hasher";
+import { UserCommandModule } from "../bounded-contexts/administration/modules/user/composition/user-command.module";
 import { AppConfigModule } from "../shared/infra/config/app-config.module";
-import { PgDatabase } from "../shared/infra/persistence/pg-database";
+import { PersistenceInfraModule } from "../shared/infra/persistence/persistence-infra.module";
 
 @Module({
-  imports: [AppConfigModule],
-  providers: [
-    PgDatabase,
-    ProvisionTenantAdministratorHandler,
-    { provide: PasswordHasher, useClass: Argon2PasswordHasher },
-    { provide: UserAccountRepository, useClass: PgUserAccountRepository },
-  ],
+  imports: [AppConfigModule, PersistenceInfraModule, UserCommandModule],
 })
 export class AdministrationCliCompositionModule {}

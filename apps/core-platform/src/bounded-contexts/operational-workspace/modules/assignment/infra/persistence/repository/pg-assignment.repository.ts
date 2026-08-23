@@ -2,6 +2,12 @@ import { Injectable } from "@nestjs/common";
 
 import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import {
+  execAndTranslatePgConstraintViolations,
+  execRevisionedPgUpdate,
+  type PgConstraintViolationTranslation,
+} from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Assignment } from "../../../domain/assignment.aggregate";
 import { AssignmentId } from "../../../domain/assignment-id";
 import {
@@ -21,6 +27,23 @@ import { findAssignmentsByIds } from "./queries/assignment.find-by-ids.queries";
 import { insertAssignment } from "./queries/assignment.insert.queries";
 import { reconcileAssignmentShipments } from "./queries/assignment.reconcile-shipments.queries";
 import { updateAssignment } from "./queries/assignment.update.queries";
+
+const ACTIVE_ASSIGNMENT_UNIQUE_CONSTRAINTS = [
+  "assignments_tenant_active_vehicle_unique",
+  "assignments_tenant_active_driver_unique",
+  "assignments_tenant_active_route_unique",
+] as const;
+const ASSIGNMENT_WRITE_CONSTRAINT_TRANSLATIONS =
+  ACTIVE_ASSIGNMENT_UNIQUE_CONSTRAINTS.map(
+    (constraint): PgConstraintViolationTranslation => ({
+      sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
+      constraint,
+      toError: () =>
+        new ConcurrencyConflictException(
+          "An active Assignment was created or changed concurrently for this Route, Vehicle, or Driver.",
+        ),
+    }),
+  );
 
 @Injectable()
 export class PgAssignmentRepository extends AssignmentRepository {
@@ -102,7 +125,12 @@ export class PgAssignmentRepository extends AssignmentRepository {
 
   async add(tenantId: string, assignment: Assignment): Promise<void> {
     const persistence = AssignmentMapper.toPersistence(tenantId, assignment);
-    await this.database.exec(insertAssignment, persistence.root);
+    await execAndTranslatePgConstraintViolations({
+      database: this.database,
+      statement: insertAssignment,
+      params: persistence.root,
+      options: { translations: ASSIGNMENT_WRITE_CONSTRAINT_TRANSLATIONS },
+    });
     await this.database.exec(
       reconcileAssignmentShipments,
       persistence.shipments,
@@ -117,19 +145,22 @@ export class PgAssignmentRepository extends AssignmentRepository {
       tenantId,
       loadedAssignment.aggregate,
     );
-    const [row] = await this.database.exec(updateAssignment, {
-      ...persistence.root,
-      expectedRevision: loadedAssignment.expectedRevision,
+    const revision = await execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateAssignment,
+      params: {
+        ...persistence.root,
+        expectedRevision: loadedAssignment.expectedRevision,
+      },
+      options: {
+        aggregateName: "Assignment",
+        constraintTranslations: ASSIGNMENT_WRITE_CONSTRAINT_TRANSLATIONS,
+      },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Assignment was changed or removed by another operation.",
-      );
-    }
     await this.database.exec(
       reconcileAssignmentShipments,
       persistence.shipments,
     );
-    return row.revision;
+    return revision;
   }
 }

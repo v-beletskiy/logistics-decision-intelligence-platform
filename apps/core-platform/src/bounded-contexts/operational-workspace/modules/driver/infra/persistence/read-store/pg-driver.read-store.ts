@@ -10,12 +10,12 @@ import {
   DriverReadStore,
   type DriverListItem,
   type DriverSearchCriteria,
-} from "../../../app/queries/search-drivers/driver-read-store";
+} from "../../../app/ports/driver-read-store";
 import type {
-  DriverCursorSearch,
-  DriverPageSearch,
-  DriverSearch,
-} from "../../../app/queries/search-drivers/driver-search";
+  DriverCursorSearchOptions,
+  DriverPageSearchOptions,
+  DriverSearchOptions,
+} from "../../../app/queries/search-drivers/driver-search-options";
 import { DriverSearchCursor } from "./driver-search.cursor";
 import { DriverSearchMapper } from "./mappers/driver-search.mapper";
 import {
@@ -31,52 +31,52 @@ export class PgDriverReadStore extends DriverReadStore {
 
   async search(
     criteria: DriverSearchCriteria,
-    search: DriverSearch,
+    options: DriverSearchOptions,
   ): Promise<PaginationResult<DriverListItem>> {
-    return search.mode === "page"
-      ? this.searchPage(criteria, search)
-      : this.searchCursor(criteria, search);
+    return options.mode === "page"
+      ? this.searchPage(criteria, options)
+      : this.searchCursor(criteria, options);
   }
 
   private async searchPage(
     criteria: DriverSearchCriteria,
-    search: DriverPageSearch,
+    options: DriverPageSearchOptions,
   ): Promise<PageResult<DriverListItem>> {
     const rows = await this.database.exec(
       searchDriversPage,
-      DriverSearchMapper.toPageParams(criteria, search),
+      DriverSearchMapper.toPageParams(criteria, options),
     );
     const totalItems = rows[0]?.totalItems ?? 0;
     return {
       mode: "page",
       items: DriverSearchMapper.pageRowsToListItems(rows),
-      page: search.page,
-      pageSize: search.pageSize,
+      page: options.page,
+      pageSize: options.pageSize,
       totalItems,
-      totalPages: Math.ceil(totalItems / search.pageSize),
+      totalPages: Math.ceil(totalItems / options.pageSize),
     };
   }
 
   private async searchCursor(
     criteria: DriverSearchCriteria,
-    search: DriverCursorSearch,
+    options: DriverCursorSearchOptions,
   ): Promise<CursorPageResult<DriverListItem>> {
-    const position = search.cursor
-      ? DriverSearchCursor.decode(search.cursor, criteria, search.sort)
+    const position = options.cursor
+      ? DriverSearchCursor.decode(options.cursor, criteria, options.sort)
       : undefined;
     const rows = await this.database.exec(
       searchDriversCursor,
-      DriverSearchMapper.toCursorParams(criteria, search, position),
+      DriverSearchMapper.toCursorParams(criteria, options, position),
     );
-    const pageRows = rows.slice(0, search.pageSize);
+    const pageRows = rows.slice(0, options.pageSize);
     const lastReturnedRow = pageRows.at(-1);
     return {
       mode: "cursor",
       items: DriverSearchMapper.cursorRowsToListItems(pageRows),
-      pageSize: search.pageSize,
+      pageSize: options.pageSize,
       nextCursor:
-        rows.length > search.pageSize && lastReturnedRow
-          ? DriverSearchCursor.encode(lastReturnedRow, criteria, search.sort)
+        rows.length > options.pageSize && lastReturnedRow
+          ? DriverSearchCursor.encode(lastReturnedRow, criteria, options.sort)
           : undefined,
     };
   }

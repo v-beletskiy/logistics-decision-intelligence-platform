@@ -18,6 +18,7 @@ const tenantId = "00000000-0000-4000-8000-000000000010";
 function trackedDatabase(
   options: {
     readonly updateSucceeds?: boolean;
+    readonly updateError?: unknown;
     readonly insertError?: unknown;
   } = {},
 ): {
@@ -33,6 +34,7 @@ function trackedDatabase(
         return [];
       }
       if (statement === updateDriver) {
+        if (options.updateError !== undefined) throw options.updateError;
         return options.updateSucceeds === false ? [] : [{ revision: "4" }];
       }
       if (
@@ -154,6 +156,23 @@ test("save rejects a stale aggregate and does not touch children", async () => {
   await assert.rejects(
     () => new PgDriverRepository(database).save(tenantId, createLoadedDriver()),
     ConcurrencyConflictException,
+  );
+  assert.deepEqual(
+    calls.map((call) => call.statement),
+    [updateDriver],
+  );
+});
+
+test("save translates the known license uniqueness constraint", async () => {
+  const conflict = {
+    code: "23505",
+    constraint: "drivers_tenant_license_number_unique",
+  };
+  const { database, calls } = trackedDatabase({ updateError: conflict });
+
+  await assert.rejects(
+    new PgDriverRepository(database).save(tenantId, createLoadedDriver()),
+    DriverLicenseNumberConflictException,
   );
   assert.deepEqual(
     calls.map((call) => call.statement),

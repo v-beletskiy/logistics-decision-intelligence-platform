@@ -13,8 +13,8 @@ import { DriverStatus } from "../../../domain/driver.aggregate";
 import {
   DriverReadStore,
   type DriverSearchCriteria,
-} from "./driver-read-store";
-import type { DriverSearch } from "./driver-search";
+} from "../../ports/driver-read-store";
+import type { DriverSearchOptions } from "./driver-search-options";
 import { SearchDriversHandler } from "./search-drivers.handler";
 import {
   SearchDriversQuery,
@@ -39,11 +39,11 @@ class AllowAccessManager extends AccessManager {
 class RecordingDriverReadStore extends DriverReadStore {
   calls: Array<{
     criteria: DriverSearchCriteria;
-    search: DriverSearch;
+    options: DriverSearchOptions;
   }> = [];
 
-  async search(criteria: DriverSearchCriteria, search: DriverSearch) {
-    this.calls.push({ criteria, search });
+  async search(criteria: DriverSearchCriteria, options: DriverSearchOptions) {
+    this.calls.push({ criteria, options });
     return {
       mode: "page" as const,
       items: [],
@@ -79,7 +79,7 @@ test("Driver search defaults to the database id ordering", async () => {
 
   await handlerWith(drivers).exec(query());
 
-  assert.deepEqual(drivers.calls[0]?.search, {
+  assert.deepEqual(drivers.calls[0]?.options, {
     mode: "page",
     page: 1,
     pageSize: 25,
@@ -95,7 +95,7 @@ test("Driver cursor search has its own default database id ordering", async () =
 
   await handlerWith(drivers).exec(query({ mode: "cursor" }));
 
-  assert.deepEqual(drivers.calls[0]?.search, {
+  assert.deepEqual(drivers.calls[0]?.options, {
     mode: "cursor",
     pageSize: 25,
     cursor: undefined,
@@ -117,7 +117,7 @@ test("Driver page name search applies one stable direction to both fields", asyn
     }),
   );
 
-  assert.deepEqual(drivers.calls[0]?.search, {
+  assert.deepEqual(drivers.calls[0]?.options, {
     mode: "page",
     page: 1,
     pageSize: 25,
@@ -140,7 +140,7 @@ test("Driver cursor search uses one direction for its complete field set", async
     }),
   );
 
-  assert.deepEqual(drivers.calls[0]?.search, {
+  assert.deepEqual(drivers.calls[0]?.options, {
     mode: "cursor",
     pageSize: 25,
     cursor: undefined,

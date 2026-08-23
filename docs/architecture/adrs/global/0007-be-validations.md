@@ -15,6 +15,18 @@ invariant.
 
 ### Validation Responsibilities
 
+| Boundary                        | Primary validation                                     |
+| ------------------------------- | ------------------------------------------------------ |
+| HTTP, gRPC, integration event   | Versioned transport schema                             |
+| App configuration               | Application-owned AJV schema, then role narrowing      |
+| Relational persistence          | Mapper read contract, then Domain reconstitution       |
+| External provider response      | Compiled envelope schema, then semantic checks         |
+| Application use case            | Preconditions and referenced state                     |
+| Aggregate, entity, value object | Business invariants during creation and reconstitution |
+
+Runtime checks remain necessary because external, persisted, deserialized, and
+JavaScript callers are not protected by TypeScript types.
+
 #### Transport Validation
 
 Transport adapters validate incoming requests before constructing application commands.
@@ -137,6 +149,11 @@ intentionally overlap with transport validation: the transport layer fails
 fast for a malformed email, while an Email Value Object applies the Domain's
 complete semantics, such as canonicalization and permitted-domain policy.
 
+While creating/reconstituting domain aggregate/entity, there should be
+validation in place.
+String enum values are validated with `isEnumValue(Enum, value)`. `instanceof` is used when a Domain API requires
+an already-constructed nominal class such as `Weight`.
+
 #### Infrastructure Validation
 
 Infrastructure validates technical constraints at integration boundaries and
@@ -152,13 +169,40 @@ Infrastructure validation never decides a business policy and never converts a
 technical failure into a Domain Exception. It returns or translates failures as
 technical/infrastructure errors.
 
-Process app configuration is also an Infrastructure boundary. It validates that object through a fixed,
-application-owned json schema.
+Process app configuration is also an Infrastructure boundary. It uses an
+application-owned AJV schema for environment shape, coercion, and role-specific
+sections. `PROCESS_ROLE` selects exactly one role. After schema validation, a
+small assertion such as `assertApiConfigSections(config)` narrows the
+discriminated configuration for TypeScript; it does not replace the schema.
+
+Generic parsing belongs in the validation package, e.g. pure `parseUrl`. Configuration maps parser failures to
+`AppConfigurationError`.
 
 Inbound integration events validate a shared CloudEvents envelope and the
 producer-owned payload schema selected by its versioned event type before inbox
 processing. Invalid or unsupported messages are deterministic failures and must
 not enter retry processing.
+
+Outbound Integration Events, including their message size, are validated before
+entering the outbox. Batch publication validates every item before writing any
+item.
+
+External provider responses are untrusted. E.g. OSRM and VROOM responses use a
+compiled AJV schema for envelope shape followed by imperative semantic checks
+that depend on the request, such as expected matrix dimensions and route/job
+sets. Request-specific schemas are compiled statically.
+
+### Validation Primitives
+
+`@logistics-decision-intelligence/validation` is framework- and error-free:
+
+- predicates inspect unknown values and return booleans or type predicates;
+- normalizers transform already typed values;
+- parsers return a structured success or failure result.
+
+Names state the operation, such as `isPlainObject`, `isEnumValue`, and
+`parseUrl`. Domain helpers may compose these primitives and own the resulting
+Domain exception and stable code.
 
 ---
 

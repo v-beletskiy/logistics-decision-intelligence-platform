@@ -2,25 +2,28 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { RouteReference } from "../../../../../domain/route-reference";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
 import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity";
 import { MeasurementUnit } from "../../../../../domain/measurement-unit.enum";
 import { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum";
 import { RecommendationType } from "../../../../../domain/recommendation-type.enum";
 import { OptimizationId } from "../../../../optimization/domain/optimization-id";
-import { Recommendation } from "../../../domain/recommendation.aggregate";
-import { RecommendationAnalysis } from "../../../domain/recommendation-analysis.value-object";
 import { Finding } from "../../../domain/finding.entity";
+import { RecommendationAnalysis } from "../../../domain/recommendation-analysis.value-object";
+import { Recommendation } from "../../../domain/recommendation.aggregate";
 import { FindingCategory } from "../../../domain/recommendation.enums";
+import type { LoadedRecommendation } from "../../../domain/recommendation.repository";
+import { addRecommendations } from "./queries/recommendation.add-many.queries";
+import { addRecommendation } from "./queries/recommendation.add.queries";
 import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries";
 import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries";
-import { saveRecommendation } from "./queries/recommendation.save.queries";
-import { saveRecommendations } from "./queries/recommendation.save-many.queries";
+import { updateRecommendation } from "./queries/recommendation.update.queries";
 import { PgRecommendationRepository } from "./pg-recommendation.repository";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 
-function trackedDatabase(): {
+function trackedDatabase(options: { updateSucceeds?: boolean } = {}): {
   database: PgDatabase;
   calls: ReadonlyArray<{ statement: unknown; params: unknown }>;
 } {
@@ -28,10 +31,11 @@ function trackedDatabase(): {
   const database = {
     exec: async (statement: unknown, params: unknown) => {
       calls.push({ statement, params });
+      if (statement === updateRecommendation) {
+        return options.updateSucceeds === false ? [] : [{ revision: "8" }];
+      }
       return [];
     },
-    runInTransaction: async <TResult>(operation: () => Promise<TResult>) =>
-      operation(),
   } as unknown as PgDatabase;
   return { database, calls };
 }
@@ -68,27 +72,31 @@ function createRecommendation(): Recommendation {
   return recommendation;
 }
 
-test("save persists the root and reconciles facts and findings", async () => {
+function loadedRecommendation(): LoadedRecommendation {
+  return { aggregate: createRecommendation(), expectedRevision: "7" };
+}
+
+test("add inserts the root and reconciles facts and findings", async () => {
   const recommendation = createRecommendation();
   const { database, calls } = trackedDatabase();
 
-  await new PgRecommendationRepository(database).save(tenantId, recommendation);
+  await new PgRecommendationRepository(database).add(tenantId, recommendation);
 
   assert.deepEqual(
     calls.map((call) => call.statement),
     [
-      saveRecommendation,
+      addRecommendation,
       reconcileRecommendationFacts,
       reconcileRecommendationFindings,
     ],
   );
 });
 
-test("save reconciles children using their stable identities", async () => {
+test("add reconciles children using their stable identities", async () => {
   const recommendation = createRecommendation();
   const { database, calls } = trackedDatabase();
 
-  await new PgRecommendationRepository(database).save(tenantId, recommendation);
+  await new PgRecommendationRepository(database).add(tenantId, recommendation);
 
   const factsParams = calls[1]?.params as { ids: string[] };
   const findingsParams = calls[2]?.params as { ids: string[] };
@@ -102,11 +110,11 @@ test("save reconciles children using their stable identities", async () => {
   );
 });
 
-test("saveMany reconciles children for all recommendations", async () => {
+test("addMany inserts and reconciles all recommendations", async () => {
   const recommendations = [createRecommendation(), createRecommendation()];
   const { database, calls } = trackedDatabase();
 
-  await new PgRecommendationRepository(database).saveMany(
+  await new PgRecommendationRepository(database).addMany(
     tenantId,
     recommendations,
   );
@@ -114,7 +122,7 @@ test("saveMany reconciles children for all recommendations", async () => {
   assert.deepEqual(
     calls.map((call) => call.statement),
     [
-      saveRecommendations,
+      addRecommendations,
       reconcileRecommendationFacts,
       reconcileRecommendationFindings,
     ],
@@ -126,10 +134,50 @@ test("saveMany reconciles children for all recommendations", async () => {
   );
 });
 
-test("saveMany with no recommendations is a no-op", async () => {
+test("addMany with no recommendations is a no-op", async () => {
   const { database, calls } = trackedDatabase();
 
-  await new PgRecommendationRepository(database).saveMany(tenantId, []);
+  await new PgRecommendationRepository(database).addMany(tenantId, []);
 
   assert.deepEqual(calls, []);
+});
+
+test("save checks the expected revision before reconciling children", async () => {
+  const loaded = loadedRecommendation();
+  const { database, calls } = trackedDatabase();
+
+  const revision = await new PgRecommendationRepository(database).save(
+    tenantId,
+    loaded,
+  );
+
+  assert.equal(revision, "8");
+  assert.equal(
+    (calls[0]?.params as { expectedRevision: string }).expectedRevision,
+    "7",
+  );
+  assert.deepEqual(
+    calls.map((call) => call.statement),
+    [
+      updateRecommendation,
+      reconcileRecommendationFacts,
+      reconcileRecommendationFindings,
+    ],
+  );
+});
+
+test("save rejects a stale aggregate and does not touch children", async () => {
+  const { database, calls } = trackedDatabase({ updateSucceeds: false });
+
+  await assert.rejects(
+    new PgRecommendationRepository(database).save(
+      tenantId,
+      loadedRecommendation(),
+    ),
+    ConcurrencyConflictException,
+  );
+  assert.deepEqual(
+    calls.map((call) => call.statement),
+    [updateRecommendation],
+  );
 });

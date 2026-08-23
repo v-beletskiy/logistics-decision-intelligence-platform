@@ -4,9 +4,14 @@ Reusable Value Objects and domain primitives shared across bounded contexts.
 
 This module contains only generic concepts that have the same meaning throughout the system and do not belong to a specific bounded context.
 
+It is implemented under `apps/core-platform/src/shared/domain` for `core-platform` app. A
+bounded-context-level `domain/` is shared only by that context's modules and is
+not another Shared Kernel.
+
 ## Core - Domain Primitives
 
-The shared kernel `/core` provides framework-free base classes for common domain mechanics:
+The Shared Kernel `core/` provides framework-free base classes for common
+Domain mechanics:
 
 - `ValueObject` centralizes equality. Concrete value objects keep their own
   `create` factory, validation, and immutable state, and expose only the
@@ -29,9 +34,8 @@ either bypass domain validation or require a persistence-shaped constructor.
 The Core Platform Shared Kernel may contain Domain Exception-aware validation
 helpers whose semantics are identical across bounded contexts. These helpers
 compose non-throwing primitives from `@logistics-decision-intelligence/validation`
-and must not contain bounded-context business rules. Helpers are grouped by
-value category, such as `validation/string/` and `validation/uuid/`, with one
-exported function per source file.
+and own the resulting Domain exception and stable error code. They must not
+contain bounded-context business rules.
 
 ## Schema Representation
 
@@ -140,6 +144,10 @@ Invariants:
 Behavior:
 
 - Converts its numeric value to any supported Weight unit through `valueIn(...)`.
+
+`Weight` is a runtime class; `WeightUnit` is a runtime enum value set. Class
+instances may be checked with `instanceof Weight`; units are checked with
+`isEnumValue(WeightUnit, value)`.
 
 ---
 

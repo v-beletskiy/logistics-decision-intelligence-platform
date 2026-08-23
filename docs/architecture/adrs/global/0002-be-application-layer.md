@@ -18,10 +18,11 @@ The Application Layer may:
 - load and persist Aggregates through Repository ports;
 - invoke Domain Services;
 - invoke Shared Domain services and algorithms;
-- coordinate Infrastructure through abstractions (e.g. gRPC clients, Event Bus, Transaction Manager);
+- coordinate Infrastructure through Application-owned ports (e.g. optimizers,
+  event publishers, and transaction managers);
 - define transactional boundaries;
 - dispatch Domain Events raised by Aggregates;
-- translate Domain Events into Integration Events and dispatch them;
+- create Integration Events from Domain facts or as use-case outcomes;
 - persist Integration Events to the Transactional Outbox;
 - return DTOs.
 
@@ -74,6 +75,8 @@ Return
 
 Outbox is required only for distributed, cross-service events.
 
+Handlers expose `exec(...)`.
+
 ---
 
 ## Command Handler Rules
@@ -103,25 +106,22 @@ Outbox is required only for distributed, cross-service events.
 ## Application Input Contracts
 
 Commands and queries define explicit, transport-independent use-case contracts.
-Module-local `*Input` interfaces enumerate the fields accepted by the use case and
-may reuse selected Domain contract property types with `Pick`.
+Module-local `*Input` interfaces enumerate exactly the fields accepted by the
+use case.
 
 ```ts
-export interface RouteStopInput
-  extends Pick<
-    RouteStopDetails,
-    "operationType" | "plannedArrivalAt" | "plannedDepartureAt"
-  > {
+export interface CreateRouteStopInput {
   readonly shipmentId: string;
+  readonly operationType: RouteStopOperationType;
+  readonly plannedArrivalAt: Date;
+  readonly plannedDepartureAt: Date;
 }
 ```
 
-This keeps the accepted field set stable when the Domain contract gains fields,
-while selected property types remain aligned with the Domain. Application mappers
-convert boundary representations such as string identifiers into Domain value
-objects. When a Domain operation requires new data, the mapper or handler fails
-typechecking until the application deliberately sources that data and, when
-appropriate, extends its input contract.
+Inputs may reuse Domain property types, but they do not inherit broad aggregate
+construction or `Details` contracts. Update operations use intention-specific
+inputs rather than a generic partial patch. Application mappers convert boundary
+representations such as string identifiers into Domain value objects.
 
 Query inputs follow read-model requirements and are defined independently of
 Aggregate construction contracts. Transport DTOs remain responsible for external
@@ -161,21 +161,27 @@ The Application Layer may translate Domain Events into Integration Events.
 
 Integration Events are persisted to the Transactional Outbox.
 
-Example:
+Internal application-event handlers translate a published cross-context fact
+into a local command. They remain thin:
 
 ```text
-Aggregate
-      │
-      ▼
-RecommendationAcceptedDomainEvent
-      │
-      ▼
-Application Layer
-      │
-      ├── Persist Aggregate
-      ├── Dispatch RecommendationAcceptedDomainEvent
-      └── Send ApplyRecommendationCommand to Operational Workspace
+RouteInputChangedHandler
+        │
+        ▼
+QueueOptimizationCommand
+        │
+        ▼
+QueueOptimizationHandler
 ```
+
+An event handler does not contain the complete use case. Unimplemented or
+placeholder handlers are not registered in composition.
+
+`@OnEvent` is allowed as Application-layer subscription metadata. Event
+transport and dispatch implementations remain outside Domain code.
+
+The use case persists its Aggregate and required Integration Events in one
+transaction, then dispatches pending Domain Events after successful persistence.
 
 ---
 
@@ -191,23 +197,13 @@ Infrastructure failures (database, network, external services, etc.) are not con
 
 ---
 
-## Error Handling
-
-Application use cases do not recover from business errors.
-
-They propagate Domain Exceptions to the transport layer.
-
-Exception translation is performed by transport adapters.
-
-Infrastructure failures are propagated and handled outside the Domain.
-
 ## Dependencies
 
 The Application Layer may depend on:
 
 - Domain Modules;
 - Shared Domain;
-- Infrastructure abstractions (e.g. gRPC client interfaces, Event Bus interface, Transaction Manager).
+- Application-owned ports and shared Application abstractions.
 
 The Application Layer must not depend on:
 

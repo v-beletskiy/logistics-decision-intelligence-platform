@@ -10,8 +10,6 @@ import { InMemoryDomainEventBus } from "./in-memory-domain-event-bus";
 @Module({
   imports: [EventEmitterModule.forRoot()],
   providers: [
-    InMemoryApplicationEventBus,
-    InMemoryDomainEventBus,
     {
       provide: DomainEventBus,
       useExisting: InMemoryDomainEventBus,

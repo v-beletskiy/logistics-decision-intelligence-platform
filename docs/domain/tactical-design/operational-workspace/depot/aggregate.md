@@ -1,4 +1,4 @@
-# Operational Workspace - Depot aggregate root
+# Depot Aggregate
 
 Represents a physical operational location where Vehicles and Drivers are based.
 
@@ -9,16 +9,6 @@ Represents a physical operational location where Vehicles and Drivers are based.
 - An Active Depot cannot receive new Vehicles if its Vehicle capacity is reached.
 - An Active Depot cannot receive new Drivers if its Driver capacity is reached.
 - An Inactive/Closed Depot cannot receive new Vehicles or Drivers.
-
-## Commands
-
-- CreateDepotCommand
-- UpdateDepotDetailsCommand
-- UpdateDepotVehicleCapacityCommand
-- UpdateDepotDriverCapacityCommand
-- ActivateDepotCommand
-- InactivateDepotCommand
-- CloseDepotCommand
 
 ## Domain Events
 
@@ -44,9 +34,7 @@ Represents a physical operational location where Vehicles and Drivers are based.
 ## Repository Interfaces
 
 - DepotRepository
-  - findById(id: DepotId)
-  - find()
-  - save(depot: Depot)
-  - delete(id: DepotId)
+  - `findById`, `find`
+  - `add`, `save`
 
 ---

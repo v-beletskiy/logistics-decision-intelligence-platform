@@ -3,7 +3,7 @@ import type { PaginationResult } from "@logistics-decision-intelligence/querying
 import type { DriverCertificationInput } from "../../app/models/driver-certification.input";
 import type { DriverDetailsInput } from "../../app/models/driver-details.input";
 import type { RegisterDriverInput } from "../../app/models/register-driver.input";
-import type { DriverListItem } from "../../app/queries/search-drivers/driver-read-store";
+import type { DriverListItem } from "../../app/ports/driver-read-store";
 import type { SearchDriversQueryInput } from "../../app/queries/search-drivers/search-drivers.query";
 import type {
   CreatedDriverCertificationResponse,

@@ -43,6 +43,7 @@ Each Aggregate:
 - owns its own state;
 - protects its invariants;
 - exposes behavior, not setters;
+- validates invariant-bearing state during creation and reconstitution;
 - raises Domain Events when business facts occur.
 
 Aggregates never:
@@ -92,6 +93,9 @@ Value Objects:
 - have no identity;
 - are compared by value;
 - encapsulate validation and domain semantics.
+
+Runtime validation remains necessary because TypeScript types disappear at
+runtime and persisted or external data may be malformed.
 
 Examples:
 
@@ -163,6 +167,7 @@ Allowed examples:
 
 - findById()
 - findRunningByRouteId()
+- findByIdForUpdate()
 - save()
 - saveMany()
 - delete()
@@ -171,7 +176,9 @@ Allowed examples:
 
 ## Business Exceptions
 
-Business failures are represented by Domain Exceptions.
+Business failures are represented by Domain Exceptions with mandatory stable
+error codes. Codes are selected from the owning module's catalog; error
+categories and uniqueness rules are defined by ADR-0009.
 
 Examples:
 
@@ -190,6 +197,15 @@ Dedicated Domain Factories should only be introduced when Aggregate creation req
 
 Avoid factories that merely wrap constructors.
 
+Creation and mutation parameters are intention-specific. Avoid generic
+`Details` or partial-update contracts that accumulate unrelated optional
+fields. Parameter type stays with the Aggregate or operation that owns
+it unless it is independently reusable.
+
+Domain organization remains flat while cohesive. Single event or policy files
+do not justify `events/` or `policies/` folders; meaningful sub-areas may be
+grouped when several files warrant it.
+
 ---
 
 ## Dependencies
@@ -197,7 +213,10 @@ Avoid factories that merely wrap constructors.
 The Domain Layer may depend only on:
 
 - itself;
-- Shared Kernel (`/shared-domain/shared-kernel`).
+- the cross-context Shared Kernel (`src/shared/domain`).
+
+Bounded-context-level `domain/` already contains concepts shared by that
+context's modules.
 
 The Domain Layer must never depend on:
 

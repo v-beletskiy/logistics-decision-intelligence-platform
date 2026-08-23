@@ -4,12 +4,12 @@ import type {
   DriverCertificationListItem,
   DriverListItem,
   DriverSearchCriteria,
-} from "../../../../app/queries/search-drivers/driver-read-store";
+} from "../../../../app/ports/driver-read-store";
 import {
-  type DriverCursorSearch,
-  type DriverPageSearch,
+  type DriverCursorSearchOptions,
+  type DriverPageSearchOptions,
   type DriverPageSort,
-} from "../../../../app/queries/search-drivers/driver-search";
+} from "../../../../app/queries/search-drivers/driver-search-options";
 import {
   hydratePersistenceData,
   parsePersistedTimestamp,
@@ -69,27 +69,27 @@ type CursorPositionParams = Pick<
 export class DriverSearchMapper {
   static toPageParams(
     criteria: DriverSearchCriteria,
-    search: DriverPageSearch,
+    options: DriverPageSearchOptions,
   ): ISearchDriversPageParams {
     return {
       ...criteria,
-      ...DriverSearchMapper.toPageSortParams(search.sort),
-      offset: pageOffset(search),
-      limit: search.pageSize,
+      ...DriverSearchMapper.toPageSortParams(options.sort),
+      offset: pageOffset(options),
+      limit: options.pageSize,
     };
   }
 
   static toCursorParams(
     criteria: DriverSearchCriteria,
-    search: DriverCursorSearch,
+    options: DriverCursorSearchOptions,
     position: DriverSearchCursorPosition | undefined,
   ): ISearchDriversCursorParams {
     return {
       ...criteria,
-      sortBy: search.sort.by,
-      direction: search.sort.direction,
+      sortBy: options.sort.by,
+      direction: options.sort.direction,
       ...DriverSearchMapper.toCursorPositionParams(position),
-      limit: search.pageSize + 1,
+      limit: options.pageSize + 1,
     };
   }
 

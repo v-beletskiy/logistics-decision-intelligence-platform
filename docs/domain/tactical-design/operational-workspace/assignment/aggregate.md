@@ -1,4 +1,4 @@
-# Operational Workspace - Assignment aggregate root
+# Assignment Aggregate
 
 Represents the allocation of operational resources required to execute a Route.
 
@@ -13,15 +13,6 @@ Represents the allocation of operational resources required to execute a Route.
 - Only a created Assignment can be started.
 - An Assignment is active while in the `Created` or `InProgress` state.
 - A Vehicle, Driver, or Route participates in at most one active Assignment.
-
-## Commands
-
-- CreateAssignmentCommand
-- ReassignVehicleCommand
-- ReassignDriverCommand
-- StartAssignmentCommand
-- CompleteAssignmentCommand
-- CancelAssignmentCommand
 
 ## Domain Events
 
@@ -43,13 +34,10 @@ Represents the allocation of operational resources required to execute a Route.
 ## Repository Interfaces
 
 - AssignmentRepository
-  - findById(id: AssignmentId)
-  - existsActiveForRoute(routeId: RouteId)
-  - existsRunningForRoute(routeId: RouteId)
-  - existsActiveForVehicle(vehicleId: VehicleId)
-  - existsActiveForDriver(driverId: DriverId)
-  - save(assignment: Assignment)
-  - delete(id: AssignmentId)
+  - `findById`, `findByIds`
+  - `existsActiveForRoute`, `existsRunningForRoute`
+  - `existsActiveForVehicle`, `existsActiveForDriver`
+  - `add`, `save`
 
 ## References to other aggregates
 

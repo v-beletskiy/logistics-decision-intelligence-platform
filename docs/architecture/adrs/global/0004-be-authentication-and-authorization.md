@@ -101,14 +101,9 @@ roles?
 scopes?
 ```
 
-The Application Layer never depends on:
-
-- JWT;
-- NestJS Request;
-- HTTP;
-- gRPC metadata.
-
-Controllers (or transport adapters) translate transport-specific authentication into Identity before invoking application use cases.
+Version 1 user accounts are tenant-local: each account belongs to exactly one
+tenant. Account identifiers remain globally unique UUIDs, and email is globally
+unique to keep local login unambiguous.
 
 ---
 
@@ -178,8 +173,13 @@ AccessManager.authorize()
 
 ↓
 
-Aggregate.execute()
+Aggregate behavior
 ```
+
+Core Platform handlers declare required permissions with `@Authorized`. The
+shared handler pipeline performs the check before `exec(...)`; handlers do not
+duplicate authorization plumbing. Contextual CASL policies remain explicit and
+deny by default.
 
 ---
 
@@ -205,8 +205,9 @@ Permissions are defined in code under:
 
 ```text
 shared/
-└── access-control/
-    └── permissions/
+└── modules/
+    └── access-control/
+        └── app/permissions/
 ```
 
 Permission dynamicmanagement is outside the scope of Version 1.
@@ -235,21 +236,11 @@ Authorization infrastructure is shared across all Bounded Contexts.
 
 ```text
 shared/
-
-├── access-control/
-    ├── identity/
-    ├── authorization/
-    │   ├── access-manager.ts
-    │   └── authorization.exceptions.ts
-    │
-    ├── roles/
-    ├── permissions/
-    ├── policies/
-    ├── casl/
-    │   ├── ability.factory.ts
-    │   ├── casl-access-manager.ts
-    │   └── conditions/
-    └── jwt/
+└── modules/
+    └── access-control/
+        ├── app/
+        ├── domain/
+        └── infra/
 ```
 
 Responsibilities:
@@ -264,6 +255,10 @@ Responsibilities:
 Administration owns identity data.
 
 Shared Access Control owns authorization evaluation.
+
+Internal automation uses identities from the typed `SYSTEM_PRINCIPALS` catalog.
+Stable principal IDs are not secrets, but they are centralized because they
+affect authorization and audit attribution. They use namespaced semantic IDs.
 
 ---
 

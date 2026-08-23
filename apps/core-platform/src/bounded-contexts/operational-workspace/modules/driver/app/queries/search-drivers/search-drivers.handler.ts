@@ -7,13 +7,16 @@ import {
 import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
 import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
 import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { DriverReadStore, type DriverListItem } from "./driver-read-store";
+import {
+  DriverReadStore,
+  type DriverListItem,
+} from "../../ports/driver-read-store";
 import {
   DEFAULT_DRIVER_CURSOR_SORT,
   DEFAULT_DRIVER_PAGE_SORT,
   type DriverCursorSort,
   type DriverPageSort,
-} from "./driver-search";
+} from "./driver-search-options";
 import {
   SearchDriversQuery,
   type SearchDriversQueryInput,

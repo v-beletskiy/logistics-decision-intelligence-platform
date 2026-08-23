@@ -1,4 +1,4 @@
-# Operational Workspace - Driver aggregate root
+# Driver Aggregate
 
 A transportation operator responsible for executing Assignments using a Vehicle.
 
@@ -9,17 +9,6 @@ A transportation operator responsible for executing Assignments using a Vehicle.
 - A Driver owns at most ten Certifications.
 - Certification identifiers and `(type, credential number)` pairs are unique within a Driver.
 - Availability cannot change while a Driver is suspended.
-
-## Commands
-
-- RegisterDriverCommand
-- UpdateDriverDetailsCommand
-- ChangeDriverAvailabilityCommand
-- SuspendDriverCommand
-- ReinstateDriverCommand
-- AddDriverCertificationCommand
-- UpdateDriverCertificationCommand
-- RemoveDriverCertificationCommand
 
 ## Domain Events
 

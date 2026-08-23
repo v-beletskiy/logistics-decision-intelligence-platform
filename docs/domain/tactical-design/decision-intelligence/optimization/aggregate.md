@@ -1,53 +1,30 @@
-# Decision Intelligence - Optimization aggregate root
+# Optimization Aggregate
 
-Represents the execution of an optimization process (Route-related optimizations only in Version 1).
+An Optimization records one attempt to optimize a Route at a specific input
+version.
 
 ## Invariants
 
-- An Optimization references exactly one Route.
-- An Optimization stores exactly one input Route version.
-- Only one Optimization may be active for a Route at a time. (enforced by domain service)
-- A Completed, Cancelled, or Failed Optimization cannot transition back to Running.
-- Recommendations can only be published by a Completed Optimization.
+- It references exactly one Route and positive input version.
+- Status is one of `Queued`, `Running`, `Completed`, `Cancelled`, or `Failed`.
+- Only a queued Optimization may start.
+- Only a running Optimization may complete.
+- Terminal Optimizations cannot return to an active state.
 
-## Commands
-
-- QueueOptimizationCommand
-- StartOptimizationCommand
-- CompleteOptimizationCommand
-- CancelOptimizationCommand
-- FailOptimizationCommand
+At most one Optimization may be active (`Queued` or `Running`) per tenant and
+Route. The Application coordinates the change; the repository and partial
+unique database index enforce consistency.
 
 ## Domain Events
 
-- OptimizationQueuedDomainEvent
-- OptimizationStartedDomainEvent
-- OptimizationCompletedDomainEvent
-- OptimizationCancelledDomainEvent
-- OptimizationFailedDomainEvent
+- `OptimizationQueuedDomainEvent`
+- `OptimizationStartedDomainEvent`
+- `OptimizationCompletedDomainEvent`
+- `OptimizationCancelledDomainEvent`
+- `OptimizationFailedDomainEvent`
 
-## Enums
+## Repository
 
-- OptimizationStatus
-  - Queued
-  - Running
-  - Completed
-  - Cancelled
-  - Failed
-
-An Optimization is active when its status is Queued or Running.
-
-## Repository Interfaces
-
-- OptimizationRepository
-  - findById(id: OptimizationId)
-  - findActiveByRouteId(routeId: RouteId)
-  - save(optimization: Optimization)
-  - update(optimization: Optimization)
-  - delete(id: OptimizationId)
-
-## References to other aggregates
-
-- RouteId
-
----
+`OptimizationRepository` exposes `findById`,
+`findActiveByRouteIdForUpdate`, `add`, `save`, and `delete`. Loaded Aggregates
+carry their expected revision for optimistic concurrency.

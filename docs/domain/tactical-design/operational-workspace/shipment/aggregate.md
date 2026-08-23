@@ -1,4 +1,4 @@
-# Operational Workspace - Shipment aggregate root
+# Shipment Aggregate
 
 A transportation request throughout its lifecycle representing the movement of goods from an origin location to a destination location.
 
@@ -11,18 +11,6 @@ A transportation request throughout its lifecycle representing the movement of g
 - Pickup must be completed before Delivery.
 - A Cancelled Shipment cannot be executed.
 - A Completed Shipment cannot be modified.
-
-## Commands
-
-- CreateShipmentCommand
-- UpdateShipmentDetailsCommand
-- StartShipmentCommand
-- CompleteShipmentCommand
-- CancelShipmentCommand
-- CompletePickupCommand
-- CompleteDeliveryCommand
-- AssignRouteCommand
-- UnassignRouteCommand
 
 ## Domain Events
 
@@ -61,10 +49,8 @@ A transportation request throughout its lifecycle representing the movement of g
 ## Repository Interfaces
 
 - ShipmentRepository
-  - findById(id: ShipmentId)
-  - findByIds(ids: readonly ShipmentId[])
-  - save(shipment: Shipment)
-  - delete(id: ShipmentId)
+  - `findById`, `findByIds`
+  - `add`, `save`
 
 ## References to other aggregates
 

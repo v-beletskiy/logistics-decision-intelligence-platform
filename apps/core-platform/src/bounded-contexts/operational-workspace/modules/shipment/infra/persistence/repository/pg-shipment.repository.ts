@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Shipment } from "../../../domain/shipment.aggregate";
 import { ShipmentId } from "../../../domain/shipment-id";
 import {
@@ -59,15 +59,14 @@ export class PgShipmentRepository extends ShipmentRepository {
     tenantId: string,
     loadedShipment: LoadedShipment,
   ): Promise<string> {
-    const [row] = await this.database.exec(updateShipment, {
-      ...ShipmentMapper.toPersistence(tenantId, loadedShipment.aggregate),
-      expectedRevision: loadedShipment.expectedRevision,
+    return execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateShipment,
+      params: {
+        ...ShipmentMapper.toPersistence(tenantId, loadedShipment.aggregate),
+        expectedRevision: loadedShipment.expectedRevision,
+      },
+      options: { aggregateName: "Shipment" },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Shipment was changed or removed by another operation.",
-      );
-    }
-    return row.revision;
   }
 }

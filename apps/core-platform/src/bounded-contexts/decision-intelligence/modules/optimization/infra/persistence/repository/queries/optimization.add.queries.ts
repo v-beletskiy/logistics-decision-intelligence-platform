@@ -11,9 +11,7 @@ export interface IAddOptimizationParams {
 }
 
 /** 'AddOptimization' return type */
-export interface IAddOptimizationResult {
-  id: string;
-}
+export type IAddOptimizationResult = void;
 
 /** 'AddOptimization' query type */
 export interface IAddOptimizationQuery {
@@ -62,7 +60,7 @@ const addOptimizationIR: any = {
     },
   ],
   statement:
-    "INSERT INTO decision_intelligence.optimizations (\n  tenant_id,\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\n)\nVALUES (\n  :tenantId!,\n  :id!,\n  :routeId!,\n  :status!,\n  :inputVersion,\n  1\n)\nON CONFLICT (tenant_id, route_id)\nWHERE status IN ('QUEUED', 'RUNNING')\nDO NOTHING\nRETURNING id",
+    "INSERT INTO decision_intelligence.optimizations (\n  tenant_id,\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\n)\nVALUES (\n  :tenantId!,\n  :id!,\n  :routeId!,\n  :status!,\n  :inputVersion,\n  1\n)",
 };
 
 /**
@@ -84,10 +82,6 @@ const addOptimizationIR: any = {
  *   :inputVersion,
  *   1
  * )
- * ON CONFLICT (tenant_id, route_id)
- * WHERE status IN ('QUEUED', 'RUNNING')
- * DO NOTHING
- * RETURNING id
  * ```
  */
 export const addOptimization = new PreparedQuery<

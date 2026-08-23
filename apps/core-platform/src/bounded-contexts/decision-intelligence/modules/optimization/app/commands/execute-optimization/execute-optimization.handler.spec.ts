@@ -72,7 +72,7 @@ class StubOptimizationRepository extends OptimizationRepository {
     return "2";
   }
 
-  async findActiveByRouteIdForReplacement(): Promise<null> {
+  async findActiveByRouteIdForUpdate(): Promise<null> {
     throw new Error("Not used by this test.");
   }
 
@@ -88,17 +88,14 @@ class StubOptimizationRepository extends OptimizationRepository {
 class RecordingRecommendationRepository extends RecommendationRepository {
   saved: readonly Recommendation[] = [];
 
-  async saveMany(
+  async addMany(
     _tenantId: string,
     recommendations: readonly Recommendation[],
   ): Promise<void> {
     this.saved = recommendations;
   }
 
-  async findById(
-    _tenantId: string,
-    _id: RecommendationId,
-  ): Promise<Recommendation | null> {
+  async findById(_tenantId: string, _id: RecommendationId): Promise<null> {
     throw new Error("Not used by this test.");
   }
 
@@ -110,7 +107,11 @@ class RecordingRecommendationRepository extends RecommendationRepository {
     throw new Error("Not used by this test.");
   }
 
-  async save(): Promise<void> {
+  async add(): Promise<void> {
+    throw new Error("Not used by this test.");
+  }
+
+  async save(): Promise<string> {
     throw new Error("Not used by this test.");
   }
 

@@ -10,7 +10,9 @@ The system requires strong domain boundaries (DDD), but the expected initial sca
 
 The Core Platform will be implemented as a modular monolith.
 
-Modules communicate through well-defined interfaces within a single deployable application.
+Bounded contexts communicate through producer-owned public APIs and typed
+application events within one deployment. Consumers never import another
+context's internal handlers or Domain model.
 
 The AI Platform will be implemented as an independent service.
 

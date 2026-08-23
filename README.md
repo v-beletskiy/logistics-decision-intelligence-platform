@@ -2,10 +2,10 @@
 
 The project documentation is organized into multiple areas:
 
-- **MVP** — the first end-to-end delivery scope and its explicit exclusions
-- **C4** — software architecture (LikeC4 DSL)
-- **ADRs** — Architecture Decision Records
-- **Domain** — Domain-Driven Design documentation (Markdown and Excalidraw)
+- [Vision](docs/vision.md) and [capability map](docs/capability-map.md)
+- [Architecture Decision Records](docs/architecture/adrs/)
+- [C4 architecture](docs/architecture/c4/) maintained in LikeC4
+- [Domain design](docs/domain/) covering strategic and tactical models
 
 ### C4 Diagrams
 
@@ -44,6 +44,9 @@ newer for Compose Watch.
 
 For each app create the environment file. Located at each app root (under `apps/<app>/.env`).
 These files are supplied to the applications by Docker Compose.
+
+Core Platform starts one role per process through `PROCESS_ROLE`: `api` serves
+HTTP/gRPC transports and `worker` runs background consumers.
 
 Start the local stack:
 

@@ -1,5 +1,7 @@
 import { RouteReference } from "../../../../../../domain/route-reference";
 import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { MeasurementUnit } from "../../../../../../domain/measurement-unit.enum";
+import { RecommendationMetric } from "../../../../../../domain/recommendation-metric.enum";
 import { RecommendationType } from "../../../../../../domain/recommendation-type.enum";
 import { RecommendationFact } from "../../../../../../domain/recommendation-fact.entity";
 import { RecommendationFactId } from "../../../../../../domain/recommendation-fact-id";
@@ -9,24 +11,39 @@ import { FindingId } from "../../../../domain/finding-id";
 import { Recommendation } from "../../../../domain/recommendation.aggregate";
 import { RecommendationAnalysis } from "../../../../domain/recommendation-analysis.value-object";
 import {
+  FindingCategory,
   RecommendationStatus,
 } from "../../../../domain/recommendation.enums";
 import { RecommendationId } from "../../../../domain/recommendation-id";
 import type { IFindRecommendationByIdResult } from "../queries/recommendation.find-by-id.queries";
 import type { IReconcileRecommendationFactsParams } from "../queries/recommendation.reconcile-facts.queries";
 import type { IReconcileRecommendationFindingsParams } from "../queries/recommendation.reconcile-findings.queries";
-import type { ISaveRecommendationParams } from "../queries/recommendation.save.queries";
-import type { ISaveRecommendationsParams } from "../queries/recommendation.save-many.queries";
-import {
-  decodePersistedFacts,
-  decodePersistedFindings,
-} from "./recommendation.persistence-decoder";
+import type { IAddRecommendationParams } from "../queries/recommendation.add.queries";
+import type { IAddRecommendationsParams } from "../queries/recommendation.add-many.queries";
+
+interface RecommendationFactPersistenceData {
+  readonly id: string;
+  readonly metric: RecommendationMetric;
+  readonly baselineValue: number;
+  readonly recommendedValue: number;
+  readonly unit: MeasurementUnit;
+  readonly improvement: number;
+}
+
+interface FindingPersistenceData {
+  readonly id: string;
+  readonly category: FindingCategory;
+  readonly title: string;
+  readonly description: string;
+}
 
 /** Maps between the Recommendation aggregate and its PostgreSQL representation. */
 export class RecommendationMapper {
   static toDomain(row: IFindRecommendationByIdResult): Recommendation {
     return hydratePersistenceData("recommendation", () => {
-      const facts = decodePersistedFacts(row.facts).map((fact) => {
+      const facts = (
+        row.facts as unknown as readonly RecommendationFactPersistenceData[]
+      ).map((fact) => {
         return RecommendationFact.reconstitute(
           RecommendationFactId.from(fact.id),
           {
@@ -38,14 +55,14 @@ export class RecommendationMapper {
           },
         );
       });
-      const findings = decodePersistedFindings(row.findings).map(
-        (finding) => {
-          return Finding.reconstitute(FindingId.from(finding.id), {
-            category: finding.category,
-            title: finding.title,
-            description: finding.description,
-          });
-        },
+      const findings = (
+        row.findings as unknown as readonly FindingPersistenceData[]
+      ).map((finding) =>
+        Finding.reconstitute(FindingId.from(finding.id), {
+          category: finding.category,
+          title: finding.title,
+          description: finding.description,
+        }),
       );
       const analysis =
         row.summary !== null && row.confidence !== null
@@ -70,7 +87,7 @@ export class RecommendationMapper {
   static toPersistence(
     tenantId: string,
     recommendation: Recommendation,
-  ): ISaveRecommendationParams {
+  ): IAddRecommendationParams {
     return {
       tenantId,
       id: recommendation.id.value,
@@ -84,10 +101,10 @@ export class RecommendationMapper {
     };
   }
 
-  static toSaveManyPersistence(
+  static toAddManyPersistence(
     tenantId: string,
     recommendations: readonly Recommendation[],
-  ): ISaveRecommendationsParams {
+  ): IAddRecommendationsParams {
     return {
       tenantId,
       ids: recommendations.map((recommendation) => recommendation.id.value),

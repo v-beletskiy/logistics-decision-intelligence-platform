@@ -55,6 +55,55 @@ Their responsibility is:
 
 Modules contain no business logic.
 
+Each runtime process has its own root under `src/composition/`:
+
+- API composition wires stuff like HTTP, gRPC, authentication, outbound messaging,
+  and in-process application-event subscriptions;
+- Worker composition wires stuff like consumers, schedulers, and their required adapters;
+- CLI composition wires stuff like requested administration workflow.
+
+The `PROCESS_ROLE` configuration selects one role (`api` or `worker`). A process
+does not instantiate transports or consumers owned only by another role.
+
+Feature-specific Nest wiring belongs in that feature's `composition/` folder.
+Those modules may import both Application handlers and Infrastructure adapters;
+they are composition code, not Application-layer code.
+
+Module placement follows what is being composed:
+
+| Module responsibility                                                    | Location                    |
+| ------------------------------------------------------------------------ | --------------------------- |
+| Process or bounded-context assembly                                      | `composition/`              |
+| Feature wiring that combines handlers, policies, and adapters            | feature `composition/`      |
+| Packaging providers owned by one adapter, such as PostgreSQL persistence | owning `infra/<adapter>/`   |
+| Transport entry points, such as gRPC controllers                         | owning `infra/<transport>/` |
+
+`app/` and `domain/` do not own Nest modules. A module under `infra/` must remain
+adapter-focused; once it selects providers across layers or transports, it is
+feature composition and moves to `composition/`. Avoid one-provider adapter
+modules unless that provider set has an independent reuse or lifecycle boundary.
+
+Feature composition follows the CQRS split consistently. Implemented command
+handlers belong to `<Feature>CommandModule`; implemented query handlers belong
+to `<Feature>QueryModule`. A feature with both always defines both modules,
+regardless of whether they are currently composed by the same runtime. Do not
+create an empty command or query module when that side has no implemented
+handlers.
+
+Name feature composition by its responsibility: a standard handler slice uses
+`CommandModule` or `QueryModule`; a workflow-specific slice uses its workflow
+name, such as `OptimizationTriggerModule` or
+`OptimizationWorkerModule`. Bounded-context composition is named for
+its boundary or process role (`ApiModule`, `WorkerModule`, `PublicApiModule`) and
+imports feature modules directly. Do not add bounded-context `CommandModule` or
+`QueryModule` pass-through modules that only re-export feature modules.
+
+When an API process subscribes to in-process application events, the bounded
+context owns a `<BoundedContext>ApplicationEventsModule` in `composition/`. It
+registers the event handlers and imports their feature workflow modules. This
+is an inbound application-event boundary, not a feature `CommandModule` or an
+Infrastructure transport module.
+
 ---
 
 ### Dependency Injection Rules
@@ -99,16 +148,21 @@ providers: [
 
 The provider registration location is the only place where implementation details are selected.
 
+`Factory` and `Provider` are semantic names, not required suffixes for DI
+classes. A factory constructs clients or objects; a provider obtains a value or
+capability. For example, `GrpcClientFactory` remains appropriate because client
+construction owns connection and authentication configuration.
+
 ### Injection Tokens
 
 Use the constructor parameter type as the injection token whenever that type exists at runtime:
 
-| Dependency contract | Injection convention |
-| --- | --- |
-| Concrete class | Constructor type only |
-| Abstract-class port | Constructor type only |
+| Dependency contract                       | Injection convention         |
+| ----------------------------------------- | ---------------------------- |
+| Concrete class                            | Constructor type only        |
+| Abstract-class port                       | Constructor type only        |
 | Interface with a `Symbol` or string token | `@Inject(TOKEN)` is required |
-| Deliberately aliased token | `@Inject(TOKEN)` is required |
+| Deliberately aliased token                | `@Inject(TOKEN)` is required |
 
 Repository ports in this codebase are abstract classes. They are intentionally framework-independent runtime contracts and may be used directly as provider tokens. Do not add `@Inject(RepositoryPort)` when it duplicates the constructor parameter type.
 
@@ -213,7 +267,9 @@ Component Tests replace Infrastructure through NestJS provider overrides without
 
 ### Module Boundaries
 
-Every Bounded Context owns its own NestJS Module.
+Every Bounded Context owns its own NestJS composition. Cross-module or public-API
+wiring uses a bounded-context `composition/` module; transport modules remain
+under their owning bounded context or domain module.
 
 Example:
 
@@ -228,9 +284,13 @@ DecisionIntelligenceModule
 Bounded Contexts communicate only through:
 
 - Integration Events;
-- gRPC abstractions.
+- typed internal application events;
+- bounded-context public query contracts;
+- external HTTP or gRPC contracts when deployed separately.
 
-They never inject services directly from another Bounded Context.
+They never inject or import another context's internal handlers. A provider's
+public query contract is implemented by provider-owned composition and consumed
+through a consumer-owned adapter.
 
 ---
 
@@ -241,6 +301,7 @@ They never inject services directly from another Bounded Context.
 - Infrastructure implementations are replaceable.
 - All wiring is centralized inside NestJS Modules.
 - Modules perform composition only and contain no business logic.
+- Only implemented handlers and adapters are registered.
 
 ---
 

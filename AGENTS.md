@@ -30,8 +30,11 @@ Read the following documents before implementing related changes:
 
 - docs/vision.md
 - docs/capability-map.md
-- docs/architecture/\*
-- docs/domain/\*
+- docs/architecture/adrs/global/\*
+- docs/architecture/adrs/core-platform/\*
+- docs/architecture/adrs/web-app/\*
+- docs/domain/strategic-design/\*
+- docs/domain/tactical-design/\*
 
 Architecture Decision Records (ADRs) located at `docs/architecture/adrs/` define implementation conventions and take precedence over assumptions.
 

@@ -69,9 +69,9 @@ Business Transaction
 └──────────────────────────────────────┘
                  │
                  ├── Persist Inbox record
-                 ├── Process RecommendationAnalysisRequestedIntegrationEvent
+                 ├── Process recommendationAnalysisRequestedV1
                  ├── Generate analysis
-                 ├── Persist RecommendationAnalysisCompletedIntegrationEvent
+                 ├── Persist recommendationAnalysisCompletedV1
                  │   to Outbox
                  └── Commit
                           │
@@ -87,7 +87,7 @@ Business Transaction
 └──────────────────────────────────────┘
                  │
                  ├── Persist Inbox record
-                 └── Process RecommendationAnalysisCompletedIntegrationEvent
+                 └── Process recommendationAnalysisCompletedV1
 ```
 
 This approach enables reliable, eventually consistent communication between independently deployed services.
@@ -102,35 +102,31 @@ This approach enables reliable, eventually consistent communication between inde
 
 ## Inter-Bounded Context Communication
 
-Bounded Contexts communicate through application events. An event crossing a
-deployment boundary is an **Integration Event**; one staying inside the modular
-monolith is an internal application event.
+Bounded Contexts expose explicit, producer-owned `public-api/` contracts. A
+consumer may depend on those contracts but never on the producer's handlers,
+Domain, or Infrastructure.
 
-Direct dependencies between Bounded Contexts are prohibited.
+In-process write notification uses typed internal application events. In-process
+reads use narrow query contracts when synchronous data is required. The
+consumer maps a provider-neutral contract through a consumer-owned adapter in
+its own Infrastructure.
 
 ```
 Operational Workspace
-        │
-        │ RouteOptimizationInputChangedApplicationEvent
-        ▼
-Application Event Bus
-        │
-        ▼
-Decision Intelligence
+    public-api/RoutePlanningSnapshotQuery
+                    │
+                    ▼
+Decision Intelligence consumer-owned query adapter
+                    │
+                    ▼
+        RouteOptimizationInputQuery
 ```
 
-The **Application Event Bus** is an abstraction over event delivery.
+Provider contracts use the provider's language.
 
-Version 1 provides:
-
-- an **InMemoryApplicationEventBus** implementation for write communication between Bounded Contexts inside the modular monolith;
-- a **read-contract** for read communication between Bounded Contexts inside the modular monolith;
-- an **IntegrationEventPublisher** output port implemented through the
-  transactional outbox for communication between independently deployed services.
-
-This provides a consistent programming model regardless of deployment topology.
-
-Communication between Bounded Contexts inside the modular monolith does not use the Outbox or Inbox patterns. If a Bounded Context is later extracted into an independent service, the same Application Event Bus abstraction can be backed by a distributed implementation using the Outbox and Inbox patterns without changing application or domain logic. While read-contract models get substituted with sync calls.
+Crossing a process or deployment boundary requires a versioned transport
+contract. Internal application events and Integration Events intentionally use
+different types and delivery guarantees.
 
 ---
 
@@ -159,36 +155,11 @@ An Integration Event is published only when another bounded context or external 
 
 Integration Events expose only the information required by consumers and never expose internal domain objects or business implementation details.
 
-```
-Aggregate
-      │
-      ▼
-Domain Event
-      │
-      ▼
-Application Use Case
-      │
-      ├── Persist business transaction
-      │
-      └── Map Domain Event
-              │
-              ▼
-      Integration Event
-              │
-              ├──────────────────────────────┐
-              │                              │
-              ▼                              ▼
- InMemoryApplicationEventBus         Transactional Outbox
- (same service)                              │
-              │                              ▼
-              ▼                      Outbox Publisher
- Another Bounded Context                     │
- (same service)                              ▼
-                                   Distributed Message Broker
-                                             │
-                                             ▼
-                                      Another Service
-```
+Internal application events are created with `defineInternalApplicationEvent`.
+Their type identifier is stable and unique within the process. Integration
+Events are created from a published contract through a producer-scoped event
+factory and are persisted directly to the transactional outbox. An intermediate
+internal event is not introduced unless multiple in-process consumers need it.
 
 This separation allows the internal domain model to evolve independently from published integration contracts.
 
@@ -206,12 +177,47 @@ This separation allows the internal domain model to evolve independently from pu
   metadata is authorization proof.
 - `source` identifies the logical producing bounded context using
   `urn:logistics-decision-intelligence:<bounded-context>`. A producer-scoped
-  event factory injects and validates it; payload schemas and use cases do not
-  own it.
+  Application event factory injects and validates it; payload schemas and use
+  cases do not own it. The factory belongs in the producer's `app/`, not its
+  `public-api/`.
 - Consumers validate `source` as CloudEvents metadata but do not bind it to an
   event type.
 - Contracts are embedded and compiled at process startup. Consumers never fetch
   schemas from a remote registry during message processing.
+
+#### Subscriptions and Delivery Identity
+
+Every inbound subscription declares three independent properties:
+
+```ts
+defineSubscription({
+  consumerId: "core-platform.decision-intelligence.optimization-executor.v1",
+  queue: "core-platform.decision-intelligence.optimization-execution",
+  contracts: [optimizationJobEnqueuedV1],
+});
+```
+
+- `consumerId` is the stable Inbox/idempotency identity;
+- `queue` is the broker delivery endpoint;
+- `contracts` are the exact immutable event versions accepted.
+
+Contracts alone cannot define consumer identity or topology. Identifiers are
+declared once in code, validated by typed helpers, and checked for duplicates at
+startup or in tests. A broker subscription implementation is named `Consumer`;
+`Worker` is reserved for background-process lifecycle.
+
+#### Outbox Publication
+
+Producers validate the CloudEvent envelope, payload contract, and message size
+before writing any item. `IntegrationEventPublisher.publishMany`
+delegates to `OutboxStore.enqueueMany`, which performs one atomic PostgreSQL
+insert. Validation failure writes nothing; a database failure fails the entire
+statement.
+
+Business changes and their outbox records must use the same transaction. Broker
+publication occurs later and remains at-least-once, so consumers use Inbox
+idempotency. A failed broker confirmation may cause redelivery; it does not make
+the business/outbox transaction partial.
 
 ---
 
@@ -265,12 +271,21 @@ Rejected because synchronous computational interactions requiring an immediate r
   gRPC APIs; language-neutral JSON Schema contracts are shared for asynchronous
   Integration Events.
 - Protocol Buffer definitions are stored in `packages/grpc-contracts`.
-  Integration Event schemas are stored in `packages/integration-contracts`.
+  Integration Event schemas are stored in
+  `packages/integration-event-contracts`; runtime CloudEvent primitives live in
+  `packages/integration-events`.
+- Each publishing bounded context owns one Application-layer
+  `<bounded-context>-integration-events.ts` factory configured with its stable
+  CloudEvent source. It creates events from published contracts; it does not
+  define their schemas. The factory is producer-internal Application code, not
+  a `public-api/` contract. In-process contracts belong in the bounded context's
+  `public-api/`; versioned cross-process schemas belong in
+  `packages/integration-event-contracts`.
 - JSON Schema is the language-neutral source of truth. Language-specific
   contract payload types are generated from those schemas rather than maintained
   as parallel handwritten definitions.
-- Each subscription declares the exact immutable contract versions it accepts;
-  typed runtimes derive the handler's discriminated event union from that list.
+- Each subscription declares its consumer ID, queue, and exact immutable
+  contract versions.
 - Inbox idempotency is scoped by a stable, version-controlled logical consumer
   identifier plus the event ID. The logical consumer identifier is independent
   of broker queue names, which may change during topology or deployment changes.

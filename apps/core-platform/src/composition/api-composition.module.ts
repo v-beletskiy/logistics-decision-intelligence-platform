@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 
-import { AdministrationModule } from "../bounded-contexts/administration/administration.module";
-import { DecisionIntelligenceModule } from "../bounded-contexts/decision-intelligence/decision-intelligence.module";
-import { OperationalWorkspaceModule } from "../bounded-contexts/operational-workspace/operational-workspace.module";
+import { AdministrationApiModule } from "../bounded-contexts/administration/composition/administration-api.module";
+import { DecisionIntelligenceApiModule } from "../bounded-contexts/decision-intelligence/composition/decision-intelligence-api.module";
+import { OperationalWorkspaceApiModule } from "../bounded-contexts/operational-workspace/composition/operational-workspace-api.module";
 import { AccessControlModule } from "../shared/modules/access-control/access-control.module";
 import { AppConfigModule } from "../shared/infra/config/app-config.module";
 import { GrpcInfraModule } from "../shared/infra/grpc/grpc-infra.module";
@@ -20,9 +20,9 @@ import { PersistenceInfraModule } from "../shared/infra/persistence/persistence-
     HttpInfraModule,
     GrpcInfraModule,
     AccessControlModule,
-    OperationalWorkspaceModule,
-    DecisionIntelligenceModule,
-    AdministrationModule,
+    OperationalWorkspaceApiModule,
+    DecisionIntelligenceApiModule,
+    AdministrationApiModule,
   ],
 })
 export class ApiCompositionModule {}

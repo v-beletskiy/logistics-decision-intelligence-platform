@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { RouteId } from "../../../domain/route-id";
 import { RouteStopId } from "../../../domain/route-stop-id";
 import {
@@ -99,15 +99,14 @@ export class PgRouteStopRepository extends RouteStopRepository {
     tenantId: string,
     loadedRouteStop: LoadedRouteStop,
   ): Promise<string> {
-    const [row] = await this.database.exec(updateRouteStop, {
-      ...RouteStopMapper.toPersistence(tenantId, loadedRouteStop.aggregate),
-      expectedRevision: loadedRouteStop.expectedRevision,
+    return execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateRouteStop,
+      params: {
+        ...RouteStopMapper.toPersistence(tenantId, loadedRouteStop.aggregate),
+        expectedRevision: loadedRouteStop.expectedRevision,
+      },
+      options: { aggregateName: "Route stop" },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Route stop was changed or removed by another operation.",
-      );
-    }
-    return row.revision;
   }
 }

@@ -73,7 +73,7 @@ class StubOptimizationRepository extends OptimizationRepository {
     super();
   }
 
-  async findActiveByRouteIdForReplacement(): Promise<LoadedOptimization | null> {
+  async findActiveByRouteIdForUpdate(): Promise<LoadedOptimization | null> {
     const result = this.activeResults[this.findCalls];
     this.findCalls += 1;
     return result ?? null;

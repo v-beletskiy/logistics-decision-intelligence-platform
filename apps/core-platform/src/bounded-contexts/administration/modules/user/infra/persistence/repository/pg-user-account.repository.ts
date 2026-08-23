@@ -1,10 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
 import {
-  isPgConstraintViolation,
-  PG_SQLSTATE,
-} from "../../../../../../../shared/infra/persistence/pg-error";
+  execAndTranslatePgConstraintViolations,
+  type PgConstraintViolationTranslation,
+} from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { UserEmailConflictException } from "../../../app/user.exceptions";
 import { UserAccount } from "../../../domain/user-account";
 import { UserAccountRepository } from "../../../domain/user-account.repository";
@@ -13,6 +14,13 @@ import { findUserAccountByEmail } from "./queries/user.find-by-email.queries";
 import { insertUserAccount } from "./queries/user.insert.queries";
 
 const USER_EMAIL_UNIQUE_CONSTRAINT = "users_email_unique";
+const USER_WRITE_CONSTRAINT_TRANSLATIONS = [
+  {
+    sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
+    constraint: USER_EMAIL_UNIQUE_CONSTRAINT,
+    toError: (cause: unknown) => new UserEmailConflictException({ cause }),
+  },
+] satisfies readonly PgConstraintViolationTranslation[];
 
 @Injectable()
 export class PgUserAccountRepository extends UserAccountRepository {
@@ -29,21 +37,11 @@ export class PgUserAccountRepository extends UserAccountRepository {
   }
 
   async add(account: UserAccount): Promise<void> {
-    try {
-      await this.database.exec(
-        insertUserAccount,
-        UserAccountMapper.toPersistence(account),
-      );
-    } catch (error: unknown) {
-      if (
-        isPgConstraintViolation(error, {
-          sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
-          constraint: USER_EMAIL_UNIQUE_CONSTRAINT,
-        })
-      ) {
-        throw new UserEmailConflictException({ cause: error });
-      }
-      throw error;
-    }
+    await execAndTranslatePgConstraintViolations({
+      database: this.database,
+      statement: insertUserAccount,
+      params: UserAccountMapper.toPersistence(account),
+      options: { translations: USER_WRITE_CONSTRAINT_TRANSLATIONS },
+    });
   }
 }

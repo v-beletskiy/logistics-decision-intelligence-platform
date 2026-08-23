@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Route } from "../../../domain/route.aggregate";
 import { RouteId } from "../../../domain/route-id";
 import {
@@ -51,15 +51,14 @@ export class PgRouteRepository extends RouteRepository {
   }
 
   async save(tenantId: string, loadedRoute: LoadedRoute): Promise<string> {
-    const [row] = await this.database.exec(updateRoute, {
-      ...RouteMapper.toPersistence(tenantId, loadedRoute.aggregate),
-      expectedRevision: loadedRoute.expectedRevision,
+    return execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateRoute,
+      params: {
+        ...RouteMapper.toPersistence(tenantId, loadedRoute.aggregate),
+        expectedRevision: loadedRoute.expectedRevision,
+      },
+      options: { aggregateName: "Route" },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Route was changed or removed by another operation.",
-      );
-    }
-    return row.revision;
   }
 }

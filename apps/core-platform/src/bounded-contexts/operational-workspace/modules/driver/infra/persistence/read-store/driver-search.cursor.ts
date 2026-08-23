@@ -9,8 +9,8 @@ import {
   isUuid,
 } from "@logistics-decision-intelligence/validation";
 
-import type { DriverSearchCriteria } from "../../../app/queries/search-drivers/driver-read-store";
-import type { DriverCursorSort } from "../../../app/queries/search-drivers/driver-search";
+import type { DriverSearchCriteria } from "../../../app/ports/driver-read-store";
+import type { DriverCursorSort } from "../../../app/queries/search-drivers/driver-search-options";
 import { DriverStatus } from "../../../domain/driver.aggregate";
 import type { ISearchDriversCursorResult } from "./queries/driver.search.queries";
 

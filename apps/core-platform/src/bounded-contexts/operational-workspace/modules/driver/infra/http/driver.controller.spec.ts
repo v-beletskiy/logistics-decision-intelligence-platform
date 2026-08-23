@@ -31,8 +31,8 @@ import { UpdateDriverDetailsHandler } from "../../app/commands/update-driver-det
 import {
   DriverReadStore,
   type DriverSearchCriteria,
-} from "../../app/queries/search-drivers/driver-read-store";
-import type { DriverSearch } from "../../app/queries/search-drivers/driver-search";
+} from "../../app/ports/driver-read-store";
+import type { DriverSearchOptions } from "../../app/queries/search-drivers/driver-search-options";
 import { SearchDriversHandler } from "../../app/queries/search-drivers/search-drivers.handler";
 import type { Driver } from "../../domain/driver.aggregate";
 import { DepotRepository } from "../../../depot/domain/depot.repository";
@@ -138,20 +138,20 @@ class InMemoryDriverRepository extends DriverRepository {
 }
 
 class EmptyDriverReadStore extends DriverReadStore {
-  async search(_criteria: DriverSearchCriteria, search: DriverSearch) {
-    return search.mode === "page"
+  async search(_criteria: DriverSearchCriteria, options: DriverSearchOptions) {
+    return options.mode === "page"
       ? {
           mode: "page" as const,
           items: [],
-          page: search.page,
-          pageSize: search.pageSize,
+          page: options.page,
+          pageSize: options.pageSize,
           totalItems: 0,
           totalPages: 0,
         }
       : {
           mode: "cursor" as const,
           items: [],
-          pageSize: search.pageSize,
+          pageSize: options.pageSize,
         };
   }
 }

@@ -11,7 +11,7 @@ import {
   type RouteOptimizationInput,
 } from "../../app/ports/route-optimization-input.query";
 
-/** Anti-corruption adapter from Operational Workspace to Optimization input. */
+/** Consumer-owned query adapter from Operational Workspace to Optimization input. */
 @Injectable()
 export class RouteOptimizationInputQueryAdapter implements RouteOptimizationInputQuery {
   constructor(private readonly snapshotQuery: RoutePlanningSnapshotQuery) {}
@@ -23,9 +23,8 @@ export class RouteOptimizationInputQueryAdapter implements RouteOptimizationInpu
     const snapshot = await this.snapshotQuery.get(tenantId, routeId);
     if (!snapshot) return null;
 
-    const [fixedOrigin, ...stops] = snapshot.orderedStops.map(
-      toOptimizationStop,
-    );
+    const [fixedOrigin, ...stops] =
+      snapshot.orderedStops.map(toOptimizationStop);
     if (!fixedOrigin) {
       throw new ApplicationInvariantViolationException(
         "A route optimization input requires a fixed origin stop.",

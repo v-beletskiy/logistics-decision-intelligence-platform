@@ -7,6 +7,7 @@ lint:
   ignore_only:
     SERVICE_SUFFIX:
       - proto/decision_intelligence/v1/recommendation_analysis_service.proto
+      - proto/operational_workspace/v1/route_analysis_service.proto
 breaking:
   use:
     - FILE

@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
 
-import { OperationalWorkspaceAppModule } from "../../app/operational-workspace-app.module";
+import { RouteQueryModule } from "../../modules/route/composition/route-query.module";
 import { RouteAnalysisGrpcController } from "../../modules/route/infra/grpc/route-analysis.grpc-controller";
 
 @Module({
-  imports: [OperationalWorkspaceAppModule],
+  imports: [RouteQueryModule],
   providers: [RouteAnalysisGrpcController],
 })
 export class OperationalWorkspaceGrpcModule {}

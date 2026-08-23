@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
 import { DriverLicenseNumberConflictException } from "../../../app/driver.exceptions";
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
 import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
 import {
-  isPgConstraintViolation,
-  PG_SQLSTATE,
-} from "../../../../../../../shared/infra/persistence/pg-error";
+  execAndTranslatePgConstraintViolations,
+  execRevisionedPgUpdate,
+  type PgConstraintViolationTranslation,
+} from "../../../../../../../shared/infra/persistence/pg-repository-write";
 import { Driver } from "../../../domain/driver.aggregate";
 import { DriverId } from "../../../domain/driver-id";
 import {
@@ -17,14 +18,19 @@ import { DriverMapper } from "./mappers/driver.mapper";
 import { findDriverByIdForUpdate } from "./queries/driver.find-by-id-for-update.queries";
 import { findDriverById } from "./queries/driver.find-by-id.queries";
 import { insertDriver } from "./queries/driver.insert.queries";
-import {
-  reconcileDriverCertifications,
-  type IReconcileDriverCertificationsParams,
-} from "./queries/driver.reconcile-certifications.queries";
+import { reconcileDriverCertifications } from "./queries/driver.reconcile-certifications.queries";
 import { updateDriver } from "./queries/driver.update.queries";
 
 const DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT =
   "drivers_tenant_license_number_unique";
+const DRIVER_WRITE_CONSTRAINT_TRANSLATIONS = [
+  {
+    sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
+    constraint: DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT,
+    toError: (cause: unknown) =>
+      new DriverLicenseNumberConflictException({ cause }),
+  },
+] satisfies readonly PgConstraintViolationTranslation[];
 
 @Injectable()
 export class PgDriverRepository extends DriverRepository {
@@ -64,20 +70,16 @@ export class PgDriverRepository extends DriverRepository {
 
   async add(tenantId: string, driver: Driver): Promise<void> {
     const persistence = DriverMapper.toPersistence(tenantId, driver);
-    try {
-      await this.database.exec(insertDriver, persistence.root);
-    } catch (error: unknown) {
-      if (
-        isPgConstraintViolation(error, {
-          sqlState: PG_SQLSTATE.UNIQUE_VIOLATION,
-          constraint: DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT,
-        })
-      ) {
-        throw new DriverLicenseNumberConflictException({ cause: error });
-      }
-      throw error;
-    }
-    await this.reconcileCertifications(persistence.certifications);
+    await execAndTranslatePgConstraintViolations({
+      database: this.database,
+      statement: insertDriver,
+      params: persistence.root,
+      options: { translations: DRIVER_WRITE_CONSTRAINT_TRANSLATIONS },
+    });
+    await this.database.exec(
+      reconcileDriverCertifications,
+      persistence.certifications,
+    );
   }
 
   /**
@@ -93,26 +95,22 @@ export class PgDriverRepository extends DriverRepository {
       tenantId,
       loadedDriver.aggregate,
     );
-    const [row] = await this.database.exec(updateDriver, {
-      ...persistence.root,
-      expectedRevision: loadedDriver.expectedRevision,
+    const revision = await execRevisionedPgUpdate({
+      database: this.database,
+      statement: updateDriver,
+      params: {
+        ...persistence.root,
+        expectedRevision: loadedDriver.expectedRevision,
+      },
+      options: {
+        aggregateName: "Driver",
+        constraintTranslations: DRIVER_WRITE_CONSTRAINT_TRANSLATIONS,
+      },
     });
-    if (!row) {
-      throw new ConcurrencyConflictException(
-        "Driver was changed or removed by another operation.",
-      );
-    }
-    await this.reconcileCertifications(persistence.certifications);
-    return row.revision;
-  }
-
-  //
-  // missing certifications - insert;
-  // existing certifications - update or do nothing if they're the same
-  // deleted certifications - delete
-  private async reconcileCertifications(
-    params: IReconcileDriverCertificationsParams,
-  ): Promise<void> {
-    await this.database.exec(reconcileDriverCertifications, params);
+    await this.database.exec(
+      reconcileDriverCertifications,
+      persistence.certifications,
+    );
+    return revision;
   }
 }

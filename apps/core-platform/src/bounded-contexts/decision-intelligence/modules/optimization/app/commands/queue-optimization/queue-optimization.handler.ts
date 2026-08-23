@@ -45,7 +45,7 @@ export class QueueOptimizationHandler extends CommandHandler {
       }
 
       const active =
-        await this.optimizationRepository.findActiveByRouteIdForReplacement(
+        await this.optimizationRepository.findActiveByRouteIdForUpdate(
           context.tenantId,
           routeId,
         );

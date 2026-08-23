@@ -1,4 +1,4 @@
-# Operational Workspace - Vehicle aggregate root
+# Vehicle Aggregate
 
 A transportation asset used to execute Assignments.
 
@@ -6,19 +6,6 @@ A transportation asset used to execute Assignments.
 
 - A Vehicle always has exactly one VehicleStatus.
 - A Vehicle must always retain at least one Compartment.
-
-## Commands
-
-- RegisterVehicleCommand
-- UpdateVehicleDetailsCommand
-- AddVehicleCompartmentCommand
-- UpdateVehicleCompartmentCommand
-- RemoveVehicleCompartmentCommand
-- MarkVehicleAvailableCommand
-- MarkVehicleUnavailableCommand
-- SendVehicleToMaintenanceCommand
-- ReturnVehicleFromMaintenanceCommand
-- DecommissionVehicleCommand
 
 ## Domain Events
 
@@ -73,10 +60,8 @@ A transportation asset used to execute Assignments.
 ## Repository Interfaces
 
 - VehicleRepository
-  - findById(id: VehicleId)
-  - findAvailable()
-  - save(vehicle: Vehicle)
-  - delete(id: VehicleId)
+  - `findById`, `findAvailable`
+  - `add`, `save`
 
 ## References to other aggregates
 
