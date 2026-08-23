@@ -83,26 +83,32 @@ adapter-focused; once it selects providers across layers or transports, it is
 feature composition and moves to `composition/`. Avoid one-provider adapter
 modules unless that provider set has an independent reuse or lifecycle boundary.
 
-Feature composition follows the CQRS split consistently. Implemented command
-handlers belong to `<Feature>CommandModule`; implemented query handlers belong
-to `<Feature>QueryModule`. A feature with both always defines both modules,
-regardless of whether they are currently composed by the same runtime. Do not
-create an empty command or query module when that side has no implemented
-handlers.
+Module names describe both their composition level and their responsibility:
 
-Name feature composition by its responsibility: a standard handler slice uses
-`CommandModule` or `QueryModule`; a workflow-specific slice uses its workflow
-name, such as `OptimizationTriggerModule` or
-`OptimizationWorkerModule`. Bounded-context composition is named for
-its boundary or process role (`ApiModule`, `WorkerModule`, `PublicApiModule`) and
-imports feature modules directly. Do not add bounded-context `CommandModule` or
-`QueryModule` pass-through modules that only re-export feature modules.
+- A feature use-case slice uses `<Feature>CommandModule` or
+  `<Feature>QueryModule`. Define only sides with implemented handlers.
+- A feature inbound-boundary slice uses a precise boundary name. A slice that
+  registers in-process application-event handlers uses
+  `<Feature>ApplicationEventHandlersModule`, for example
+  `OptimizationApplicationEventHandlersModule`. Possible equivalent future boundaries
+  follow the same pattern, such as `<Feature>IntegrationEventHandlersModule` or
+  `<Feature>ScheduledJobHandlersModule`.
+- An independently composed feature workflow uses `<Feature><Workflow>Module`,
+  for example `OptimizationWorkerModule`. A workflow name is justified only
+  when the module owns a distinct runtime or lifecycle slice, not merely to
+  avoid `CommandModule` or `QueryModule`.
+- A bounded-context boundary module uses `<BoundedContext><Boundary>Module`,
+  such as `DecisionIntelligenceApplicationEventsModule`,
+  `OperationalWorkspaceHttpModule`, or `DecisionIntelligenceGrpcModule`. It
+  aggregates the relevant feature slices for that boundary.
+- A bounded-context runtime module uses `<BoundedContext><Role>Module`, such as
+  `DecisionIntelligenceApiModule` or `DecisionIntelligenceWorkerModule`, and
+  imports its boundary and workflow modules.
 
-When an API process subscribes to in-process application events, the bounded
-context owns a `<BoundedContext>ApplicationEventsModule` in `composition/`. It
-registers the event handlers and imports their feature workflow modules. This
-is an inbound application-event boundary, not a feature `CommandModule` or an
-Infrastructure transport module.
+Boundary aggregation modules may be thin because the boundary is an explicit
+composition concern. Do not add bounded-context `CommandModule` or `QueryModule`
+pass-through modules that only re-export feature modules, and do not create
+empty modules for anticipated handlers.
 
 ---
 
