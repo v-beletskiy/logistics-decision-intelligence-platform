@@ -65,7 +65,10 @@ function createRecommendation(): Recommendation {
     ],
     score: 87.5,
   });
+  const requestEventId = "00000000-0000-4000-8000-000000000041";
+  recommendation.requestAnalysis(requestEventId);
   recommendation.attachAnalysis(
+    requestEventId,
     RecommendationAnalysis.create({
       summary: "Recommended plan.",
       confidence: 80,

@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/decision-intelligence/modules/optimization/infra/persistence/repository/queries/optimization.find-active-by-route-id-for-update.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindActiveOptimizationByRouteIdForUpdate' parameters type */
 export interface IFindActiveOptimizationByRouteIdForUpdateParams {
@@ -22,25 +22,7 @@ export interface IFindActiveOptimizationByRouteIdForUpdateQuery {
   result: IFindActiveOptimizationByRouteIdForUpdateResult;
 }
 
-const findActiveOptimizationByRouteIdForUpdateIR: any = {
-  usedParamSet: { tenantId: true, routeId: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 122, b: 131 }],
-    },
-    {
-      name: "routeId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 150, b: 158 }],
-    },
-  ],
-  statement:
-    "SELECT\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\nFROM decision_intelligence.optimizations\nWHERE tenant_id = :tenantId!\n  AND route_id = :routeId!\n  AND status IN ('QUEUED', 'RUNNING')\nFOR UPDATE",
-};
+const findActiveOptimizationByRouteIdForUpdateIR: any = {"usedParamSet":{"tenantId":true,"routeId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":122,"b":131}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":150,"b":158}]}],"statement":"SELECT\n  id,\n  route_id,\n  status,\n  input_version,\n  revision\nFROM decision_intelligence.optimizations\nWHERE tenant_id = :tenantId!\n  AND route_id = :routeId!\n  AND status IN ('QUEUED', 'RUNNING')\nFOR UPDATE"};
 
 /**
  * Query generated from SQL:
@@ -58,7 +40,4 @@ const findActiveOptimizationByRouteIdForUpdateIR: any = {
  * FOR UPDATE
  * ```
  */
-export const findActiveOptimizationByRouteIdForUpdate = new PreparedQuery<
-  IFindActiveOptimizationByRouteIdForUpdateParams,
-  IFindActiveOptimizationByRouteIdForUpdateResult
->(findActiveOptimizationByRouteIdForUpdateIR);
+export const findActiveOptimizationByRouteIdForUpdate = new PreparedQuery<IFindActiveOptimizationByRouteIdForUpdateParams,IFindActiveOptimizationByRouteIdForUpdateResult>(findActiveOptimizationByRouteIdForUpdateIR);

@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/assignment/infra/persistence/repository/queries/assignment.exists-active-for-vehicle.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'ExistsActiveAssignmentForVehicle' parameters type */
 export interface IExistsActiveAssignmentForVehicleParams {
@@ -18,25 +18,7 @@ export interface IExistsActiveAssignmentForVehicleQuery {
   result: IExistsActiveAssignmentForVehicleResult;
 }
 
-const existsActiveAssignmentForVehicleIR: any = {
-  usedParamSet: { tenantId: true, vehicleId: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 88, b: 97 }],
-    },
-    {
-      name: "vehicleId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 120, b: 130 }],
-    },
-  ],
-  statement:
-    "SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE tenant_id = :tenantId!\n    AND vehicle_id = :vehicleId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\"",
-};
+const existsActiveAssignmentForVehicleIR: any = {"usedParamSet":{"tenantId":true,"vehicleId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":97}]},{"name":"vehicleId","required":true,"transform":{"type":"scalar"},"locs":[{"a":120,"b":130}]}],"statement":"SELECT EXISTS (\n  SELECT 1\n  FROM operational_workspace.assignments\n  WHERE tenant_id = :tenantId!\n    AND vehicle_id = :vehicleId!\n    AND status IN ('CREATED', 'IN_PROGRESS')\n) AS \"exists!\""};
 
 /**
  * Query generated from SQL:
@@ -50,7 +32,4 @@ const existsActiveAssignmentForVehicleIR: any = {
  * ) AS "exists!"
  * ```
  */
-export const existsActiveAssignmentForVehicle = new PreparedQuery<
-  IExistsActiveAssignmentForVehicleParams,
-  IExistsActiveAssignmentForVehicleResult
->(existsActiveAssignmentForVehicleIR);
+export const existsActiveAssignmentForVehicle = new PreparedQuery<IExistsActiveAssignmentForVehicleParams,IExistsActiveAssignmentForVehicleResult>(existsActiveAssignmentForVehicleIR);

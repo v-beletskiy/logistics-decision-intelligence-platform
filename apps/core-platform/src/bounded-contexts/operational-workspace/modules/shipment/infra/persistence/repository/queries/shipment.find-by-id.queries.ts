@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/shipment/infra/persistence/repository/queries/shipment.find-by-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindShipmentById' parameters type */
 export interface IFindShipmentByIdParams {
@@ -48,25 +48,7 @@ export interface IFindShipmentByIdQuery {
   result: IFindShipmentByIdResult;
 }
 
-const findShipmentByIdIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 600, b: 609 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 622, b: 625 }],
-    },
-  ],
-  statement:
-    "SELECT id, status, pickup_completed, delivery_completed, revision,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_latitude, pickup_longitude, pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_latitude, delivery_longitude, delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id = :id!",
-};
+const findShipmentByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":600,"b":609}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":622,"b":625}]}],"statement":"SELECT id, status, pickup_completed, delivery_completed, revision,\n       pickup_country, pickup_state_or_region, pickup_city, pickup_street, pickup_building_number, pickup_postal_code,\n       pickup_latitude, pickup_longitude, pickup_start_at, pickup_end_at,\n       delivery_country, delivery_state_or_region, delivery_city, delivery_street, delivery_building_number, delivery_postal_code,\n       delivery_latitude, delivery_longitude, delivery_start_at, delivery_end_at,\n       weight_value, weight_unit, length, width, height, dimension_unit\nFROM operational_workspace.shipments\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -82,7 +64,4 @@ const findShipmentByIdIR: any = {
  *   AND id = :id!
  * ```
  */
-export const findShipmentById = new PreparedQuery<
-  IFindShipmentByIdParams,
-  IFindShipmentByIdResult
->(findShipmentByIdIR);
+export const findShipmentById = new PreparedQuery<IFindShipmentByIdParams,IFindShipmentByIdResult>(findShipmentByIdIR);

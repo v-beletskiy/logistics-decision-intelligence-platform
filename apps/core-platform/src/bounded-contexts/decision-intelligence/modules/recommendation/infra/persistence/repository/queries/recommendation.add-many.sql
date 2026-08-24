@@ -7,10 +7,12 @@ WITH incoming AS (
     :optimizationIds!::uuid[],
     :types!::text[],
     :statuses!::text[],
+    :analysisRequestEventIds!::uuid[],
+    :analysisStatuses!::text[],
     :summaries!::text[],
     :confidences!::float8[],
     :scores!::float8[]
-  ) AS values(id, route_id, optimization_id, type, status, summary, confidence, score)
+  ) AS values(id, route_id, optimization_id, type, status, analysis_request_event_id, analysis_status, summary, confidence, score)
 )
 INSERT INTO decision_intelligence.recommendations (
   tenant_id,
@@ -19,6 +21,8 @@ INSERT INTO decision_intelligence.recommendations (
   optimization_id,
   type,
   status,
+  analysis_request_event_id,
+  analysis_status,
   summary,
   confidence,
   score,
@@ -31,6 +35,8 @@ SELECT
   incoming.optimization_id,
   incoming.type,
   incoming.status,
+  incoming.analysis_request_event_id,
+  incoming.analysis_status,
   incoming.summary,
   incoming.confidence,
   incoming.score,

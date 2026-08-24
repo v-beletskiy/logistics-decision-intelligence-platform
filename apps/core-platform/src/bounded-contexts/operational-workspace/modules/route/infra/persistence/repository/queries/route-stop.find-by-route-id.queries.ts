@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/route/infra/persistence/repository/queries/route-stop.find-by-route-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindRouteStopsByRouteId' parameters type */
 export interface IFindRouteStopsByRouteIdParams {
@@ -28,25 +28,7 @@ export interface IFindRouteStopsByRouteIdQuery {
   result: IFindRouteStopsByRouteIdResult;
 }
 
-const findRouteStopsByRouteIdIR: any = {
-  usedParamSet: { tenantId: true, routeId: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 264, b: 273 }],
-    },
-    {
-      name: "routeId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 294, b: 302 }],
-    },
-  ],
-  statement:
-    "SELECT\n  s.id,\n  s.route_id,\n  s.shipment_id,\n  s.sequence,\n  s.operation_type,\n  s.status,\n  s.planned_arrival_at,\n  s.planned_departure_at,\n  s.actual_arrival_at,\n  s.actual_departure_at,\n  s.revision\nFROM operational_workspace.route_stops s\nWHERE s.tenant_id = :tenantId!\n  AND s.route_id = :routeId!\nORDER BY s.sequence",
-};
+const findRouteStopsByRouteIdIR: any = {"usedParamSet":{"tenantId":true,"routeId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":264,"b":273}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":294,"b":302}]}],"statement":"SELECT\n  s.id,\n  s.route_id,\n  s.shipment_id,\n  s.sequence,\n  s.operation_type,\n  s.status,\n  s.planned_arrival_at,\n  s.planned_departure_at,\n  s.actual_arrival_at,\n  s.actual_departure_at,\n  s.revision\nFROM operational_workspace.route_stops s\nWHERE s.tenant_id = :tenantId!\n  AND s.route_id = :routeId!\nORDER BY s.sequence"};
 
 /**
  * Query generated from SQL:
@@ -69,7 +51,4 @@ const findRouteStopsByRouteIdIR: any = {
  * ORDER BY s.sequence
  * ```
  */
-export const findRouteStopsByRouteId = new PreparedQuery<
-  IFindRouteStopsByRouteIdParams,
-  IFindRouteStopsByRouteIdResult
->(findRouteStopsByRouteIdIR);
+export const findRouteStopsByRouteId = new PreparedQuery<IFindRouteStopsByRouteIdParams,IFindRouteStopsByRouteIdResult>(findRouteStopsByRouteIdIR);

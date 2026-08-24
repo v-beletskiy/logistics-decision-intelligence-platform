@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/route/infra/persistence/repository/queries/route-stop.find-by-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindRouteStopById' parameters type */
 export interface IFindRouteStopByIdParams {
@@ -28,25 +28,7 @@ export interface IFindRouteStopByIdQuery {
   result: IFindRouteStopByIdResult;
 }
 
-const findRouteStopByIdIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 264, b: 273 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 288, b: 291 }],
-    },
-  ],
-  statement:
-    "SELECT\n  s.id,\n  s.route_id,\n  s.shipment_id,\n  s.sequence,\n  s.operation_type,\n  s.status,\n  s.planned_arrival_at,\n  s.planned_departure_at,\n  s.actual_arrival_at,\n  s.actual_departure_at,\n  s.revision\nFROM operational_workspace.route_stops s\nWHERE s.tenant_id = :tenantId!\n  AND s.id = :id!",
-};
+const findRouteStopByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":264,"b":273}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":288,"b":291}]}],"statement":"SELECT\n  s.id,\n  s.route_id,\n  s.shipment_id,\n  s.sequence,\n  s.operation_type,\n  s.status,\n  s.planned_arrival_at,\n  s.planned_departure_at,\n  s.actual_arrival_at,\n  s.actual_departure_at,\n  s.revision\nFROM operational_workspace.route_stops s\nWHERE s.tenant_id = :tenantId!\n  AND s.id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -68,7 +50,4 @@ const findRouteStopByIdIR: any = {
  *   AND s.id = :id!
  * ```
  */
-export const findRouteStopById = new PreparedQuery<
-  IFindRouteStopByIdParams,
-  IFindRouteStopByIdResult
->(findRouteStopByIdIR);
+export const findRouteStopById = new PreparedQuery<IFindRouteStopByIdParams,IFindRouteStopByIdResult>(findRouteStopByIdIR);

@@ -5,6 +5,11 @@ export enum RecommendationStatus {
   Expired = "EXPIRED",
 }
 
+export enum RecommendationAnalysisStatus {
+  Pending = "PENDING",
+  Completed = "COMPLETED",
+}
+
 export enum FindingCategory {
   Strength = "STRENGTH",
   Risk = "RISK",

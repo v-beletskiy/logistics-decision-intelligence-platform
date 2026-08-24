@@ -16,6 +16,13 @@ CREATE TABLE IF NOT EXISTS decision_intelligence.recommendation_route_plan_stops
 CREATE INDEX IF NOT EXISTS recommendation_route_plan_stops_tenant_recommendation_idx
   ON decision_intelligence.recommendation_route_plan_stops (tenant_id, recommendation_id, sequence);
 
+ALTER TABLE decision_intelligence.recommendations
+  ADD COLUMN IF NOT EXISTS analysis_request_event_id uuid;
+
+ALTER TABLE decision_intelligence.recommendations
+  ADD COLUMN IF NOT EXISTS analysis_status text NOT NULL DEFAULT 'PENDING'
+  CHECK (analysis_status IN ('PENDING', 'COMPLETED'));
+
 ALTER TABLE shared.integration_inbox
   ADD COLUMN IF NOT EXISTS status text;
 

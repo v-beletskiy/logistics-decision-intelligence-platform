@@ -1,8 +1,7 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/driver/infra/persistence/repository/queries/driver.find-by-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
-export type Json =
-  null | boolean | number | string | Json[] | { [key: string]: Json };
+export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 /** 'FindDriverById' parameters type */
 export interface IFindDriverByIdParams {
@@ -29,25 +28,7 @@ export interface IFindDriverByIdQuery {
   result: IFindDriverByIdResult;
 }
 
-const findDriverByIdIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 639, b: 648 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 663, b: 666 }],
-    },
-  ],
-  statement:
-    "SELECT\n  d.id,\n  d.first_name,\n  d.last_name,\n  d.license_number,\n  d.depot_id,\n  d.phone_number,\n  d.status,\n  d.revision,\n  COALESCE(certifications.items, '[]'::jsonb) AS certifications\nFROM operational_workspace.drivers d\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', c.id,\n      'type', c.type,\n      'credentialNumber', c.credential_number,\n      'validFrom', c.valid_from,\n      'validUntil', c.valid_until\n    )\n    ORDER BY c.id\n  ) AS items\n  FROM operational_workspace.driver_certifications c\n  WHERE c.tenant_id = d.tenant_id\n    AND c.driver_id = d.id\n) certifications ON true\nWHERE d.tenant_id = :tenantId!\n  AND d.id = :id!",
-};
+const findDriverByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":639,"b":648}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":663,"b":666}]}],"statement":"SELECT\n  d.id,\n  d.first_name,\n  d.last_name,\n  d.license_number,\n  d.depot_id,\n  d.phone_number,\n  d.status,\n  d.revision,\n  COALESCE(certifications.items, '[]'::jsonb) AS certifications\nFROM operational_workspace.drivers d\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', c.id,\n      'type', c.type,\n      'credentialNumber', c.credential_number,\n      'validFrom', c.valid_from,\n      'validUntil', c.valid_until\n    )\n    ORDER BY c.id\n  ) AS items\n  FROM operational_workspace.driver_certifications c\n  WHERE c.tenant_id = d.tenant_id\n    AND c.driver_id = d.id\n) certifications ON true\nWHERE d.tenant_id = :tenantId!\n  AND d.id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -82,7 +63,4 @@ const findDriverByIdIR: any = {
  *   AND d.id = :id!
  * ```
  */
-export const findDriverById = new PreparedQuery<
-  IFindDriverByIdParams,
-  IFindDriverByIdResult
->(findDriverByIdIR);
+export const findDriverById = new PreparedQuery<IFindDriverByIdParams,IFindDriverByIdResult>(findDriverByIdIR);

@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/decision-intelligence/modules/recommendation/infra/persistence/repository/queries/recommendation.delete.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'DeleteRecommendation' parameters type */
 export interface IDeleteRecommendationParams {
@@ -16,25 +16,7 @@ export interface IDeleteRecommendationQuery {
   result: IDeleteRecommendationResult;
 }
 
-const deleteRecommendationIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 68, b: 77 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 90, b: 93 }],
-    },
-  ],
-  statement:
-    "DELETE FROM decision_intelligence.recommendations\nWHERE tenant_id = :tenantId!\n  AND id = :id!",
-};
+const deleteRecommendationIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":68,"b":77}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":90,"b":93}]}],"statement":"DELETE FROM decision_intelligence.recommendations\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -44,7 +26,4 @@ const deleteRecommendationIR: any = {
  *   AND id = :id!
  * ```
  */
-export const deleteRecommendation = new PreparedQuery<
-  IDeleteRecommendationParams,
-  IDeleteRecommendationResult
->(deleteRecommendationIR);
+export const deleteRecommendation = new PreparedQuery<IDeleteRecommendationParams,IDeleteRecommendationResult>(deleteRecommendationIR);

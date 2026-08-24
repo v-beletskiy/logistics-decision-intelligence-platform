@@ -27,6 +27,14 @@ export const RECOMMENDATION_ERROR_CODES = defineErrorCodes(
       "recommendation-analysis-confidence-cannot-exceed-100",
     recommendationAnalysisFindingsAreInvalid:
       "recommendation-analysis-findings-are-invalid",
+    recommendationAnalysisStatusIsInvalid:
+      "recommendation-analysis-status-is-invalid",
+    recommendationAnalysisLifecycleIsInvalid:
+      "recommendation-analysis-lifecycle-is-invalid",
+    recommendationAnalysisRequestAlreadyExists:
+      "recommendation-analysis-request-already-exists",
+    recommendationAnalysisRequestDoesNotMatch:
+      "recommendation-analysis-request-does-not-match",
     proposedRoutePlanIsInvalid: "proposed-route-plan-is-invalid",
     proposedRoutePlanHasDuplicateRouteStops:
       "proposed-route-plan-has-duplicate-route-stops",

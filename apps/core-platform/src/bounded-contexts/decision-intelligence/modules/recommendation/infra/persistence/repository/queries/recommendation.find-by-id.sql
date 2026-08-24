@@ -5,6 +5,8 @@ SELECT
   r.optimization_id,
   r.type,
   r.status,
+  r.analysis_request_event_id,
+  r.analysis_status,
   r.summary,
   r.confidence,
   r.score,

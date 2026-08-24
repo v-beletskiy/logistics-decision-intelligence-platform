@@ -1,9 +1,9 @@
 /** Types generated for queries found in "src/bounded-contexts/decision-intelligence/modules/recommendation/infra/persistence/repository/queries/recommendation.reconcile-facts.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
-export type numberArray = number[];
+export type numberArray = (number)[];
 
-export type stringArray = string[];
+export type stringArray = (string)[];
 
 /** 'ReconcileRecommendationFacts' parameters type */
 export interface IReconcileRecommendationFactsParams {
@@ -29,79 +29,7 @@ export interface IReconcileRecommendationFactsQuery {
   result: IReconcileRecommendationFactsResult;
 }
 
-const reconcileRecommendationFactsIR: any = {
-  usedParamSet: {
-    recommendationIds: true,
-    ids: true,
-    metrics: true,
-    baselineValues: true,
-    recommendedValues: true,
-    units: true,
-    improvements: true,
-    tenantId: true,
-  },
-  params: [
-    {
-      name: "recommendationIds",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [
-        { a: 49, b: 67 },
-        { a: 1543, b: 1561 },
-      ],
-    },
-    {
-      name: "ids",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [
-        { a: 82, b: 86 },
-        { a: 1598, b: 1602 },
-      ],
-    },
-    {
-      name: "metrics",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 101, b: 109 }],
-    },
-    {
-      name: "baselineValues",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 124, b: 139 }],
-    },
-    {
-      name: "recommendedValues",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 156, b: 174 }],
-    },
-    {
-      name: "units",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 191, b: 197 }],
-    },
-    {
-      name: "improvements",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 212, b: 225 }],
-    },
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [
-        { a: 599, b: 608 },
-        { a: 1492, b: 1501 },
-      ],
-    },
-  ],
-  statement:
-    'WITH incoming AS (\n  SELECT *\n  FROM unnest(\n    :recommendationIds!::uuid[],\n    :ids!::uuid[],\n    :metrics!::text[],\n    :baselineValues!::float8[],\n    :recommendedValues!::float8[],\n    :units!::text[],\n    :improvements!::float8[]\n  ) AS values(\n    recommendation_id,\n    id,\n    metric,\n    baseline_value,\n    recommended_value,\n    unit,\n    improvement\n  )\n),\nupserted AS (\n  INSERT INTO decision_intelligence.recommendation_facts AS current (\n    tenant_id,\n    recommendation_id,\n    id,\n    metric,\n    baseline_value,\n    recommended_value,\n    unit,\n    improvement\n  )\n  SELECT\n    :tenantId!,\n    incoming.recommendation_id,\n    incoming.id,\n    incoming.metric,\n    incoming.baseline_value,\n    incoming.recommended_value,\n    incoming.unit,\n    incoming.improvement\n  FROM incoming\n  ON CONFLICT (tenant_id, recommendation_id, id)\n  DO UPDATE SET\n    metric = EXCLUDED.metric,\n    baseline_value = EXCLUDED.baseline_value,\n    recommended_value = EXCLUDED.recommended_value,\n    unit = EXCLUDED.unit,\n    improvement = EXCLUDED.improvement,\n    updated_at = now()\n  WHERE (\n    current.metric,\n    current.baseline_value,\n    current.recommended_value,\n    current.unit,\n    current.improvement\n  ) IS DISTINCT FROM (\n    EXCLUDED.metric,\n    EXCLUDED.baseline_value,\n    EXCLUDED.recommended_value,\n    EXCLUDED.unit,\n    EXCLUDED.improvement\n  )\n  RETURNING id\n),\ndeleted AS (\n  DELETE FROM decision_intelligence.recommendation_facts current\n  WHERE current.tenant_id = :tenantId!\n    AND current.recommendation_id = ANY(:recommendationIds!::uuid[])\n    AND current.id <> ALL(:ids!::uuid[])\n  RETURNING id\n)\nSELECT\n  (SELECT count(*)::integer FROM upserted) AS "upsertedCount!",\n  (SELECT count(*)::integer FROM deleted) AS "deletedCount!"',
-};
+const reconcileRecommendationFactsIR: any = {"usedParamSet":{"recommendationIds":true,"ids":true,"metrics":true,"baselineValues":true,"recommendedValues":true,"units":true,"improvements":true,"tenantId":true},"params":[{"name":"recommendationIds","required":true,"transform":{"type":"scalar"},"locs":[{"a":49,"b":67},{"a":1543,"b":1561}]},{"name":"ids","required":true,"transform":{"type":"scalar"},"locs":[{"a":82,"b":86},{"a":1598,"b":1602}]},{"name":"metrics","required":true,"transform":{"type":"scalar"},"locs":[{"a":101,"b":109}]},{"name":"baselineValues","required":true,"transform":{"type":"scalar"},"locs":[{"a":124,"b":139}]},{"name":"recommendedValues","required":true,"transform":{"type":"scalar"},"locs":[{"a":156,"b":174}]},{"name":"units","required":true,"transform":{"type":"scalar"},"locs":[{"a":191,"b":197}]},{"name":"improvements","required":true,"transform":{"type":"scalar"},"locs":[{"a":212,"b":225}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":599,"b":608},{"a":1492,"b":1501}]}],"statement":"WITH incoming AS (\n  SELECT *\n  FROM unnest(\n    :recommendationIds!::uuid[],\n    :ids!::uuid[],\n    :metrics!::text[],\n    :baselineValues!::float8[],\n    :recommendedValues!::float8[],\n    :units!::text[],\n    :improvements!::float8[]\n  ) AS values(\n    recommendation_id,\n    id,\n    metric,\n    baseline_value,\n    recommended_value,\n    unit,\n    improvement\n  )\n),\nupserted AS (\n  INSERT INTO decision_intelligence.recommendation_facts AS current (\n    tenant_id,\n    recommendation_id,\n    id,\n    metric,\n    baseline_value,\n    recommended_value,\n    unit,\n    improvement\n  )\n  SELECT\n    :tenantId!,\n    incoming.recommendation_id,\n    incoming.id,\n    incoming.metric,\n    incoming.baseline_value,\n    incoming.recommended_value,\n    incoming.unit,\n    incoming.improvement\n  FROM incoming\n  ON CONFLICT (tenant_id, recommendation_id, id)\n  DO UPDATE SET\n    metric = EXCLUDED.metric,\n    baseline_value = EXCLUDED.baseline_value,\n    recommended_value = EXCLUDED.recommended_value,\n    unit = EXCLUDED.unit,\n    improvement = EXCLUDED.improvement,\n    updated_at = now()\n  WHERE (\n    current.metric,\n    current.baseline_value,\n    current.recommended_value,\n    current.unit,\n    current.improvement\n  ) IS DISTINCT FROM (\n    EXCLUDED.metric,\n    EXCLUDED.baseline_value,\n    EXCLUDED.recommended_value,\n    EXCLUDED.unit,\n    EXCLUDED.improvement\n  )\n  RETURNING id\n),\ndeleted AS (\n  DELETE FROM decision_intelligence.recommendation_facts current\n  WHERE current.tenant_id = :tenantId!\n    AND current.recommendation_id = ANY(:recommendationIds!::uuid[])\n    AND current.id <> ALL(:ids!::uuid[])\n  RETURNING id\n)\nSELECT\n  (SELECT count(*)::integer FROM upserted) AS \"upsertedCount!\",\n  (SELECT count(*)::integer FROM deleted) AS \"deletedCount!\""};
 
 /**
  * Query generated from SQL:
@@ -182,7 +110,4 @@ const reconcileRecommendationFactsIR: any = {
  *   (SELECT count(*)::integer FROM deleted) AS "deletedCount!"
  * ```
  */
-export const reconcileRecommendationFacts = new PreparedQuery<
-  IReconcileRecommendationFactsParams,
-  IReconcileRecommendationFactsResult
->(reconcileRecommendationFactsIR);
+export const reconcileRecommendationFacts = new PreparedQuery<IReconcileRecommendationFactsParams,IReconcileRecommendationFactsResult>(reconcileRecommendationFactsIR);

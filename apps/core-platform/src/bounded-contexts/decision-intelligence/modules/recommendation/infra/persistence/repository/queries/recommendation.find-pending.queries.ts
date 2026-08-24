@@ -13,6 +13,8 @@ export interface IFindRecommendationsPendingParams {
 
 /** 'FindRecommendationsPending' return type */
 export interface IFindRecommendationsPendingResult {
+  analysis_request_event_id: string | null;
+  analysis_status: string;
   confidence: number | null;
   facts: Json | null;
   findings: Json | null;
@@ -33,7 +35,7 @@ export interface IFindRecommendationsPendingQuery {
   result: IFindRecommendationsPendingResult;
 }
 
-const findRecommendationsPendingIR: any = {"usedParamSet":{"tenantId":true,"limit":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":1388,"b":1397}]},{"name":"limit","required":false,"transform":{"type":"scalar"},"locs":[{"a":1446,"b":1451}]}],"statement":"SELECT\n  r.id,\n  r.route_id,\n  r.optimization_id,\n  r.type,\n  r.status,\n  r.summary,\n  r.confidence,\n  r.score,\n  r.revision,\n  COALESCE(facts.items, '[]'::jsonb) AS facts,\n  COALESCE(findings.items, '[]'::jsonb) AS findings,\n  COALESCE(route_plan_stops.items, '[]'::jsonb) AS proposed_route_stop_ids\nFROM decision_intelligence.recommendations r\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', f.id,\n      'metric', f.metric,\n      'baselineValue', f.baseline_value,\n      'recommendedValue', f.recommended_value,\n      'unit', f.unit,\n      'improvement', f.improvement\n    )\n    ORDER BY f.id\n  ) AS items\n  FROM decision_intelligence.recommendation_facts f\n  WHERE f.tenant_id = r.tenant_id\n    AND f.recommendation_id = r.id\n) facts ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', g.id,\n      'category', g.category,\n      'title', g.title,\n      'description', g.description\n    )\n    ORDER BY g.id\n  ) AS items\n  FROM decision_intelligence.recommendation_findings g\n  WHERE g.tenant_id = r.tenant_id\n    AND g.recommendation_id = r.id\n) findings ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(p.route_stop_id ORDER BY p.sequence) AS items\n  FROM decision_intelligence.recommendation_route_plan_stops p\n  WHERE p.tenant_id = r.tenant_id\n    AND p.recommendation_id = r.id\n) route_plan_stops ON true\nWHERE r.tenant_id = :tenantId!\n  AND r.status = 'PENDING'\nORDER BY r.id\nLIMIT :limit"};
+const findRecommendationsPendingIR: any = {"usedParamSet":{"tenantId":true,"limit":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":1440,"b":1449}]},{"name":"limit","required":false,"transform":{"type":"scalar"},"locs":[{"a":1498,"b":1503}]}],"statement":"SELECT\n  r.id,\n  r.route_id,\n  r.optimization_id,\n  r.type,\n  r.status,\n  r.analysis_request_event_id,\n  r.analysis_status,\n  r.summary,\n  r.confidence,\n  r.score,\n  r.revision,\n  COALESCE(facts.items, '[]'::jsonb) AS facts,\n  COALESCE(findings.items, '[]'::jsonb) AS findings,\n  COALESCE(route_plan_stops.items, '[]'::jsonb) AS proposed_route_stop_ids\nFROM decision_intelligence.recommendations r\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', f.id,\n      'metric', f.metric,\n      'baselineValue', f.baseline_value,\n      'recommendedValue', f.recommended_value,\n      'unit', f.unit,\n      'improvement', f.improvement\n    )\n    ORDER BY f.id\n  ) AS items\n  FROM decision_intelligence.recommendation_facts f\n  WHERE f.tenant_id = r.tenant_id\n    AND f.recommendation_id = r.id\n) facts ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', g.id,\n      'category', g.category,\n      'title', g.title,\n      'description', g.description\n    )\n    ORDER BY g.id\n  ) AS items\n  FROM decision_intelligence.recommendation_findings g\n  WHERE g.tenant_id = r.tenant_id\n    AND g.recommendation_id = r.id\n) findings ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(p.route_stop_id ORDER BY p.sequence) AS items\n  FROM decision_intelligence.recommendation_route_plan_stops p\n  WHERE p.tenant_id = r.tenant_id\n    AND p.recommendation_id = r.id\n) route_plan_stops ON true\nWHERE r.tenant_id = :tenantId!\n  AND r.status = 'PENDING'\nORDER BY r.id\nLIMIT :limit"};
 
 /**
  * Query generated from SQL:
@@ -44,6 +46,8 @@ const findRecommendationsPendingIR: any = {"usedParamSet":{"tenantId":true,"limi
  *   r.optimization_id,
  *   r.type,
  *   r.status,
+ *   r.analysis_request_event_id,
+ *   r.analysis_status,
  *   r.summary,
  *   r.confidence,
  *   r.score,

@@ -13,6 +13,7 @@ import { Recommendation } from "../../../../domain/recommendation.aggregate.js";
 import { RecommendationAnalysis } from "../../../../domain/recommendation-analysis.value-object.js";
 import {
   FindingCategory,
+  RecommendationAnalysisStatus,
   RecommendationStatus,
 } from "../../../../domain/recommendation.enums.js";
 import { RecommendationId } from "../../../../domain/recommendation-id.js";
@@ -88,6 +89,8 @@ export class RecommendationMapper {
         type: row.type as RecommendationType,
         proposedRoutePlan,
         status: row.status as RecommendationStatus,
+        analysisRequestEventId: row.analysis_request_event_id ?? undefined,
+        analysisStatus: row.analysis_status as RecommendationAnalysisStatus,
         facts,
         score: row.score,
         analysis,
@@ -106,6 +109,8 @@ export class RecommendationMapper {
       optimizationId: recommendation.optimizationId.value,
       type: recommendation.type,
       status: recommendation.status,
+      analysisRequestEventId: recommendation.analysisRequestEventId ?? null,
+      analysisStatus: recommendation.analysisStatus,
       score: recommendation.score,
       summary: recommendation.analysis?.summary ?? null,
       confidence: recommendation.analysis?.confidence ?? null,
@@ -127,6 +132,12 @@ export class RecommendationMapper {
       ),
       types: recommendations.map((recommendation) => recommendation.type),
       statuses: recommendations.map((recommendation) => recommendation.status),
+      analysisRequestEventIds: recommendations.map(
+        (recommendation) => recommendation.analysisRequestEventId ?? null,
+      ) as string[],
+      analysisStatuses: recommendations.map(
+        (recommendation) => recommendation.analysisStatus,
+      ),
       scores: recommendations.map((recommendation) => recommendation.score),
       summaries: recommendations.map(
         (recommendation) => recommendation.analysis?.summary ?? null,

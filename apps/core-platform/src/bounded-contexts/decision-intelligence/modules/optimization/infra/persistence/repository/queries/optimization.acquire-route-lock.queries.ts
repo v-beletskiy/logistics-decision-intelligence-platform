@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/decision-intelligence/modules/optimization/infra/persistence/repository/queries/optimization.acquire-route-lock.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'AcquireOptimizationRouteLock' parameters type */
 export interface IAcquireOptimizationRouteLockParams {
@@ -18,25 +18,7 @@ export interface IAcquireOptimizationRouteLockQuery {
   result: IAcquireOptimizationRouteLockResult;
 }
 
-const acquireOptimizationRouteLockIR: any = {
-  usedParamSet: { tenantId: true, routeId: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 49, b: 58 }],
-    },
-    {
-      name: "routeId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 70, b: 78 }],
-    },
-  ],
-  statement:
-    "SELECT pg_advisory_xact_lock(\n  hashtextextended(:tenantId! || ':' || :routeId!, 0)\n)",
-};
+const acquireOptimizationRouteLockIR: any = {"usedParamSet":{"tenantId":true,"routeId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":49,"b":58}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":70,"b":78}]}],"statement":"SELECT pg_advisory_xact_lock(\n  hashtextextended(:tenantId! || ':' || :routeId!, 0)\n)"};
 
 /**
  * Query generated from SQL:
@@ -46,7 +28,4 @@ const acquireOptimizationRouteLockIR: any = {
  * )
  * ```
  */
-export const acquireOptimizationRouteLock = new PreparedQuery<
-  IAcquireOptimizationRouteLockParams,
-  IAcquireOptimizationRouteLockResult
->(acquireOptimizationRouteLockIR);
+export const acquireOptimizationRouteLock = new PreparedQuery<IAcquireOptimizationRouteLockParams,IAcquireOptimizationRouteLockResult>(acquireOptimizationRouteLockIR);

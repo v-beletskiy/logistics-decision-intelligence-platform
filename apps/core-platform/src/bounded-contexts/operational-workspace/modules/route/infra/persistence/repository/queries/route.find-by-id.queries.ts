@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/route/infra/persistence/repository/queries/route.find-by-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindRouteById' parameters type */
 export interface IFindRouteByIdParams {
@@ -23,25 +23,7 @@ export interface IFindRouteByIdQuery {
   result: IFindRouteByIdResult;
 }
 
-const findRouteByIdIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 170, b: 179 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 194, b: 197 }],
-    },
-  ],
-  statement:
-    "SELECT\n  r.id,\n  r.status,\n  r.planned_stop_count,\n  r.next_stop_sequence,\n  r.active_stop_sequence,\n  r.revision\nFROM operational_workspace.routes r\nWHERE r.tenant_id = :tenantId!\n  AND r.id = :id!",
-};
+const findRouteByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":170,"b":179}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":194,"b":197}]}],"statement":"SELECT\n  r.id,\n  r.status,\n  r.planned_stop_count,\n  r.next_stop_sequence,\n  r.active_stop_sequence,\n  r.revision\nFROM operational_workspace.routes r\nWHERE r.tenant_id = :tenantId!\n  AND r.id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -58,7 +40,4 @@ const findRouteByIdIR: any = {
  *   AND r.id = :id!
  * ```
  */
-export const findRouteById = new PreparedQuery<
-  IFindRouteByIdParams,
-  IFindRouteByIdResult
->(findRouteByIdIR);
+export const findRouteById = new PreparedQuery<IFindRouteByIdParams,IFindRouteByIdResult>(findRouteByIdIR);

@@ -8,13 +8,17 @@ import {
   DomainException,
 } from "../../../../../shared/domain/domain.exceptions.js";
 import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number.js";
+import { requireUuid } from "../../../../../shared/domain/validation/primitives/uuid/require-uuid.js";
 import { OptimizationId } from "../../optimization/domain/optimization-id.js";
 import { RecommendationType } from "../../../domain/recommendation-type.enum.js";
 import { RecommendationFact } from "../../../domain/recommendation-fact.entity.js";
 import type { RecommendationEvent } from "./recommendation.events.js";
 import { RecommendationAnalysis } from "./recommendation-analysis.value-object.js";
 import { RecommendationId } from "./recommendation-id.js";
-import { RecommendationStatus } from "./recommendation.enums.js";
+import {
+  RecommendationAnalysisStatus,
+  RecommendationStatus,
+} from "./recommendation.enums.js";
 import { ProposedRoutePlan } from "./proposed-route-plan.value-object.js";
 
 export interface CreateRecommendationParams {
@@ -26,13 +30,16 @@ export interface CreateRecommendationParams {
   readonly score: number;
 }
 
-export interface RecommendationProps
-  extends Omit<
-    CreateRecommendationParams,
-    "proposedRoutePlan"
-  > {
+export interface RecommendationProps {
+  readonly routeId: RouteReference;
+  readonly optimizationId: OptimizationId;
+  readonly type: RecommendationType;
   readonly proposedRoutePlan?: ProposedRoutePlan;
+  readonly facts: readonly RecommendationFact[];
+  readonly score: number;
   readonly status: RecommendationStatus;
+  readonly analysisRequestEventId?: string;
+  readonly analysisStatus: RecommendationAnalysisStatus;
   readonly analysis?: RecommendationAnalysis;
 }
 
@@ -47,8 +54,10 @@ export class Recommendation extends Aggregate<
   private readonly _proposedRoutePlan?: ProposedRoutePlan;
   private readonly _score: number;
   private _status: RecommendationStatus;
-  private readonly _facts: readonly RecommendationFact[];
+  private _analysisRequestEventId?: string;
+  private _analysisStatus: RecommendationAnalysisStatus;
   private _analysis?: RecommendationAnalysis;
+  private readonly _facts: readonly RecommendationFact[];
 
   private constructor(id: RecommendationId, props: RecommendationProps) {
     super(id);
@@ -79,8 +88,27 @@ export class Recommendation extends Aggregate<
     this._proposedRoutePlan = props.proposedRoutePlan;
     this._score = requireFiniteNumber(props.score, "Recommendation score");
     this._status = props.status;
+    this._analysisRequestEventId =
+      props.analysisRequestEventId === undefined
+        ? undefined
+        : requireUuid(
+            props.analysisRequestEventId,
+            "Recommendation analysis request event ID",
+          );
+    this._analysisStatus = props.analysisStatus;
+    if (!isEnumValue(RecommendationAnalysisStatus, this._analysisStatus)) {
+      throw new DomainException(
+        "A recommendation analysis status is invalid.",
+        RECOMMENDATION_ERROR_CODES.recommendationAnalysisStatusIsInvalid,
+      );
+    }
     this._facts = [...props.facts];
     this._analysis = props.analysis;
+    assertAnalysisLifecycleIsValid(
+      this._analysisStatus,
+      this._analysisRequestEventId,
+      this._analysis,
+    );
   }
 
   get routeId(): RouteReference {
@@ -115,6 +143,14 @@ export class Recommendation extends Aggregate<
     return this._analysis;
   }
 
+  get analysisRequestEventId(): string | undefined {
+    return this._analysisRequestEventId;
+  }
+
+  get analysisStatus(): RecommendationAnalysisStatus {
+    return this._analysisStatus;
+  }
+
   static create(details: CreateRecommendationParams): Recommendation {
     if (!(details.proposedRoutePlan instanceof ProposedRoutePlan)) {
       throw new DomainException(
@@ -125,6 +161,7 @@ export class Recommendation extends Aggregate<
     const recommendation = new Recommendation(RecommendationId.generate(), {
       ...details,
       status: RecommendationStatus.Pending,
+      analysisStatus: RecommendationAnalysisStatus.Pending,
     });
     recommendation.raiseDomainEvent("RecommendationCreatedDomainEvent");
     return recommendation;
@@ -134,6 +171,12 @@ export class Recommendation extends Aggregate<
     id: RecommendationId,
     props: RecommendationProps,
   ): Recommendation {
+    if (props.analysisRequestEventId === undefined) {
+      throw new DomainException(
+        "A persisted recommendation analysis requires its request event ID.",
+        RECOMMENDATION_ERROR_CODES.recommendationAnalysisLifecycleIsInvalid,
+      );
+    }
     return new Recommendation(id, props);
   }
 
@@ -188,12 +231,41 @@ export class Recommendation extends Aggregate<
     this.raiseDomainEvent("RecommendationExpiredDomainEvent");
   }
 
-  attachAnalysis(analysis: RecommendationAnalysis): void {
+  requestAnalysis(requestEventId: string): void {
+    if (
+      this._analysisStatus !== RecommendationAnalysisStatus.Pending ||
+      this._analysisRequestEventId !== undefined
+    ) {
+      throw new DomainConflictException(
+        "Recommendation analysis has already been requested.",
+        RECOMMENDATION_ERROR_CODES.recommendationAnalysisRequestAlreadyExists,
+      );
+    }
+    this._analysisRequestEventId = requireUuid(
+      requestEventId,
+      "Recommendation analysis request event ID",
+    );
+  }
+
+  attachAnalysis(
+    requestEventId: string,
+    analysis: RecommendationAnalysis,
+  ): boolean {
     if (!(analysis instanceof RecommendationAnalysis)) {
       throw new DomainException(
         "Recommendation analysis must be valid.",
         RECOMMENDATION_ERROR_CODES.recommendationAnalysisMustBeValid,
       );
+    }
+    const normalizedRequestEventId = requireUuid(
+      requestEventId,
+      "Recommendation analysis request event ID",
+    );
+    if (
+      this._analysisStatus === RecommendationAnalysisStatus.Completed &&
+      this._analysisRequestEventId === normalizedRequestEventId
+    ) {
+      return false;
     }
     if (this._status !== RecommendationStatus.Pending) {
       throw new DomainConflictException(
@@ -201,8 +273,19 @@ export class Recommendation extends Aggregate<
         RECOMMENDATION_ERROR_CODES.analysisCanOnlyBeAttachedToAPendingRecommendation,
       );
     }
+    if (
+      this._analysisStatus !== RecommendationAnalysisStatus.Pending ||
+      this._analysisRequestEventId !== normalizedRequestEventId
+    ) {
+      throw new DomainConflictException(
+        "Recommendation analysis completion does not match its request.",
+        RECOMMENDATION_ERROR_CODES.recommendationAnalysisRequestDoesNotMatch,
+      );
+    }
     this._analysis = analysis;
+    this._analysisStatus = RecommendationAnalysisStatus.Completed;
     this.raiseDomainEvent("RecommendationAnalysisAttachedDomainEvent");
+    return true;
   }
 
   private raiseDomainEvent(type: RecommendationEvent["type"]): void {
@@ -211,5 +294,24 @@ export class Recommendation extends Aggregate<
       occurredAt: new Date(),
       type,
     } satisfies RecommendationEvent);
+  }
+}
+
+function assertAnalysisLifecycleIsValid(
+  status: RecommendationAnalysisStatus,
+  requestEventId: string | undefined,
+  analysis: RecommendationAnalysis | undefined,
+): void {
+  const isValidPending =
+    status === RecommendationAnalysisStatus.Pending && analysis === undefined;
+  const isValidCompleted =
+    status === RecommendationAnalysisStatus.Completed &&
+    requestEventId !== undefined &&
+    analysis !== undefined;
+  if (!isValidPending && !isValidCompleted) {
+    throw new DomainException(
+      "The recommendation analysis lifecycle state is invalid.",
+      RECOMMENDATION_ERROR_CODES.recommendationAnalysisLifecycleIsInvalid,
+    );
   }
 }

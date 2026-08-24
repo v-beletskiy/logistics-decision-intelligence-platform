@@ -152,35 +152,37 @@ export class ExecuteOptimizationHandler extends CommandHandler {
             }),
           ]
         : [];
+
+      const analysisRequests = recommendations.map((recommendation) => {
+        const event = decisionIntelligenceIntegrationEventFactory.create(
+          recommendationAnalysisRequestedV1,
+          {
+            tenantid: command.tenantId,
+            subject: `recommendation/${recommendation.id.value}`,
+            data: {
+              recommendationId: recommendation.id.value,
+              routeId: recommendation.routeId.value,
+            },
+          },
+        );
+        recommendation.requestAnalysis(event.id);
+        return event;
+      });
       await this.recommendationRepository.addMany(
         command.tenantId,
         recommendations,
       );
-
-      if (recommendations.length > 0) {
-        await this.integrationEventPublisher.publishMany(
-          recommendations.map((persistedRecommendation) =>
-            decisionIntelligenceIntegrationEventFactory.create(
-              recommendationAnalysisRequestedV1,
-              {
-                tenantid: command.tenantId,
-                subject: `recommendation/${persistedRecommendation.id.value}`,
-                data: {
-                  recommendationId: persistedRecommendation.id.value,
-                  routeId: persistedRecommendation.routeId.value,
-                },
-              },
-            ),
-          ),
-        );
-      }
+      await this.integrationEventPublisher.publishMany(analysisRequests);
 
       optimization.complete();
       await this.optimizationRepository.save(command.tenantId, current);
 
       return {
         result: undefined,
-        eventsFrom: [optimization, ...recommendations] satisfies DomainEventsSource[],
+        eventsFrom: [
+          optimization,
+          ...recommendations,
+        ] satisfies DomainEventsSource[],
       };
     });
   }

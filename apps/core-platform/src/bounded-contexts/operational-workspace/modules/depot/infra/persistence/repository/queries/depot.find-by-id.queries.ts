@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/depot/infra/persistence/repository/queries/depot.find-by-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 /** 'FindDepotById' parameters type */
 export interface IFindDepotByIdParams {
@@ -33,25 +33,7 @@ export interface IFindDepotByIdQuery {
   result: IFindDepotByIdResult;
 }
 
-const findDepotByIdIR: any = {
-  usedParamSet: { tenantId: true, id: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 241, b: 250 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 263, b: 266 }],
-    },
-  ],
-  statement:
-    "SELECT id, name, country, state_or_region, city, street, building_number, postal_code, latitude, longitude, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count, revision\nFROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\n  AND id = :id!",
-};
+const findDepotByIdIR: any = {"usedParamSet":{"tenantId":true,"id":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":241,"b":250}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":263,"b":266}]}],"statement":"SELECT id, name, country, state_or_region, city, street, building_number, postal_code, latitude, longitude, status, vehicle_capacity, driver_capacity, vehicle_count, driver_count, revision\nFROM operational_workspace.depots\nWHERE tenant_id = :tenantId!\n  AND id = :id!"};
 
 /**
  * Query generated from SQL:
@@ -62,7 +44,4 @@ const findDepotByIdIR: any = {
  *   AND id = :id!
  * ```
  */
-export const findDepotById = new PreparedQuery<
-  IFindDepotByIdParams,
-  IFindDepotByIdResult
->(findDepotByIdIR);
+export const findDepotById = new PreparedQuery<IFindDepotByIdParams,IFindDepotByIdResult>(findDepotByIdIR);

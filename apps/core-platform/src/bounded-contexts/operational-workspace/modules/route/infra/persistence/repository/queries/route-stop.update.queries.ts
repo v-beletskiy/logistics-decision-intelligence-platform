@@ -1,5 +1,5 @@
 /** Types generated for queries found in "src/bounded-contexts/operational-workspace/modules/route/infra/persistence/repository/queries/route-stop.update.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
 export type DateOrString = Date | string;
 
@@ -26,56 +26,7 @@ export interface IUpdateRouteStopQuery {
   result: IUpdateRouteStopResult;
 }
 
-const updateRouteStopIR: any = {
-  usedParamSet: {
-    status: true,
-    actualArrivalAt: true,
-    actualDepartureAt: true,
-    tenantId: true,
-    id: true,
-    expectedRevision: true,
-  },
-  params: [
-    {
-      name: "status",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 54, b: 61 }],
-    },
-    {
-      name: "actualArrivalAt",
-      required: false,
-      transform: { type: "scalar" },
-      locs: [{ a: 88, b: 103 }],
-    },
-    {
-      name: "actualDepartureAt",
-      required: false,
-      transform: { type: "scalar" },
-      locs: [{ a: 132, b: 149 }],
-    },
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 222, b: 231 }],
-    },
-    {
-      name: "id",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 244, b: 247 }],
-    },
-    {
-      name: "expectedRevision",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 266, b: 283 }],
-    },
-  ],
-  statement:
-    "UPDATE operational_workspace.route_stops\nSET status = :status!,\n    actual_arrival_at = :actualArrivalAt,\n    actual_departure_at = :actualDepartureAt,\n    revision = revision + 1,\n    updated_at = now()\nWHERE tenant_id = :tenantId!\n  AND id = :id!\n  AND revision = :expectedRevision!\nRETURNING revision",
-};
+const updateRouteStopIR: any = {"usedParamSet":{"status":true,"actualArrivalAt":true,"actualDepartureAt":true,"tenantId":true,"id":true,"expectedRevision":true},"params":[{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":54,"b":61}]},{"name":"actualArrivalAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":88,"b":103}]},{"name":"actualDepartureAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":132,"b":149}]},{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":222,"b":231}]},{"name":"id","required":true,"transform":{"type":"scalar"},"locs":[{"a":244,"b":247}]},{"name":"expectedRevision","required":true,"transform":{"type":"scalar"},"locs":[{"a":266,"b":283}]}],"statement":"UPDATE operational_workspace.route_stops\nSET status = :status!,\n    actual_arrival_at = :actualArrivalAt,\n    actual_departure_at = :actualDepartureAt,\n    revision = revision + 1,\n    updated_at = now()\nWHERE tenant_id = :tenantId!\n  AND id = :id!\n  AND revision = :expectedRevision!\nRETURNING revision"};
 
 /**
  * Query generated from SQL:
@@ -92,7 +43,4 @@ const updateRouteStopIR: any = {
  * RETURNING revision
  * ```
  */
-export const updateRouteStop = new PreparedQuery<
-  IUpdateRouteStopParams,
-  IUpdateRouteStopResult
->(updateRouteStopIR);
+export const updateRouteStop = new PreparedQuery<IUpdateRouteStopParams,IUpdateRouteStopResult>(updateRouteStopIR);
