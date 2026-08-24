@@ -1,27 +1,42 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { OptimizationStop } from "./optimization-stop.js";
+import {
+  OptimizationStopOperationType,
+  type OptimizationStop,
+} from "./optimization-stop.js";
 import type { CostMatrix } from "./cost-matrix.js";
 import { OptimizationCostModel } from "./optimization-cost-model.js";
 import { RouteOptimizationEvaluator } from "./route-optimization-evaluator.js";
 
 const stops: readonly OptimizationStop[] = [
   {
+    routeStopId: "00000000-0000-4000-8000-000000000001",
     shipmentId: "s1",
+    operationType: OptimizationStopOperationType.Pickup,
     location: { latitude: 50.45, longitude: 30.52 },
+    requestedTimeWindowStartAt: new Date("2026-08-10T08:00:00Z"),
+    requestedTimeWindowEndAt: new Date("2026-08-10T08:30:00Z"),
     plannedArrivalAt: new Date("2026-08-10T08:00:00Z"),
     plannedDepartureAt: new Date("2026-08-10T08:30:00Z"),
   },
   {
+    routeStopId: "00000000-0000-4000-8000-000000000002",
     shipmentId: "s2",
+    operationType: OptimizationStopOperationType.Delivery,
     location: { latitude: 49.84, longitude: 24.03 },
+    requestedTimeWindowStartAt: new Date("2026-08-10T09:00:00Z"),
+    requestedTimeWindowEndAt: new Date("2026-08-10T09:30:00Z"),
     plannedArrivalAt: new Date("2026-08-10T09:00:00Z"),
     plannedDepartureAt: new Date("2026-08-10T09:30:00Z"),
   },
   {
+    routeStopId: "00000000-0000-4000-8000-000000000003",
     shipmentId: "s3",
+    operationType: OptimizationStopOperationType.Delivery,
     location: { latitude: 48.0, longitude: 22.0 },
+    requestedTimeWindowStartAt: new Date("2026-08-10T10:00:00Z"),
+    requestedTimeWindowEndAt: new Date("2026-08-10T10:30:00Z"),
     plannedArrivalAt: new Date("2026-08-10T10:00:00Z"),
     plannedDepartureAt: new Date("2026-08-10T10:30:00Z"),
   },

@@ -15,16 +15,23 @@ import type { RecommendationEvent } from "./recommendation.events.js";
 import { RecommendationAnalysis } from "./recommendation-analysis.value-object.js";
 import { RecommendationId } from "./recommendation-id.js";
 import { RecommendationStatus } from "./recommendation.enums.js";
+import { ProposedRoutePlan } from "./proposed-route-plan.value-object.js";
 
 export interface CreateRecommendationParams {
   readonly routeId: RouteReference;
   readonly optimizationId: OptimizationId;
   readonly type: RecommendationType;
+  readonly proposedRoutePlan: ProposedRoutePlan;
   readonly facts: readonly RecommendationFact[];
   readonly score: number;
 }
 
-export interface RecommendationProps extends CreateRecommendationParams {
+export interface RecommendationProps
+  extends Omit<
+    CreateRecommendationParams,
+    "proposedRoutePlan"
+  > {
+  readonly proposedRoutePlan?: ProposedRoutePlan;
   readonly status: RecommendationStatus;
   readonly analysis?: RecommendationAnalysis;
 }
@@ -37,6 +44,7 @@ export class Recommendation extends Aggregate<
   private readonly _routeId: RouteReference;
   private readonly _optimizationId: OptimizationId;
   private readonly _type: RecommendationType;
+  private readonly _proposedRoutePlan?: ProposedRoutePlan;
   private readonly _score: number;
   private _status: RecommendationStatus;
   private readonly _facts: readonly RecommendationFact[];
@@ -68,6 +76,7 @@ export class Recommendation extends Aggregate<
     this._routeId = props.routeId;
     this._optimizationId = props.optimizationId;
     this._type = props.type;
+    this._proposedRoutePlan = props.proposedRoutePlan;
     this._score = requireFiniteNumber(props.score, "Recommendation score");
     this._status = props.status;
     this._facts = [...props.facts];
@@ -84,6 +93,10 @@ export class Recommendation extends Aggregate<
 
   get type(): RecommendationType {
     return this._type;
+  }
+
+  get proposedRoutePlan(): ProposedRoutePlan | undefined {
+    return this._proposedRoutePlan;
   }
 
   get score(): number {
@@ -103,6 +116,12 @@ export class Recommendation extends Aggregate<
   }
 
   static create(details: CreateRecommendationParams): Recommendation {
+    if (!(details.proposedRoutePlan instanceof ProposedRoutePlan)) {
+      throw new DomainException(
+        "An optimize route plan recommendation requires a valid proposed route plan.",
+        RECOMMENDATION_ERROR_CODES.optimizeRoutePlanRecommendationRequiresAProposedRoutePlan,
+      );
+    }
     const recommendation = new Recommendation(RecommendationId.generate(), {
       ...details,
       status: RecommendationStatus.Pending,

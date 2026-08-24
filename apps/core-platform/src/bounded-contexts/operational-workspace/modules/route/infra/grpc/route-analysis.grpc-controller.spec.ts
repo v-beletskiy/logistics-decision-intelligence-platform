@@ -9,6 +9,7 @@ import type {
 import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry.js";
 import type { GetRouteAnalysisContextHandler } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.handler.js";
 import type { RouteAnalysisContextResult } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.result.js";
+import { RouteStopOperationType } from "../../domain/route-stop.aggregate.js";
 import { RouteAnalysisGrpcController } from "./route-analysis.grpc-controller.js";
 
 const context: RouteAnalysisContextResult = {
@@ -16,8 +17,12 @@ const context: RouteAnalysisContextResult = {
   routeVersion: 3,
   stops: [
     {
+      routeStopId: "00000000-0000-4000-8000-000000000003",
       shipmentId: "00000000-0000-4000-8000-000000000002",
+      operationType: RouteStopOperationType.Pickup,
       location: { latitude: 50.4501, longitude: 30.5234 },
+      requestedTimeWindowStartAt: new Date("2026-08-10T08:00:00.000Z"),
+      requestedTimeWindowEndAt: new Date("2026-08-10T09:00:00.000Z"),
       plannedArrivalAt: new Date("2026-08-10T08:00:00.000Z"),
       plannedDepartureAt: new Date("2026-08-10T09:00:00.000Z"),
     },

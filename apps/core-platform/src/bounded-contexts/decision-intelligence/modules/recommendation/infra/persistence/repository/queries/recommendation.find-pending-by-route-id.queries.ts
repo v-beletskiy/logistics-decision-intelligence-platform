@@ -1,8 +1,7 @@
 /** Types generated for queries found in "src/bounded-contexts/decision-intelligence/modules/recommendation/infra/persistence/repository/queries/recommendation.find-pending-by-route-id.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
-export type Json =
-  null | boolean | number | string | Json[] | { [key: string]: Json };
+export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 
 /** 'FindRecommendationsPendingByRouteId' parameters type */
 export interface IFindRecommendationsPendingByRouteIdParams {
@@ -17,6 +16,7 @@ export interface IFindRecommendationsPendingByRouteIdResult {
   findings: Json | null;
   id: string;
   optimization_id: string;
+  proposed_route_stop_ids: Json | null;
   revision: string;
   route_id: string;
   score: number;
@@ -31,25 +31,7 @@ export interface IFindRecommendationsPendingByRouteIdQuery {
   result: IFindRecommendationsPendingByRouteIdResult;
 }
 
-const findRecommendationsPendingByRouteIdIR: any = {
-  usedParamSet: { tenantId: true, routeId: true },
-  params: [
-    {
-      name: "tenantId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 1068, b: 1077 }],
-    },
-    {
-      name: "routeId",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 1098, b: 1106 }],
-    },
-  ],
-  statement:
-    "SELECT\n  r.id,\n  r.route_id,\n  r.optimization_id,\n  r.type,\n  r.status,\n  r.summary,\n  r.confidence,\n  r.score,\n  r.revision,\n  COALESCE(facts.items, '[]'::jsonb) AS facts,\n  COALESCE(findings.items, '[]'::jsonb) AS findings\nFROM decision_intelligence.recommendations r\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', f.id,\n      'metric', f.metric,\n      'baselineValue', f.baseline_value,\n      'recommendedValue', f.recommended_value,\n      'unit', f.unit,\n      'improvement', f.improvement\n    )\n    ORDER BY f.id\n  ) AS items\n  FROM decision_intelligence.recommendation_facts f\n  WHERE f.tenant_id = r.tenant_id\n    AND f.recommendation_id = r.id\n) facts ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', g.id,\n      'category', g.category,\n      'title', g.title,\n      'description', g.description\n    )\n    ORDER BY g.id\n  ) AS items\n  FROM decision_intelligence.recommendation_findings g\n  WHERE g.tenant_id = r.tenant_id\n    AND g.recommendation_id = r.id\n) findings ON true\nWHERE r.tenant_id = :tenantId!\n  AND r.route_id = :routeId!\n  AND r.status = 'PENDING'\nORDER BY r.id",
-};
+const findRecommendationsPendingByRouteIdIR: any = {"usedParamSet":{"tenantId":true,"routeId":true},"params":[{"name":"tenantId","required":true,"transform":{"type":"scalar"},"locs":[{"a":1388,"b":1397}]},{"name":"routeId","required":true,"transform":{"type":"scalar"},"locs":[{"a":1418,"b":1426}]}],"statement":"SELECT\n  r.id,\n  r.route_id,\n  r.optimization_id,\n  r.type,\n  r.status,\n  r.summary,\n  r.confidence,\n  r.score,\n  r.revision,\n  COALESCE(facts.items, '[]'::jsonb) AS facts,\n  COALESCE(findings.items, '[]'::jsonb) AS findings,\n  COALESCE(route_plan_stops.items, '[]'::jsonb) AS proposed_route_stop_ids\nFROM decision_intelligence.recommendations r\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', f.id,\n      'metric', f.metric,\n      'baselineValue', f.baseline_value,\n      'recommendedValue', f.recommended_value,\n      'unit', f.unit,\n      'improvement', f.improvement\n    )\n    ORDER BY f.id\n  ) AS items\n  FROM decision_intelligence.recommendation_facts f\n  WHERE f.tenant_id = r.tenant_id\n    AND f.recommendation_id = r.id\n) facts ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(\n    jsonb_build_object(\n      'id', g.id,\n      'category', g.category,\n      'title', g.title,\n      'description', g.description\n    )\n    ORDER BY g.id\n  ) AS items\n  FROM decision_intelligence.recommendation_findings g\n  WHERE g.tenant_id = r.tenant_id\n    AND g.recommendation_id = r.id\n) findings ON true\nLEFT JOIN LATERAL (\n  SELECT jsonb_agg(p.route_stop_id ORDER BY p.sequence) AS items\n  FROM decision_intelligence.recommendation_route_plan_stops p\n  WHERE p.tenant_id = r.tenant_id\n    AND p.recommendation_id = r.id\n) route_plan_stops ON true\nWHERE r.tenant_id = :tenantId!\n  AND r.route_id = :routeId!\n  AND r.status = 'PENDING'\nORDER BY r.id"};
 
 /**
  * Query generated from SQL:
@@ -65,7 +47,8 @@ const findRecommendationsPendingByRouteIdIR: any = {
  *   r.score,
  *   r.revision,
  *   COALESCE(facts.items, '[]'::jsonb) AS facts,
- *   COALESCE(findings.items, '[]'::jsonb) AS findings
+ *   COALESCE(findings.items, '[]'::jsonb) AS findings,
+ *   COALESCE(route_plan_stops.items, '[]'::jsonb) AS proposed_route_stop_ids
  * FROM decision_intelligence.recommendations r
  * LEFT JOIN LATERAL (
  *   SELECT jsonb_agg(
@@ -97,13 +80,16 @@ const findRecommendationsPendingByRouteIdIR: any = {
  *   WHERE g.tenant_id = r.tenant_id
  *     AND g.recommendation_id = r.id
  * ) findings ON true
+ * LEFT JOIN LATERAL (
+ *   SELECT jsonb_agg(p.route_stop_id ORDER BY p.sequence) AS items
+ *   FROM decision_intelligence.recommendation_route_plan_stops p
+ *   WHERE p.tenant_id = r.tenant_id
+ *     AND p.recommendation_id = r.id
+ * ) route_plan_stops ON true
  * WHERE r.tenant_id = :tenantId!
  *   AND r.route_id = :routeId!
  *   AND r.status = 'PENDING'
  * ORDER BY r.id
  * ```
  */
-export const findRecommendationsPendingByRouteId = new PreparedQuery<
-  IFindRecommendationsPendingByRouteIdParams,
-  IFindRecommendationsPendingByRouteIdResult
->(findRecommendationsPendingByRouteIdIR);
+export const findRecommendationsPendingByRouteId = new PreparedQuery<IFindRecommendationsPendingByRouteIdParams,IFindRecommendationsPendingByRouteIdResult>(findRecommendationsPendingByRouteIdIR);

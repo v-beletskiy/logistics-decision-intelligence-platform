@@ -14,6 +14,7 @@ export class RecommendationAnalysisGrpcMapper {
       type: context.type,
       status: context.status,
       score: context.score,
+      proposedRouteStopIds: [...context.proposedRouteStopIds],
       facts: context.facts.map((fact): RecommendationFact => ({
         metric: fact.metric,
         baselineValue: fact.baselineValue,

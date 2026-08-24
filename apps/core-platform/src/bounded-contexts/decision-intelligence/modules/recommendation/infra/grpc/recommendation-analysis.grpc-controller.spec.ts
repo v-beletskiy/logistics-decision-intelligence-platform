@@ -21,6 +21,7 @@ const context: RecommendationAnalysisContextResult = {
   type: RecommendationType.AssignVehicle,
   status: RecommendationStatus.Pending,
   score: 90,
+  proposedRouteStopIds: ["00000000-0000-4000-8000-000000000012"],
   facts: [
     {
       metric: RecommendationMetric.TotalDistance,

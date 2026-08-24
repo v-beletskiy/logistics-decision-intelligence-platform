@@ -24,5 +24,7 @@ export const OPTIMIZATION_ERROR_CODES = defineErrorCodes(
       "candidate-recommendation-type-is-invalid",
     candidateRecommendationFactsMustBeValidRecommendationFacts:
       "candidate-recommendation-facts-must-be-valid-recommendation-facts",
+    candidateRecommendationProposedRoutePlanMustBeValid:
+      "candidate-recommendation-proposed-route-plan-must-be-valid",
   },
 );

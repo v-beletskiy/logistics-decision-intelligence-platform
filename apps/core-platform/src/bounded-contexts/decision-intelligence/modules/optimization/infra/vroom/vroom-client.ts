@@ -50,19 +50,30 @@ function decodeVroomSolution(
     throw new Error("VROOM returned an incomplete optimization solution.");
   }
 
-  const orderedJobIds = route.steps.flatMap((step) =>
-    step.type === "job" && step.job !== undefined ? [step.job] : [],
+  const orderedTaskIds = route.steps.flatMap((step) =>
+    (step.type === "job" ||
+      step.type === "pickup" ||
+      step.type === "delivery") &&
+    step.id !== undefined
+      ? [step.id]
+      : [],
   );
-  const expectedJobIds = new Set(request.jobs.map((job) => job.id));
+  const expectedTaskIds = new Set([
+    ...request.jobs.map((job) => job.id),
+    ...request.shipments.flatMap((shipment) => [
+      shipment.pickup.id,
+      shipment.delivery.id,
+    ]),
+  ]);
   if (
-    orderedJobIds.length !== expectedJobIds.size ||
-    new Set(orderedJobIds).size !== expectedJobIds.size ||
-    orderedJobIds.some((jobId) => !expectedJobIds.has(jobId))
+    orderedTaskIds.length !== expectedTaskIds.size ||
+    new Set(orderedTaskIds).size !== expectedTaskIds.size ||
+    orderedTaskIds.some((taskId) => !expectedTaskIds.has(taskId))
   ) {
     throw new Error("VROOM returned an incomplete optimization solution.");
   }
 
-  return { route, orderedJobIds };
+  return { route, orderedTaskIds };
 }
 
 function parseVroomSolution(value: unknown): VroomSolution {

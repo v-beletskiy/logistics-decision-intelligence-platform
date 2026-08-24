@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   RoutePlanningSnapshotQuery,
+  RoutePlanningStopOperationType,
   type RoutePlanningSnapshot,
 } from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query.js";
 import { RouteOptimizationInputQueryAdapter } from "./route-optimization-input.query-adapter.js";
@@ -24,8 +25,15 @@ function snapshot(stopCount: number): RoutePlanningSnapshot {
     routeId,
     routeVersion: 7,
     orderedStops: Array.from({ length: stopCount }, (_, index) => ({
+      routeStopId: `00000000-0000-4000-8000-00000000000${index + 1}`,
       shipmentId: `${index + 1}`,
+      operationType:
+        index === 0
+          ? RoutePlanningStopOperationType.Pickup
+          : RoutePlanningStopOperationType.Delivery,
       location: { latitude: 50 + index, longitude: 30 + index },
+      requestedTimeWindowStartAt: new Date("2026-01-01T10:00:00.000Z"),
+      requestedTimeWindowEndAt: new Date("2026-01-01T10:05:00.000Z"),
       plannedArrivalAt: new Date("2026-01-01T10:00:00.000Z"),
       plannedDepartureAt: new Date("2026-01-01T10:05:00.000Z"),
     })),

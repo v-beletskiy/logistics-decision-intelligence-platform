@@ -17,5 +17,6 @@ export interface RecommendationAnalysisContextResult {
   readonly type: RecommendationType;
   readonly status: RecommendationStatus;
   readonly score: number;
+  readonly proposedRouteStopIds: readonly string[];
   readonly facts: readonly RecommendationAnalysisFactResult[];
 }

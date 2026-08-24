@@ -5,7 +5,20 @@ import type { HttpClient } from "../../../../../../shared/infra/http/http-client
 import { VroomClient } from "./vroom-client.js";
 import type { VroomRequest } from "./vroom-request.js";
 
-const request: VroomRequest = { jobs: [], vehicles: [{ id: 1 }] };
+const request: VroomRequest = {
+  jobs: [],
+  shipments: [],
+  vehicles: [
+    {
+      id: 1,
+      profile: "car",
+      start: [30.52, 50.45],
+      start_index: 0,
+      time_window: [0, 1],
+    },
+  ],
+  matrices: { car: { durations: [[0]], distances: [[0]] } },
+};
 
 function httpClient(response: unknown): HttpClient {
   return {
@@ -47,8 +60,10 @@ test("rejects a VROOM solution that omits a requested job", async () => {
     httpClient({ code: 0, routes: [{ vehicle: 1, cost: 0, steps: [] }] }),
   );
   const requestWithJob: VroomRequest = {
-    jobs: [{ id: 1, location: [30.52, 50.45] }],
-    vehicles: [{ id: 1 }],
+    jobs: [{ id: 1, location: [30.52, 50.45], location_index: 0 }],
+    shipments: [],
+    vehicles: request.vehicles,
+    matrices: request.matrices,
   };
 
   await assert.rejects(

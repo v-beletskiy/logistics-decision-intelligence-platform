@@ -8,7 +8,7 @@ import {
 import type { TrxManager } from "../../../../../app/trx/trx-manager.js";
 import { NonRetryableMessageException } from "../../errors.js";
 import { InboxProcessor } from "./inbox-processor.js";
-import type { InboxStore } from "./inbox-store.js";
+import { InboxClaimResult, type InboxStore } from "./inbox-store.js";
 import {
   inboxConsumerId,
   type InboxMessage,
@@ -31,7 +31,8 @@ test("does not invoke a handler when the inbox already completed the event", asy
   let handled = false;
   const processor = new InboxProcessor(
     immediateTrxManager(),
-    fakeInboxStore(false),
+    fakeInboxStore(InboxClaimResult.AlreadyProcessedOrActive),
+    appConfig(),
   );
 
   await processor.process(
@@ -48,11 +49,12 @@ test("does not invoke a handler when the inbox already completed the event", asy
 test("acknowledges a deterministic consumer failure by completing the inbox record", async () => {
   const completed: string[] = [];
   const processor = new InboxProcessor(immediateTrxManager(), {
-    tryStart: async () => true,
+    claim: async () => InboxClaimResult.Claimed,
     markCompleted: async (message: InboxMessageKey) => {
       completed.push(message.eventId);
     },
-  } as InboxStore);
+    release: async () => undefined,
+  } as InboxStore, appConfig());
 
   await processor.process(
     inboxConsumerId("decision-intelligence.analysis-completed"),
@@ -70,12 +72,13 @@ test("acknowledges a deterministic consumer failure by completing the inbox reco
 test("uses the consumer name as part of the idempotency identity", async () => {
   const started: string[] = [];
   const processor = new InboxProcessor(immediateTrxManager(), {
-    tryStart: async (message: InboxMessage) => {
+    claim: async (message: InboxMessage) => {
       started.push(message.consumerId);
-      return true;
+      return InboxClaimResult.Claimed;
     },
     markCompleted: async () => undefined,
-  } as InboxStore);
+    release: async () => undefined,
+  } as InboxStore, appConfig());
   let handled = 0;
 
   await processor.process(
@@ -100,6 +103,34 @@ test("uses the consumer name as part of the idempotency identity", async () => {
   ]);
 });
 
+test("releases a claimed message when a transient handler failure must be retried", async () => {
+  const released: string[] = [];
+  const processor = new InboxProcessor(
+    immediateTrxManager(),
+    {
+      claim: async () => InboxClaimResult.Claimed,
+      markCompleted: async () => undefined,
+      release: async (message: InboxMessageKey) => {
+        released.push(message.eventId);
+      },
+    } as InboxStore,
+    appConfig(),
+  );
+
+  await assert.rejects(
+    processor.process(
+      inboxConsumerId("decision-intelligence.analysis-completed"),
+      event,
+      async () => {
+        throw new Error("VROOM is unavailable.");
+      },
+    ),
+    /VROOM is unavailable/,
+  );
+
+  assert.deepEqual(released, [event.id]);
+});
+
 function immediateTrxManager(): TrxManager {
   return {
     run: async <TResult>(operation: () => Promise<TResult>): Promise<TResult> =>
@@ -107,9 +138,16 @@ function immediateTrxManager(): TrxManager {
   } as TrxManager;
 }
 
-function fakeInboxStore(started: boolean): InboxStore {
+function fakeInboxStore(claimResult: InboxClaimResult): InboxStore {
   return {
-    tryStart: async () => started,
+    claim: async () => claimResult,
     markCompleted: async () => undefined,
+    release: async () => undefined,
   } as InboxStore;
+}
+
+function appConfig() {
+  return {
+    messaging: { outboxProcessingLeaseMs: 300_000 },
+  } as never;
 }

@@ -9,6 +9,7 @@ message RecommendationContext {
   string status = 4;
   double score = 5;
   repeated RecommendationFact facts = 6;
+  repeated string proposed_route_stop_ids = 7;
 }
 
 message RecommendationFact {

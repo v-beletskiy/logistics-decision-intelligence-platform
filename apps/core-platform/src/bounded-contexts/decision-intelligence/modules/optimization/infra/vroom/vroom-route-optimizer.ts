@@ -17,18 +17,18 @@ import { VroomMapper } from "./vroom.mapper.js";
 export class VroomRouteOptimizer implements RouteOptimizer {
   constructor(
     private readonly vroomClient: VroomClient,
-    private readonly mapper: VroomMapper,
+    private readonly vroomMapper: VroomMapper,
     @Inject(APP_CONFIG) private readonly config: WorkerAppConfig,
   ) {}
 
   async optimize(
     problem: RouteOptimizationProblem,
   ): Promise<RouteOptimizationSolution> {
-    const request = this.mapper.toRequest(problem.fixedOrigin, problem.stops);
+    const request = this.vroomMapper.toRequest(problem);
     const response = await this.vroomClient.optimize(
       this.config.optimization.vroomBaseUrl,
       request,
     );
-    return this.mapper.toSolution(response, problem.matrix);
+    return this.vroomMapper.toSolution(response, problem.matrix);
   }
 }

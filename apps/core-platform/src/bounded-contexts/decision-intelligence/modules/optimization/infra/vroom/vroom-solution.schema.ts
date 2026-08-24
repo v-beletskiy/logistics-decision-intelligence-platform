@@ -26,7 +26,7 @@ const vroomStepSchema = {
         "delivery",
       ],
     },
-    job: nonNegativeInteger,
+    id: nonNegativeInteger,
     location: {
       type: "array",
       minItems: 2,
@@ -80,5 +80,5 @@ export type VroomRoute = NonNullable<VroomSolution["routes"]>[number];
 /** Structurally and semantically validated result for the submitted problem. */
 export interface SuccessfulVroomSolution {
   readonly route: VroomRoute;
-  readonly orderedJobIds: readonly number[];
+  readonly orderedTaskIds: readonly number[];
 }

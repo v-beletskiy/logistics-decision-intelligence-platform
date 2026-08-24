@@ -7,10 +7,12 @@ import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
 import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number.js";
 import { RecommendationFact } from "../../../domain/recommendation-fact.entity.js";
 import { RecommendationType } from "../../../domain/recommendation-type.enum.js";
+import { ProposedRoutePlan } from "../../recommendation/domain/proposed-route-plan.value-object.js";
 
 export interface CandidateRecommendationProps {
   readonly routeId: RouteReference;
   readonly type: RecommendationType;
+  readonly proposedRoutePlan: ProposedRoutePlan;
   readonly facts: readonly RecommendationFact[];
   readonly score: number;
 }
@@ -19,6 +21,7 @@ export interface CandidateRecommendationProps {
 export class CandidateRecommendation extends ValueObject<CandidateRecommendation> {
   readonly routeId: RouteReference;
   readonly type: RecommendationType;
+  readonly proposedRoutePlan: ProposedRoutePlan;
   readonly score: number;
   private readonly _facts: readonly RecommendationFact[];
 
@@ -41,6 +44,13 @@ export class CandidateRecommendation extends ValueObject<CandidateRecommendation
     }
     this.routeId = props.routeId;
     this.type = props.type;
+    if (!(props.proposedRoutePlan instanceof ProposedRoutePlan)) {
+      throw new DomainException(
+        "Candidate recommendation route plan must be valid.",
+        OPTIMIZATION_ERROR_CODES.candidateRecommendationProposedRoutePlanMustBeValid,
+      );
+    }
+    this.proposedRoutePlan = props.proposedRoutePlan;
     this._facts = [...props.facts];
     this.score = requireFiniteNumber(
       props.score,
@@ -58,6 +68,12 @@ export class CandidateRecommendation extends ValueObject<CandidateRecommendation
   }
 
   protected equalityComponents(): readonly unknown[] {
-    return [this.routeId, this.type, this._facts, this.score];
+    return [
+      this.routeId,
+      this.type,
+      this.proposedRoutePlan,
+      this._facts,
+      this.score,
+    ];
   }
 }

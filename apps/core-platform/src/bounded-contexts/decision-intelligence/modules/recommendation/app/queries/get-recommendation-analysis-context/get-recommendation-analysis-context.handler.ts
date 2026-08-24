@@ -30,6 +30,9 @@ export class GetRecommendationAnalysisContextHandler {
       type: recommendation.type,
       status: recommendation.status,
       score: recommendation.score,
+      proposedRouteStopIds: recommendation.proposedRoutePlan?.orderedRouteStopIds.map(
+        (routeStopId) => routeStopId.value,
+      ) ?? [],
       facts: recommendation.facts.map((fact) => ({
         metric: fact.metric,
         baselineValue: fact.baselineValue,

@@ -3,13 +3,25 @@ import { Injectable } from "@nestjs/common";
 import { ApplicationInvariantViolationException } from "../../../../../../shared/app/app.exceptions.js";
 import {
   RoutePlanningSnapshotQuery,
+  RoutePlanningStopOperationType,
   type RoutePlanningStopSnapshot,
 } from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query.js";
-import type { OptimizationStop } from "../../domain/optimization-stop.js";
+import {
+  OptimizationStopOperationType,
+  type OptimizationStop,
+} from "../../domain/optimization-stop.js";
 import {
   RouteOptimizationInputQuery,
   type RouteOptimizationInput,
 } from "../../app/ports/route-optimization-input.query.js";
+
+const routeStopOperationTypeMapping: Record<
+  RoutePlanningStopOperationType,
+  OptimizationStopOperationType
+> = {
+  [RoutePlanningStopOperationType.Pickup]: OptimizationStopOperationType.Pickup,
+  [RoutePlanningStopOperationType.Delivery]: OptimizationStopOperationType.Delivery,
+};
 
 /** Consumer-owned query adapter from Operational Workspace to Optimization input. */
 @Injectable()
@@ -41,8 +53,12 @@ export class RouteOptimizationInputQueryAdapter implements RouteOptimizationInpu
 
 function toOptimizationStop(stop: RoutePlanningStopSnapshot): OptimizationStop {
   return {
+    routeStopId: stop.routeStopId,
     shipmentId: stop.shipmentId,
+    operationType: routeStopOperationTypeMapping[stop.operationType],
     location: stop.location,
+    requestedTimeWindowStartAt: stop.requestedTimeWindowStartAt,
+    requestedTimeWindowEndAt: stop.requestedTimeWindowEndAt,
     plannedArrivalAt: stop.plannedArrivalAt,
     plannedDepartureAt: stop.plannedDepartureAt,
   };

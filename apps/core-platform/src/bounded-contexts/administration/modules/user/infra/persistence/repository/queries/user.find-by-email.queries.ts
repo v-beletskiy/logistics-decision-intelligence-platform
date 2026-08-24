@@ -1,7 +1,7 @@
 /** Types generated for queries found in "src/bounded-contexts/administration/modules/user/infra/persistence/repository/queries/user.find-by-email.sql" */
-import { PreparedQuery } from "@pgtyped/runtime";
+import { PreparedQuery } from '@pgtyped/runtime';
 
-export type stringArray = string[];
+export type stringArray = (string)[];
 
 /** 'FindUserAccountByEmail' parameters type */
 export interface IFindUserAccountByEmailParams {
@@ -24,19 +24,7 @@ export interface IFindUserAccountByEmailQuery {
   result: IFindUserAccountByEmailResult;
 }
 
-const findUserAccountByEmailIR: any = {
-  usedParamSet: { email: true },
-  params: [
-    {
-      name: "email",
-      required: true,
-      transform: { type: "scalar" },
-      locs: [{ a: 98, b: 104 }],
-    },
-  ],
-  statement:
-    "SELECT id, tenant_id, email, password_hash, roles, active\nFROM administration.users\nWHERE email = :email!",
-};
+const findUserAccountByEmailIR: any = {"usedParamSet":{"email":true},"params":[{"name":"email","required":true,"transform":{"type":"scalar"},"locs":[{"a":98,"b":104}]}],"statement":"SELECT id, tenant_id, email, password_hash, roles, active\nFROM administration.users\nWHERE email = :email!"};
 
 /**
  * Query generated from SQL:
@@ -46,7 +34,6 @@ const findUserAccountByEmailIR: any = {
  * WHERE email = :email!
  * ```
  */
-export const findUserAccountByEmail = new PreparedQuery<
-  IFindUserAccountByEmailParams,
-  IFindUserAccountByEmailResult
->(findUserAccountByEmailIR);
+export const findUserAccountByEmail = new PreparedQuery<IFindUserAccountByEmailParams,IFindUserAccountByEmailResult>(findUserAccountByEmailIR);
+
+

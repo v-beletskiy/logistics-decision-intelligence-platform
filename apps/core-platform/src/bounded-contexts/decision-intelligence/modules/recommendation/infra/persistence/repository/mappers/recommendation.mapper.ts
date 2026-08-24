@@ -1,4 +1,5 @@
 import { RouteReference } from "../../../../../../domain/route-reference.js";
+import { RouteStopReference } from "../../../../../../domain/route-stop-reference.js";
 import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import { MeasurementUnit } from "../../../../../../domain/measurement-unit.enum.js";
 import { RecommendationMetric } from "../../../../../../domain/recommendation-metric.enum.js";
@@ -15,11 +16,13 @@ import {
   RecommendationStatus,
 } from "../../../../domain/recommendation.enums.js";
 import { RecommendationId } from "../../../../domain/recommendation-id.js";
+import { ProposedRoutePlan } from "../../../../domain/proposed-route-plan.value-object.js";
 import type { IFindRecommendationByIdResult } from "../queries/recommendation.find-by-id.queries.js";
 import type { IReconcileRecommendationFactsParams } from "../queries/recommendation.reconcile-facts.queries.js";
 import type { IReconcileRecommendationFindingsParams } from "../queries/recommendation.reconcile-findings.queries.js";
 import type { IAddRecommendationParams } from "../queries/recommendation.add.queries.js";
 import type { IAddRecommendationsParams } from "../queries/recommendation.add-many.queries.js";
+import type { IAddRecommendationRoutePlanStopsParams } from "../queries/recommendation.add-route-plan-stops.queries.js";
 
 interface RecommendationFactPersistenceData {
   readonly id: string;
@@ -72,10 +75,18 @@ export class RecommendationMapper {
               findings,
             })
           : undefined;
+      const routeStopIds = row.proposed_route_stop_ids as unknown as readonly string[];
+      const proposedRoutePlan =
+        routeStopIds.length > 0
+          ? ProposedRoutePlan.reconstitute({
+              orderedRouteStopIds: routeStopIds.map(RouteStopReference.from),
+            })
+          : undefined;
       return Recommendation.reconstitute(RecommendationId.from(row.id), {
         routeId: RouteReference.from(row.route_id),
         optimizationId: OptimizationId.from(row.optimization_id),
         type: row.type as RecommendationType,
+        proposedRoutePlan,
         status: row.status as RecommendationStatus,
         facts,
         score: row.score,
@@ -124,6 +135,27 @@ export class RecommendationMapper {
         (recommendation) => recommendation.analysis?.confidence ?? null,
       ) as number[],
     };
+  }
+
+  static toAddRoutePlanStopsParams(
+    tenantId: string,
+    recommendations: readonly Recommendation[],
+  ): IAddRecommendationRoutePlanStopsParams | undefined {
+    const recommendationIds: string[] = [];
+    const routeStopIds: string[] = [];
+    const sequences: number[] = [];
+    for (const recommendation of recommendations) {
+      recommendation.proposedRoutePlan?.orderedRouteStopIds.forEach(
+        (routeStopId, index) => {
+          recommendationIds.push(recommendation.id.value);
+          routeStopIds.push(routeStopId.value);
+          sequences.push(index + 1);
+        },
+      );
+    }
+    return recommendationIds.length > 0
+      ? { tenantId, recommendationIds, routeStopIds, sequences }
+      : undefined;
   }
 
   static toReconcileFactsParams(

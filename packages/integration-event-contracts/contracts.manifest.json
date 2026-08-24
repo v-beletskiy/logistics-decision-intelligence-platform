@@ -7,6 +7,10 @@
     "eventType": "recommendation-analysis.completed.v1",
     "schemaId": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v1"
   },
+  "recommendationAnalysisCompletedV2": {
+    "eventType": "recommendation-analysis.completed.v2",
+    "schemaId": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v2"
+  },
   "recommendationAnalysisRequestedV1": {
     "eventType": "decision-intelligence.recommendation-analysis-requested.v1",
     "schemaId": "urn:logistics-decision-intelligence:core-platform:decision-intelligence:recommendation-analysis-requested:v1"

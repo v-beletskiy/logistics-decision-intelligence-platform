@@ -2,6 +2,7 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { RouteReference } from "../../../../../domain/route-reference.js";
+import { RouteStopReference } from "../../../../../domain/route-stop-reference.js";
 import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
 import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
 import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity.js";
@@ -12,10 +13,12 @@ import { OptimizationId } from "../../../../optimization/domain/optimization-id.
 import { Finding } from "../../../domain/finding.entity.js";
 import { RecommendationAnalysis } from "../../../domain/recommendation-analysis.value-object.js";
 import { Recommendation } from "../../../domain/recommendation.aggregate.js";
+import { ProposedRoutePlan } from "../../../domain/proposed-route-plan.value-object.js";
 import { FindingCategory } from "../../../domain/recommendation.enums.js";
 import type { LoadedRecommendation } from "../../../domain/recommendation.repository.js";
 import { addRecommendations } from "./queries/recommendation.add-many.queries.js";
 import { addRecommendation } from "./queries/recommendation.add.queries.js";
+import { addRecommendationRoutePlanStops } from "./queries/recommendation.add-route-plan-stops.queries.js";
 import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries.js";
 import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries.js";
 import { updateRecommendation } from "./queries/recommendation.update.queries.js";
@@ -45,6 +48,12 @@ function createRecommendation(): Recommendation {
     routeId: RouteReference.from("00000000-0000-4000-8000-000000000021"),
     optimizationId: OptimizationId.from("00000000-0000-4000-8000-000000000011"),
     type: RecommendationType.OptimizeRoutePlan,
+    proposedRoutePlan: ProposedRoutePlan.create({
+      orderedRouteStopIds: [
+        RouteStopReference.from("00000000-0000-4000-8000-000000000031"),
+        RouteStopReference.from("00000000-0000-4000-8000-000000000032"),
+      ],
+    }),
     facts: [
       RecommendationFact.create({
         metric: RecommendationMetric.TotalDistance,
@@ -86,6 +95,7 @@ test("add inserts the root and reconciles facts and findings", async () => {
     calls.map((call) => call.statement),
     [
       addRecommendation,
+      addRecommendationRoutePlanStops,
       reconcileRecommendationFacts,
       reconcileRecommendationFindings,
     ],
@@ -98,8 +108,8 @@ test("add reconciles children using their stable identities", async () => {
 
   await new PgRecommendationRepository(database).add(tenantId, recommendation);
 
-  const factsParams = calls[1]?.params as { ids: string[] };
-  const findingsParams = calls[2]?.params as { ids: string[] };
+  const factsParams = calls[2]?.params as { ids: string[] };
+  const findingsParams = calls[3]?.params as { ids: string[] };
   assert.deepEqual(
     factsParams.ids,
     recommendation.facts.map((fact) => fact.id.value),
@@ -123,11 +133,12 @@ test("addMany inserts and reconciles all recommendations", async () => {
     calls.map((call) => call.statement),
     [
       addRecommendations,
+      addRecommendationRoutePlanStops,
       reconcileRecommendationFacts,
       reconcileRecommendationFindings,
     ],
   );
-  const factsParams = calls[1]?.params as { recommendationIds: string[] };
+  const factsParams = calls[2]?.params as { recommendationIds: string[] };
   assert.deepEqual(
     factsParams.recommendationIds,
     recommendations.map((recommendation) => recommendation.id.value),

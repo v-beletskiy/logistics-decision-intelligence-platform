@@ -16,6 +16,7 @@ test("RecommendationAnalysisGrpcMapper maps a recommendation context", () => {
     type: RecommendationType.OptimizeRoutePlan,
     status: RecommendationStatus.Pending,
     score: 87.5,
+    proposedRouteStopIds: ["00000000-0000-4000-8000-000000000012"],
     facts: [
       {
         metric: RecommendationMetric.TotalDistance,

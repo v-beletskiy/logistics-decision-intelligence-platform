@@ -19,6 +19,7 @@ import {
   OptimizationStatus,
 } from "../../../domain/optimization.aggregate.js";
 import { OptimizationId } from "../../../domain/optimization-id.js";
+import { OptimizationStopOperationType } from "../../../domain/optimization-stop.js";
 import {
   OptimizationRepository,
   type LoadedOptimization,
@@ -107,8 +108,12 @@ function routeInput(routeVersion: number): RouteOptimizationInput {
     routeId,
     routeVersion,
     fixedOrigin: {
+      routeStopId: "33333333-3333-4333-8333-333333333334",
       shipmentId: "33333333-3333-4333-8333-333333333333",
+      operationType: OptimizationStopOperationType.Pickup,
       location: { latitude: 50.45, longitude: 30.52 },
+      requestedTimeWindowStartAt: plannedArrivalAt,
+      requestedTimeWindowEndAt: plannedDepartureAt,
       plannedArrivalAt,
       plannedDepartureAt,
     },

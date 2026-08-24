@@ -169,6 +169,11 @@ Infrastructure validation never decides a business policy and never converts a
 technical failure into a Domain Exception. It returns or translates failures as
 technical/infrastructure errors.
 
+An Infrastructure client validates its protocol boundary, not invariants already
+guaranteed by its typed Application port or provider-owned public contract.
+Those invariants are validated by their owner; duplicating them in clients risks
+divergent policy and misclassified failures.
+
 Process app configuration is also an Infrastructure boundary. It uses an
 application-owned AJV schema for environment shape, coercion, and role-specific
 sections. `PROCESS_ROLE` selects exactly one role. After schema validation, a

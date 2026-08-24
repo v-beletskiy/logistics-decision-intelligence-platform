@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { RoutePlanningSnapshotQuery } from "../public-api/queries/route-planning-snapshot.query.js";
-import { RoutePlanningSnapshotQueryAdapter } from "../modules/route/app/queries/route-planning-snapshot/route-planning-snapshot.query-adapter.js";
+import { RoutePlanningSnapshotHandler } from "../modules/route/app/queries/route-planning-snapshot/route-planning-snapshot.handler.js";
 import { RouteQueryModule } from "../modules/route/composition/route-query.module.js";
 
 @Module({
@@ -9,7 +9,7 @@ import { RouteQueryModule } from "../modules/route/composition/route-query.modul
   providers: [
     {
       provide: RoutePlanningSnapshotQuery,
-      useClass: RoutePlanningSnapshotQueryAdapter,
+      useClass: RoutePlanningSnapshotHandler,
     },
   ],
   exports: [RoutePlanningSnapshotQuery],

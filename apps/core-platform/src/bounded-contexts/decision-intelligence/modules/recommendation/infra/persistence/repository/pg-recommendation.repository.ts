@@ -19,6 +19,7 @@ import { reconcileRecommendationFindings } from "./queries/recommendation.reconc
 import { addRecommendation } from "./queries/recommendation.add.queries.js";
 import { addRecommendations } from "./queries/recommendation.add-many.queries.js";
 import { updateRecommendation } from "./queries/recommendation.update.queries.js";
+import { addRecommendationRoutePlanStops } from "./queries/recommendation.add-route-plan-stops.queries.js";
 
 @Injectable()
 export class PgRecommendationRepository extends RecommendationRepository {
@@ -69,6 +70,7 @@ export class PgRecommendationRepository extends RecommendationRepository {
       addRecommendation,
       RecommendationMapper.toPersistence(tenantId, recommendation),
     );
+    await this.addRoutePlanStops(tenantId, [recommendation]);
     await this.reconcileChildren(tenantId, [recommendation]);
   }
 
@@ -81,6 +83,7 @@ export class PgRecommendationRepository extends RecommendationRepository {
       addRecommendations,
       RecommendationMapper.toAddManyPersistence(tenantId, recommendations),
     );
+    await this.addRoutePlanStops(tenantId, recommendations);
     await this.reconcileChildren(tenantId, recommendations);
   }
 
@@ -120,5 +123,18 @@ export class PgRecommendationRepository extends RecommendationRepository {
       reconcileRecommendationFindings,
       RecommendationMapper.toReconcileFindingsParams(tenantId, recommendations),
     );
+  }
+
+  private async addRoutePlanStops(
+    tenantId: string,
+    recommendations: readonly Recommendation[],
+  ): Promise<void> {
+    const params = RecommendationMapper.toAddRoutePlanStopsParams(
+      tenantId,
+      recommendations,
+    );
+    if (params) {
+      await this.database.exec(addRecommendationRoutePlanStops, params);
+    }
   }
 }

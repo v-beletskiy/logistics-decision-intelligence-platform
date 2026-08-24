@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:logistics-decision-intelligence:ai-platform:recommendation-analysis:completed:v2",
+  "x-event-type": "recommendation-analysis.completed.v2",
+  "title": "RecommendationAnalysisCompletedV2Payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recommendationId", "requestEventId", "analysis"],
+  "properties": {
+    "recommendationId": { "type": "string", "format": "uuid" },
+    "requestEventId": { "type": "string", "format": "uuid" },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "confidence", "findings"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1, "maxLength": 10000 },
+        "confidence": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "findings": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["category", "title", "description"],
+            "properties": {
+              "category": { "enum": ["STRENGTH", "RISK", "ASSUMPTION"] },
+              "title": { "type": "string", "minLength": 1, "maxLength": 500 },
+              "description": { "type": "string", "minLength": 1, "maxLength": 5000 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

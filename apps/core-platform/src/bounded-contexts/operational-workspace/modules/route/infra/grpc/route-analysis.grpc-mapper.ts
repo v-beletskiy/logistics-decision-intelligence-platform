@@ -1,5 +1,6 @@
 import type {
   RouteAnalysisContext,
+  RouteStopOperationType,
   RouteStop,
 } from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_types.js";
 import type { GeoPoint } from "../../../../../../shared/infra/grpc/generated/shared/v1/geography.js";
@@ -18,12 +19,24 @@ export class RouteAnalysisGrpcMapper {
           longitude: stop.location.longitude,
         };
         return {
+          routeStopId: stop.routeStopId,
           shipmentId: stop.shipmentId,
+          operationType: toGrpcOperationType(stop.operationType),
           location,
+          requestedTimeWindowStartAt: stop.requestedTimeWindowStartAt,
+          requestedTimeWindowEndAt: stop.requestedTimeWindowEndAt,
           plannedArrivalAt: stop.plannedArrivalAt,
           plannedDepartureAt: stop.plannedDepartureAt,
         };
       }),
     };
   }
+}
+
+function toGrpcOperationType(
+  operationType: "PICKUP" | "DELIVERY",
+): RouteStopOperationType {
+  return operationType === "PICKUP"
+    ? 1
+    : 2;
 }

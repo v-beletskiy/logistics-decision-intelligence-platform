@@ -21,6 +21,7 @@ import { RecommendationId } from "../../../../recommendation/domain/recommendati
 import { RecommendationRepository } from "../../../../recommendation/domain/recommendation.repository.js";
 import type { CostMatrix } from "../../../domain/cost-matrix.js";
 import { Optimization } from "../../../domain/optimization.aggregate.js";
+import { OptimizationStopOperationType } from "../../../domain/optimization-stop.js";
 import { OptimizationCostModel } from "../../../domain/optimization-cost-model.js";
 import {
   OptimizationRepository,
@@ -121,22 +122,54 @@ class RecordingRecommendationRepository extends RecommendationRepository {
 }
 
 class StubRouteOptimizationInputQuery extends RouteOptimizationInputQuery {
+  constructor(private readonly routeVersion = 1) {
+    super();
+  }
+
   async get(): Promise<RouteOptimizationInput> {
     const plannedArrivalAt = new Date("2026-01-01T10:00:00.000Z");
     const plannedDepartureAt = new Date("2026-01-01T10:05:00.000Z");
     return {
       routeId,
-      routeVersion: 1,
+      routeVersion: this.routeVersion,
       fixedOrigin: {
+        routeStopId: "33333333-3333-4333-8333-333333333334",
         shipmentId: "33333333-3333-4333-8333-333333333333",
+        operationType: OptimizationStopOperationType.Pickup,
         location: { latitude: 50.45, longitude: 30.52 },
+        requestedTimeWindowStartAt: plannedArrivalAt,
+        requestedTimeWindowEndAt: new Date("2026-01-01T18:00:00.000Z"),
         plannedArrivalAt,
         plannedDepartureAt,
       },
       stops: [
         {
-          shipmentId: "44444444-4444-4444-8444-444444444444",
+          routeStopId: "44444444-4444-4444-8444-444444444445",
+          shipmentId: "33333333-3333-4333-8333-333333333333",
+          operationType: OptimizationStopOperationType.Delivery,
           location: { latitude: 49.84, longitude: 24.03 },
+          requestedTimeWindowStartAt: plannedArrivalAt,
+          requestedTimeWindowEndAt: new Date("2026-01-01T18:00:00.000Z"),
+          plannedArrivalAt,
+          plannedDepartureAt,
+        },
+        {
+          routeStopId: "55555555-5555-4555-8555-555555555555",
+          shipmentId: "44444444-4444-4444-8444-444444444444",
+          operationType: OptimizationStopOperationType.Pickup,
+          location: { latitude: 48, longitude: 22 },
+          requestedTimeWindowStartAt: plannedArrivalAt,
+          requestedTimeWindowEndAt: new Date("2026-01-01T18:00:00.000Z"),
+          plannedArrivalAt,
+          plannedDepartureAt,
+        },
+        {
+          routeStopId: "66666666-6666-4666-8666-666666666666",
+          shipmentId: "44444444-4444-4444-8444-444444444444",
+          operationType: OptimizationStopOperationType.Delivery,
+          location: { latitude: 47, longitude: 21 },
+          requestedTimeWindowStartAt: plannedArrivalAt,
+          requestedTimeWindowEndAt: new Date("2026-01-01T18:00:00.000Z"),
           plannedArrivalAt,
           plannedDepartureAt,
         },
@@ -146,30 +179,41 @@ class StubRouteOptimizationInputQuery extends RouteOptimizationInputQuery {
 }
 
 const matrix: CostMatrix = {
-  labels: ["origin", "stop"],
+  labels: ["origin", "delivery-a", "pickup-b", "delivery-b"],
   distanceMatrix: [
-    [0, 10],
-    [10, 0],
+    [0, 100, 10, 100],
+    [100, 0, 100, 100],
+    [100, 100, 0, 10],
+    [100, 10, 100, 0],
   ],
   durationMatrix: [
-    [0, 600],
-    [600, 0],
+    [0, 6000, 600, 6000],
+    [6000, 0, 6000, 6000],
+    [6000, 6000, 0, 600],
+    [6000, 600, 6000, 0],
   ],
 };
 
 class StubCostMatrixProvider extends CostMatrixProvider {
+  calls = 0;
+
   async compute(): Promise<CostMatrix> {
+    this.calls += 1;
     return matrix;
   }
 }
 
 class StubRouteOptimizer extends RouteOptimizer {
+  constructor(private readonly orderedStopIndexes = [0, 2, 3, 1]) {
+    super();
+  }
+
   async optimize(
     _problem: RouteOptimizationProblem,
   ): Promise<RouteOptimizationSolution> {
     return {
-      orderedStopIndexes: [0, 1],
-      metrics: { distanceKm: 10, durationSeconds: 600 },
+      orderedStopIndexes: this.orderedStopIndexes,
+      metrics: { distanceKm: 30, durationSeconds: 1800 },
     };
   }
 }
@@ -214,4 +258,80 @@ test("persists an analysis request in the outbox with its recommendation", async
     recommendationId: recommendation.id.value,
     routeId,
   });
+  assert.deepEqual(
+    recommendation.proposedRoutePlan?.orderedRouteStopIds.map(
+      (routeStopId) => routeStopId.value,
+    ),
+    [
+      "33333333-3333-4333-8333-333333333334",
+      "55555555-5555-4555-8555-555555555555",
+      "66666666-6666-4666-8666-666666666666",
+      "44444444-4444-4444-8444-444444444445",
+    ],
+  );
+});
+
+test("completes without publishing a recommendation when the route does not improve", async () => {
+  const optimization = Optimization.queue({
+    routeId: RouteReference.from(routeId),
+    inputVersion: 1,
+  });
+  optimization.pullDomainEvents();
+  const recommendationRepository = new RecordingRecommendationRepository();
+  const integrationEvents = new RecordingIntegrationEventPublisher();
+  const handler = new ExecuteOptimizationHandler(
+    new StubOptimizationRepository({
+      aggregate: optimization,
+      expectedRevision: "1",
+    }),
+    recommendationRepository,
+    new StubCostMatrixProvider(),
+    new StubRouteOptimizer([0, 1, 2, 3]),
+    new RouteOptimizationEvaluator(OptimizationCostModel.create()),
+    new StubRouteOptimizationInputQuery(),
+    integrationEvents,
+    new ImmediateTrxManager(),
+    new RecordingDomainEventBus(),
+  );
+
+  await handler.exec(
+    new ExecuteOptimizationCommand(tenantId, optimization.id.value),
+  );
+
+  assert.deepEqual(recommendationRepository.saved, []);
+  assert.equal(integrationEvents.events.length, 0);
+});
+
+test("cancels a stale optimization before invoking external providers", async () => {
+  const optimization = Optimization.queue({
+    routeId: RouteReference.from(routeId),
+    inputVersion: 1,
+  });
+  optimization.pullDomainEvents();
+  const recommendationRepository = new RecordingRecommendationRepository();
+  const integrationEvents = new RecordingIntegrationEventPublisher();
+  const matrixProvider = new StubCostMatrixProvider();
+  const handler = new ExecuteOptimizationHandler(
+    new StubOptimizationRepository({
+      aggregate: optimization,
+      expectedRevision: "1",
+    }),
+    recommendationRepository,
+    matrixProvider,
+    new StubRouteOptimizer(),
+    new RouteOptimizationEvaluator(OptimizationCostModel.create()),
+    new StubRouteOptimizationInputQuery(2),
+    integrationEvents,
+    new ImmediateTrxManager(),
+    new RecordingDomainEventBus(),
+  );
+
+  await handler.exec(
+    new ExecuteOptimizationCommand(tenantId, optimization.id.value),
+  );
+
+  assert.equal(matrixProvider.calls, 0);
+  assert.deepEqual(recommendationRepository.saved, []);
+  assert.equal(integrationEvents.events.length, 0);
+  assert.equal(optimization.status, "CANCELLED");
 });

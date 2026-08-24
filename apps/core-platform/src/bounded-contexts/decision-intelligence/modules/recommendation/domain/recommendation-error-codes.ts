@@ -27,5 +27,10 @@ export const RECOMMENDATION_ERROR_CODES = defineErrorCodes(
       "recommendation-analysis-confidence-cannot-exceed-100",
     recommendationAnalysisFindingsAreInvalid:
       "recommendation-analysis-findings-are-invalid",
+    proposedRoutePlanIsInvalid: "proposed-route-plan-is-invalid",
+    proposedRoutePlanHasDuplicateRouteStops:
+      "proposed-route-plan-has-duplicate-route-stops",
+    optimizeRoutePlanRecommendationRequiresAProposedRoutePlan:
+      "optimize-route-plan-recommendation-requires-a-proposed-route-plan",
   },
 );
