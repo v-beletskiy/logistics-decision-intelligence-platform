@@ -1,6 +1,6 @@
 import type { SortDirection } from "@logistics-decision-intelligence/querying";
 
-import type { DriverStatus } from "../../../domain/driver.aggregate";
+import type { DriverStatus } from "../../../domain/driver.aggregate.js";
 
 export interface SearchDriversQueryInput {
   readonly mode: "page" | "cursor";

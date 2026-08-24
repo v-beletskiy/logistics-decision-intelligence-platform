@@ -1,5 +1,5 @@
 import { Global, Module } from "@nestjs/common";
-import { APP_CONFIG, createAppConfig } from "./app-config";
+import { APP_CONFIG, createAppConfig } from "./app-config.js";
 
 export const appConfig = createAppConfig();
 

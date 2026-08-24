@@ -1,9 +1,9 @@
 import type {
   RouteAnalysisContextResult,
   RouteAnalysisStopResult,
-} from "../../../../app/queries/get-route-analysis-context/get-route-analysis-context.result";
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
-import type { IFindRouteAnalysisContextByRouteIdResult } from "../queries/route-analysis-context.find-by-route-id.queries";
+} from "../../../../app/queries/get-route-analysis-context/get-route-analysis-context.result.js";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
+import type { IFindRouteAnalysisContextByRouteIdResult } from "../queries/route-analysis-context.find-by-route-id.queries.js";
 
 /** Maps the Route analysis PostgreSQL projection to its Application result. */
 export class RouteAnalysisContextMapper {

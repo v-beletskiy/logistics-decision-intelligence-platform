@@ -6,7 +6,7 @@ import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intellige
 import {
   IntegrationEventValidator,
   InvalidIntegrationEventException,
-} from "./integration-event-validator";
+} from "./integration-event-validator.js";
 
 test("validates a complete versioned CloudEvents integration event", () => {
   const validator = new IntegrationEventValidator([

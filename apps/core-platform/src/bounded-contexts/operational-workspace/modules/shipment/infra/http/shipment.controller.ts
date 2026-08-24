@@ -8,30 +8,30 @@ import {
   Put,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { CancelShipmentCommand } from "../../app/commands/cancel-shipment/cancel-shipment.command";
-import { CancelShipmentHandler } from "../../app/commands/cancel-shipment/cancel-shipment.handler";
-import { CompleteDeliveryCommand } from "../../app/commands/complete-delivery/complete-delivery.command";
-import { CompleteDeliveryHandler } from "../../app/commands/complete-delivery/complete-delivery.handler";
-import { CompletePickupCommand } from "../../app/commands/complete-pickup/complete-pickup.command";
-import { CompletePickupHandler } from "../../app/commands/complete-pickup/complete-pickup.handler";
-import { CreateShipmentCommand } from "../../app/commands/create-shipment/create-shipment.command";
-import { CreateShipmentHandler } from "../../app/commands/create-shipment/create-shipment.handler";
-import { UpdateShipmentDetailsCommand } from "../../app/commands/update-shipment-details/update-shipment-details.command";
-import { UpdateShipmentDetailsHandler } from "../../app/commands/update-shipment-details/update-shipment-details.handler";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { CancelShipmentCommand } from "../../app/commands/cancel-shipment/cancel-shipment.command.js";
+import { CancelShipmentHandler } from "../../app/commands/cancel-shipment/cancel-shipment.handler.js";
+import { CompleteDeliveryCommand } from "../../app/commands/complete-delivery/complete-delivery.command.js";
+import { CompleteDeliveryHandler } from "../../app/commands/complete-delivery/complete-delivery.handler.js";
+import { CompletePickupCommand } from "../../app/commands/complete-pickup/complete-pickup.command.js";
+import { CompletePickupHandler } from "../../app/commands/complete-pickup/complete-pickup.handler.js";
+import { CreateShipmentCommand } from "../../app/commands/create-shipment/create-shipment.command.js";
+import { CreateShipmentHandler } from "../../app/commands/create-shipment/create-shipment.handler.js";
+import { UpdateShipmentDetailsCommand } from "../../app/commands/update-shipment-details/update-shipment-details.command.js";
+import { UpdateShipmentDetailsHandler } from "../../app/commands/update-shipment-details/update-shipment-details.handler.js";
 import type {
   CreateShipmentRequest,
   CreatedShipmentResponse,
   ShipmentRouteParams,
   UpdateShipmentDetailsRequest,
-} from "./shipment.http-contracts";
-import { ShipmentHttpMapper } from "./shipment.http-mapper";
+} from "./shipment.http-contracts.js";
+import { ShipmentHttpMapper } from "./shipment.http-mapper.js";
 import {
   createShipmentRequestPipe,
   shipmentRouteParamsPipe,
   updateShipmentDetailsRequestPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "shipments", version: "1" })
 export class ShipmentController {

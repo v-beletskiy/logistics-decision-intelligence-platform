@@ -9,31 +9,31 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
-import { ActivateDepotHandler } from "../../app/commands/activate-depot/activate-depot.handler";
-import { CloseDepotHandler } from "../../app/commands/close-depot/close-depot.handler";
-import { CreateDepotHandler } from "../../app/commands/create-depot/create-depot.handler";
-import { InactivateDepotHandler } from "../../app/commands/inactivate-depot/inactivate-depot.handler";
-import { UpdateDepotDetailsHandler } from "../../app/commands/update-depot-details/update-depot-details.handler";
-import { UpdateDepotDriverCapacityHandler } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.handler";
-import { UpdateDepotVehicleCapacityHandler } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.handler";
-import { Depot } from "../../domain/depot.aggregate";
-import { DepotId } from "../../domain/depot-id";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
+import { ActivateDepotHandler } from "../../app/commands/activate-depot/activate-depot.handler.js";
+import { CloseDepotHandler } from "../../app/commands/close-depot/close-depot.handler.js";
+import { CreateDepotHandler } from "../../app/commands/create-depot/create-depot.handler.js";
+import { InactivateDepotHandler } from "../../app/commands/inactivate-depot/inactivate-depot.handler.js";
+import { UpdateDepotDetailsHandler } from "../../app/commands/update-depot-details/update-depot-details.handler.js";
+import { UpdateDepotDriverCapacityHandler } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.handler.js";
+import { UpdateDepotVehicleCapacityHandler } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.handler.js";
+import { Depot } from "../../domain/depot.aggregate.js";
+import { DepotId } from "../../domain/depot-id.js";
 import {
   DepotRepository,
   type LoadedDepot,
-} from "../../domain/depot.repository";
-import { DepotController } from "./depot.controller";
+} from "../../domain/depot.repository.js";
+import { DepotController } from "./depot.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

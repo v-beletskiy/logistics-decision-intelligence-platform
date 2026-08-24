@@ -11,7 +11,7 @@ import {
   IntegrationEventDecoder,
   IntegrationEventFactory,
   IntegrationEventValidationError,
-} from "./index";
+} from "./index.js";
 
 const decoder = new IntegrationEventDecoder([
   recommendationAnalysisRequestedV1,

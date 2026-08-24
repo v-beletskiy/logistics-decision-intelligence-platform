@@ -1,8 +1,8 @@
 import type {
   RecommendationContext,
   RecommendationFact,
-} from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_types";
-import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result";
+} from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_types.js";
+import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result.js";
 
 export class RecommendationAnalysisGrpcMapper {
   static toContext(

@@ -1,6 +1,6 @@
-import { ValueObject } from "../../../../../shared/domain/core/value-object";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { USER_ERROR_CODES } from "./user-error-codes";
+import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { USER_ERROR_CODES } from "./user-error-codes.js";
 
 const MAX_EMAIL_LENGTH = 254;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;

@@ -1,5 +1,5 @@
-import type { IssuedAccessToken } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import type { AccessTokenResponse } from "./authentication.http-contracts";
+import type { IssuedAccessToken } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import type { AccessTokenResponse } from "./authentication.http-contracts.js";
 
 export class AuthenticationHttpMapper {
   static toAccessTokenResponse(token: IssuedAccessToken): AccessTokenResponse {

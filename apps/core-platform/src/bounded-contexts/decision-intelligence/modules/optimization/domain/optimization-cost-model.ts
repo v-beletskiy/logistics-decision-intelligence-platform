@@ -1,4 +1,4 @@
-import type { RouteMetrics } from "./route-metrics";
+import type { RouteMetrics } from "./route-metrics.js";
 
 const DISTANCE_COST_PER_KM = 1;
 const DURATION_COST_PER_MINUTE = 1;

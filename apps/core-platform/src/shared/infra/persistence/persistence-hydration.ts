@@ -1,4 +1,4 @@
-import { MalformedPersistenceDataException } from "./persistence.exceptions";
+import { MalformedPersistenceDataException } from "./persistence.exceptions.js";
 
 /** Translates failures while rebuilding domain objects from persisted data. */
 export function hydratePersistenceData<T>(

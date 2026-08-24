@@ -11,26 +11,26 @@ import {
   Query,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { AddDriverCertificationCommand } from "../../app/commands/add-driver-certification/add-driver-certification.command";
-import { AddDriverCertificationHandler } from "../../app/commands/add-driver-certification/add-driver-certification.handler";
-import { ChangeDriverAvailabilityCommand } from "../../app/commands/change-driver-availability/change-driver-availability.command";
-import { ChangeDriverAvailabilityHandler } from "../../app/commands/change-driver-availability/change-driver-availability.handler";
-import { RegisterDriverCommand } from "../../app/commands/register-driver/register-driver.command";
-import { RegisterDriverHandler } from "../../app/commands/register-driver/register-driver.handler";
-import { ReinstateDriverCommand } from "../../app/commands/reinstate-driver/reinstate-driver.command";
-import { ReinstateDriverHandler } from "../../app/commands/reinstate-driver/reinstate-driver.handler";
-import { RemoveDriverCertificationCommand } from "../../app/commands/remove-driver-certification/remove-driver-certification.command";
-import { RemoveDriverCertificationHandler } from "../../app/commands/remove-driver-certification/remove-driver-certification.handler";
-import { SuspendDriverCommand } from "../../app/commands/suspend-driver/suspend-driver.command";
-import { SuspendDriverHandler } from "../../app/commands/suspend-driver/suspend-driver.handler";
-import { UpdateDriverCertificationCommand } from "../../app/commands/update-driver-certification/update-driver-certification.command";
-import { UpdateDriverCertificationHandler } from "../../app/commands/update-driver-certification/update-driver-certification.handler";
-import { UpdateDriverDetailsCommand } from "../../app/commands/update-driver-details/update-driver-details.command";
-import { UpdateDriverDetailsHandler } from "../../app/commands/update-driver-details/update-driver-details.handler";
-import { SearchDriversHandler } from "../../app/queries/search-drivers/search-drivers.handler";
-import { SearchDriversQuery } from "../../app/queries/search-drivers/search-drivers.query";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { AddDriverCertificationCommand } from "../../app/commands/add-driver-certification/add-driver-certification.command.js";
+import { AddDriverCertificationHandler } from "../../app/commands/add-driver-certification/add-driver-certification.handler.js";
+import { ChangeDriverAvailabilityCommand } from "../../app/commands/change-driver-availability/change-driver-availability.command.js";
+import { ChangeDriverAvailabilityHandler } from "../../app/commands/change-driver-availability/change-driver-availability.handler.js";
+import { RegisterDriverCommand } from "../../app/commands/register-driver/register-driver.command.js";
+import { RegisterDriverHandler } from "../../app/commands/register-driver/register-driver.handler.js";
+import { ReinstateDriverCommand } from "../../app/commands/reinstate-driver/reinstate-driver.command.js";
+import { ReinstateDriverHandler } from "../../app/commands/reinstate-driver/reinstate-driver.handler.js";
+import { RemoveDriverCertificationCommand } from "../../app/commands/remove-driver-certification/remove-driver-certification.command.js";
+import { RemoveDriverCertificationHandler } from "../../app/commands/remove-driver-certification/remove-driver-certification.handler.js";
+import { SuspendDriverCommand } from "../../app/commands/suspend-driver/suspend-driver.command.js";
+import { SuspendDriverHandler } from "../../app/commands/suspend-driver/suspend-driver.handler.js";
+import { UpdateDriverCertificationCommand } from "../../app/commands/update-driver-certification/update-driver-certification.command.js";
+import { UpdateDriverCertificationHandler } from "../../app/commands/update-driver-certification/update-driver-certification.handler.js";
+import { UpdateDriverDetailsCommand } from "../../app/commands/update-driver-details/update-driver-details.command.js";
+import { UpdateDriverDetailsHandler } from "../../app/commands/update-driver-details/update-driver-details.handler.js";
+import { SearchDriversHandler } from "../../app/queries/search-drivers/search-drivers.handler.js";
+import { SearchDriversQuery } from "../../app/queries/search-drivers/search-drivers.query.js";
 import type {
   ChangeDriverAvailabilityRequest,
   CreatedDriverCertificationResponse,
@@ -42,8 +42,8 @@ import type {
   SearchDriversRequest,
   SearchDriversResponse,
   UpdateDriverRequest,
-} from "./driver.http-contracts";
-import { DriverHttpMapper } from "./driver.http-mapper";
+} from "./driver.http-contracts.js";
+import { DriverHttpMapper } from "./driver.http-mapper.js";
 import {
   changeDriverAvailabilityRequestPipe,
   driverCertificationRequestPipe,
@@ -52,7 +52,7 @@ import {
   registerDriverRequestPipe,
   searchDriversRequestPipe,
   updateDriverRequestPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "drivers", version: "1" })
 export class DriverController {

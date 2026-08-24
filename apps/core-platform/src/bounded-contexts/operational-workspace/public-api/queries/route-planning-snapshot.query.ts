@@ -1,4 +1,4 @@
-import type { GeoCoordinateProps } from "../../../../shared/domain/value-objects/location/geo-coordinate";
+import type { GeoCoordinateProps } from "../../../../shared/domain/value-objects/location/geo-coordinate.js";
 
 export interface RoutePlanningStopSnapshot {
   readonly shipmentId: string;

@@ -8,7 +8,7 @@ import {
   type QueryResultRow,
 } from "pg";
 
-import { APP_CONFIG, type AppConfig } from "../config/app-config";
+import { APP_CONFIG, type AppConfig } from "../config/app-config.js";
 
 @Injectable()
 export class PgDatabase implements OnModuleDestroy {

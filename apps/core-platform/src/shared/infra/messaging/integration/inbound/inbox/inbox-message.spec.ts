@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { inboxConsumerId } from "./inbox-message";
+import { inboxConsumerId } from "./inbox-message.js";
 
 test("creates stable lowercase inbox consumer identifiers", () => {
   assert.equal(

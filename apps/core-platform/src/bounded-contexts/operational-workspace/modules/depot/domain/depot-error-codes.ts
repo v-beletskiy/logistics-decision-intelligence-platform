@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions.js";
 
 export const DEPOT_ERROR_CODES = defineErrorCodes(
   "operational-workspace.depot",

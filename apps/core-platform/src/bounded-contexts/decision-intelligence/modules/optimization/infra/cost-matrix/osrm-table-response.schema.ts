@@ -5,7 +5,7 @@ import {
   type IdentifiedSchema,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id.js";
 
 const matrixCellSchema = {
   anyOf: [{ type: "number", minimum: 0 }, { type: "null" }],

@@ -1,17 +1,17 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DriverLicenseNumberConflictException } from "../../../app/driver.exceptions";
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { Driver, DriverStatus } from "../../../domain/driver.aggregate";
-import { DriverId } from "../../../domain/driver-id";
-import { findDriverByIdForUpdate } from "./queries/driver.find-by-id-for-update.queries";
-import { findDriverById } from "./queries/driver.find-by-id.queries";
-import { insertDriver } from "./queries/driver.insert.queries";
-import { reconcileDriverCertifications } from "./queries/driver.reconcile-certifications.queries";
-import { updateDriver } from "./queries/driver.update.queries";
-import { PgDriverRepository } from "./pg-driver.repository";
+import { DriverLicenseNumberConflictException } from "../../../app/driver.exceptions.js";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { Driver, DriverStatus } from "../../../domain/driver.aggregate.js";
+import { DriverId } from "../../../domain/driver-id.js";
+import { findDriverByIdForUpdate } from "./queries/driver.find-by-id-for-update.queries.js";
+import { findDriverById } from "./queries/driver.find-by-id.queries.js";
+import { insertDriver } from "./queries/driver.insert.queries.js";
+import { reconcileDriverCertifications } from "./queries/driver.reconcile-certifications.queries.js";
+import { updateDriver } from "./queries/driver.update.queries.js";
+import { PgDriverRepository } from "./pg-driver.repository.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

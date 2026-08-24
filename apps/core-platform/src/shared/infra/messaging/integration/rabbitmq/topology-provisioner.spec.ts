@@ -2,8 +2,8 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 import type { Channel } from "amqplib";
 
-import { IntegrationTopology } from "./topology";
-import { RabbitMqTopologyProvisioner } from "./topology-provisioner";
+import { IntegrationTopology } from "./topology.js";
+import { RabbitMqTopologyProvisioner } from "./topology-provisioner.js";
 
 test("declares integration exchanges", async () => {
   const exchanges: Array<readonly [string, string, boolean]> = [];

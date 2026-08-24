@@ -1,7 +1,7 @@
 import {
   defineInternalApplicationEvent,
   type InternalApplicationEventOf,
-} from "../../../../shared/app/messaging/internal-application-event-bus";
+} from "../../../../shared/app/messaging/internal-application-event-bus.js";
 
 export interface RouteInputChangedPayload {
   readonly routeId: string;

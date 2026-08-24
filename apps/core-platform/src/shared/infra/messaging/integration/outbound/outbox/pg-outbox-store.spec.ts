@@ -3,10 +3,10 @@ import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 import { integrationEventId } from "@logistics-decision-intelligence/integration-events";
 
-import type { AppConfig } from "../../../../config/app-config";
-import type { PgDatabase } from "../../../../persistence/pg-database";
-import type { TrxManager } from "../../../../../app/trx/trx-manager";
-import { PgOutboxStore } from "./pg-outbox-store";
+import type { AppConfig } from "../../../../config/app-config.js";
+import type { PgDatabase } from "../../../../persistence/pg-database.js";
+import type { TrxManager } from "../../../../../app/trx/trx-manager.js";
+import { PgOutboxStore } from "./pg-outbox-store.js";
 
 test("claims events with a lease token and uses it for state transitions - happy path scenario with the same token", async () => {
   const queries: Array<{

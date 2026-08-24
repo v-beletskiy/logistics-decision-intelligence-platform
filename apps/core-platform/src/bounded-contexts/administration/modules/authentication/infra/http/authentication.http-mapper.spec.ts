@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AuthenticationHttpMapper } from "./authentication.http-mapper";
+import { AuthenticationHttpMapper } from "./authentication.http-mapper.js";
 
 test("AuthenticationHttpMapper maps the application token to its public response", () => {
   assert.deepEqual(

@@ -3,11 +3,11 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id.js";
 import {
   vehicleCompartmentRequestFields,
   vehicleCompartmentRequestRequiredFields,
-} from "./shared-vehicles.schema";
+} from "./shared-vehicles.schema.js";
 
 export const updateVehicleCompartmentRequestSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

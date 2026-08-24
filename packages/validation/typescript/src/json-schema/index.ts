@@ -1,10 +1,10 @@
-export { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
+export { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects.js";
 export {
   base64EncodedTextSchemaRef,
   JSON_SCHEMA_PRIMITIVES_SCHEMA_ID,
   jsonSchemaPrimitives,
   positiveSafeIntegerSchemaRef,
-} from "./schema-primitives";
+} from "./schema-primitives.js";
 export {
   SchemaRegistry,
   SchemaValidationError,
@@ -12,5 +12,5 @@ export {
   type IdentifiedSchema,
   type ValidationIssue,
   type ValidationResult,
-} from "./schema-registry";
-export { createSchemaId } from "./schema-id";
+} from "./schema-registry.js";
+export { createSchemaId } from "./schema-id.js";

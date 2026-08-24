@@ -1,5 +1,5 @@
-import { inboxConsumerId, type InboxConsumerId } from "./inbox/inbox-message";
-import type { IntegrationEventContract } from "./integration-event-validator";
+import { inboxConsumerId, type InboxConsumerId } from "./inbox/inbox-message.js";
+import type { IntegrationEventContract } from "./integration-event-validator.js";
 
 declare const rabbitMqQueueNameBrand: unique symbol;
 

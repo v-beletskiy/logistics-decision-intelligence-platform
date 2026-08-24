@@ -1,10 +1,10 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { OptimizationStop } from "./optimization-stop";
-import type { CostMatrix } from "./cost-matrix";
-import { OptimizationCostModel } from "./optimization-cost-model";
-import { RouteOptimizationEvaluator } from "./route-optimization-evaluator";
+import type { OptimizationStop } from "./optimization-stop.js";
+import type { CostMatrix } from "./cost-matrix.js";
+import { OptimizationCostModel } from "./optimization-cost-model.js";
+import { RouteOptimizationEvaluator } from "./route-optimization-evaluator.js";
 
 const stops: readonly OptimizationStop[] = [
   {

@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "./domain.exceptions";
+import { defineErrorCodes } from "./domain.exceptions.js";
 
 export const SHARED_DOMAIN_ERROR_CODES = defineErrorCodes("shared", {
   textTooShort: "text-too-short",

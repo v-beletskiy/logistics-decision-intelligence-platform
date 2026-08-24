@@ -8,22 +8,22 @@ import {
   Put,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { CancelRouteCommand } from "../../app/commands/cancel-route/cancel-route.command";
-import { CancelRouteHandler } from "../../app/commands/cancel-route/cancel-route.handler";
-import { CompleteRouteCommand } from "../../app/commands/complete-route/complete-route.command";
-import { CompleteRouteHandler } from "../../app/commands/complete-route/complete-route.handler";
-import { CreateRouteCommand } from "../../app/commands/create-route/create-route.command";
-import { CreateRouteHandler } from "../../app/commands/create-route/create-route.handler";
-import { RecordRouteStopArrivalCommand } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.command";
-import { RecordRouteStopArrivalHandler } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.handler";
-import { RecordRouteStopDepartureCommand } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.command";
-import { RecordRouteStopDepartureHandler } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.handler";
-import { StartRouteCommand } from "../../app/commands/start-route/start-route.command";
-import { StartRouteHandler } from "../../app/commands/start-route/start-route.handler";
-import { StartRouteStopCommand } from "../../app/commands/start-route-stop/start-route-stop.command";
-import { StartRouteStopHandler } from "../../app/commands/start-route-stop/start-route-stop.handler";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { CancelRouteCommand } from "../../app/commands/cancel-route/cancel-route.command.js";
+import { CancelRouteHandler } from "../../app/commands/cancel-route/cancel-route.handler.js";
+import { CompleteRouteCommand } from "../../app/commands/complete-route/complete-route.command.js";
+import { CompleteRouteHandler } from "../../app/commands/complete-route/complete-route.handler.js";
+import { CreateRouteCommand } from "../../app/commands/create-route/create-route.command.js";
+import { CreateRouteHandler } from "../../app/commands/create-route/create-route.handler.js";
+import { RecordRouteStopArrivalCommand } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.command.js";
+import { RecordRouteStopArrivalHandler } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.handler.js";
+import { RecordRouteStopDepartureCommand } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.command.js";
+import { RecordRouteStopDepartureHandler } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.handler.js";
+import { StartRouteCommand } from "../../app/commands/start-route/start-route.command.js";
+import { StartRouteHandler } from "../../app/commands/start-route/start-route.handler.js";
+import { StartRouteStopCommand } from "../../app/commands/start-route-stop/start-route-stop.command.js";
+import { StartRouteStopHandler } from "../../app/commands/start-route-stop/start-route-stop.handler.js";
 import type {
   CreateRouteRequest,
   CreatedRouteResponse,
@@ -31,15 +31,15 @@ import type {
   RecordRouteStopDepartureRequest,
   RouteRouteParams,
   RouteStopRouteParams,
-} from "./route.http-contracts";
-import { RouteHttpMapper } from "./route.http-mapper";
+} from "./route.http-contracts.js";
+import { RouteHttpMapper } from "./route.http-mapper.js";
 import {
   createRouteRequestPipe,
   recordRouteStopArrivalRequestPipe,
   recordRouteStopDepartureRequestPipe,
   routeRouteParamsPipe,
   routeStopRouteParamsPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "routes", version: "1" })
 export class RouteController {

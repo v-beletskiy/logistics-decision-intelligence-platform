@@ -3,9 +3,9 @@ export type {
   IntegrationEventPayloadOf,
   IntegrationEventTypeOf,
   JsonSchema,
-} from "./contract";
+} from "./contract.js";
 export {
   integrationEventEnvelopeV1Schema,
   type IntegrationEventEnvelopeV1,
-} from "./envelope";
-export * from "./generated/integration-event-contracts";
+} from "./envelope.js";
+export * from "./generated/integration-event-contracts.js";

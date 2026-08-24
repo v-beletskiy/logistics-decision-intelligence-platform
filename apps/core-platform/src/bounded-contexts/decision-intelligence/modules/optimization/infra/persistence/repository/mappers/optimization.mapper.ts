@@ -1,11 +1,11 @@
-import { RouteReference } from "../../../../../../domain/route-reference";
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { RouteReference } from "../../../../../../domain/route-reference.js";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Optimization,
   OptimizationStatus,
-} from "../../../../domain/optimization.aggregate";
-import { OptimizationId } from "../../../../domain/optimization-id";
-import type { IAddOptimizationParams } from "../queries/optimization.add.queries";
+} from "../../../../domain/optimization.aggregate.js";
+import { OptimizationId } from "../../../../domain/optimization-id.js";
+import type { IAddOptimizationParams } from "../queries/optimization.add.queries.js";
 
 export interface OptimizationPersistenceRow {
   readonly id: string;

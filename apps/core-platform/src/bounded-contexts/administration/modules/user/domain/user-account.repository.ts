@@ -1,4 +1,4 @@
-import { UserAccount } from "./user-account";
+import { UserAccount } from "./user-account.js";
 
 export abstract class UserAccountRepository {
   abstract findByEmail(normalizedEmail: string): Promise<UserAccount | null>;

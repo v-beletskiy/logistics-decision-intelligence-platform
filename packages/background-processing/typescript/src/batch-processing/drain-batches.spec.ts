@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { drainBatches } from "./drain-batches";
+import { drainBatches } from "./drain-batches.js";
 
 test("drains full batches until the source returns a partial batch", async () => {
   const pages = [[1, 2], [3]];

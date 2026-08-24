@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { optionalValidDate } from "./optional-valid-date";
-import { requireValidDate } from "./require-valid-date";
+import { optionalValidDate } from "./optional-valid-date.js";
+import { requireValidDate } from "./require-valid-date.js";
 
 test("requires a valid date and returns a defensive copy", () => {
   const input = new Date("2026-01-01T00:00:00.000Z");

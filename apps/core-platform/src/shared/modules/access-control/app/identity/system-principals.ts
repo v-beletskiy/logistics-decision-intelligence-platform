@@ -1,6 +1,6 @@
-import { ServiceScope } from "../scopes/service-scope.enum";
-import { IdentityType } from "./identity-type.enum";
-import type { ServiceIdentity } from "./identity";
+import { ServiceScope } from "../scopes/service-scope.enum.js";
+import { IdentityType } from "./identity-type.enum.js";
+import type { ServiceIdentity } from "./identity.js";
 
 // Used for non-human actors that enter an application use case.
 

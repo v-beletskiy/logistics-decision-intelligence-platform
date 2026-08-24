@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
 
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { DriverCertificationId } from "../../../domain/driver-certification-id";
-import { DriverId } from "../../../domain/driver-id";
-import { DriverRepository } from "../../../domain/driver.repository";
-import { RemoveDriverCertificationCommand } from "./remove-driver-certification.command";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { DriverCertificationId } from "../../../domain/driver-certification-id.js";
+import { DriverId } from "../../../domain/driver-id.js";
+import { DriverRepository } from "../../../domain/driver.repository.js";
+import { RemoveDriverCertificationCommand } from "./remove-driver-certification.command.js";
 
 @Injectable()
 export class RemoveDriverCertificationHandler extends CommandHandler {

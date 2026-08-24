@@ -1,25 +1,25 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RouteReference } from "../../../../../domain/route-reference";
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity";
-import { MeasurementUnit } from "../../../../../domain/measurement-unit.enum";
-import { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum";
-import { RecommendationType } from "../../../../../domain/recommendation-type.enum";
-import { OptimizationId } from "../../../../optimization/domain/optimization-id";
-import { Finding } from "../../../domain/finding.entity";
-import { RecommendationAnalysis } from "../../../domain/recommendation-analysis.value-object";
-import { Recommendation } from "../../../domain/recommendation.aggregate";
-import { FindingCategory } from "../../../domain/recommendation.enums";
-import type { LoadedRecommendation } from "../../../domain/recommendation.repository";
-import { addRecommendations } from "./queries/recommendation.add-many.queries";
-import { addRecommendation } from "./queries/recommendation.add.queries";
-import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries";
-import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries";
-import { updateRecommendation } from "./queries/recommendation.update.queries";
-import { PgRecommendationRepository } from "./pg-recommendation.repository";
+import { RouteReference } from "../../../../../domain/route-reference.js";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity.js";
+import { MeasurementUnit } from "../../../../../domain/measurement-unit.enum.js";
+import { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum.js";
+import { RecommendationType } from "../../../../../domain/recommendation-type.enum.js";
+import { OptimizationId } from "../../../../optimization/domain/optimization-id.js";
+import { Finding } from "../../../domain/finding.entity.js";
+import { RecommendationAnalysis } from "../../../domain/recommendation-analysis.value-object.js";
+import { Recommendation } from "../../../domain/recommendation.aggregate.js";
+import { FindingCategory } from "../../../domain/recommendation.enums.js";
+import type { LoadedRecommendation } from "../../../domain/recommendation.repository.js";
+import { addRecommendations } from "./queries/recommendation.add-many.queries.js";
+import { addRecommendation } from "./queries/recommendation.add.queries.js";
+import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries.js";
+import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries.js";
+import { updateRecommendation } from "./queries/recommendation.update.queries.js";
+import { PgRecommendationRepository } from "./pg-recommendation.repository.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

@@ -1,13 +1,13 @@
-import type { ShipmentDetailsInput } from "../../app/models/shipment-details.input";
+import type { ShipmentDetailsInput } from "../../app/models/shipment-details.input.js";
 import {
   DimensionUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
 import type {
   CreateShipmentRequest,
   CreatedShipmentResponse,
   UpdateShipmentDetailsRequest,
-} from "./shipment.http-contracts";
+} from "./shipment.http-contracts.js";
 
 export class ShipmentHttpMapper {
   static toShipmentDetailsInput(

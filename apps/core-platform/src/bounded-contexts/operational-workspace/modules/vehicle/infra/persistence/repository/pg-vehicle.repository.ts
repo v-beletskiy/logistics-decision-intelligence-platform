@@ -1,25 +1,25 @@
 import { Injectable } from "@nestjs/common";
 
-import { VehicleRegistrationNumberConflictException } from "../../../app/vehicle.exceptions";
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import { VehicleRegistrationNumberConflictException } from "../../../app/vehicle.exceptions.js";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   execRevisionedPgUpdate,
   type PgConstraintViolationTranslation,
-} from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Vehicle, VehicleStatus } from "../../../domain/vehicle.aggregate";
-import { VehicleId } from "../../../domain/vehicle-id";
+} from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Vehicle, VehicleStatus } from "../../../domain/vehicle.aggregate.js";
+import { VehicleId } from "../../../domain/vehicle-id.js";
 import {
   VehicleRepository,
   type LoadedVehicle,
-} from "../../../domain/vehicle.repository";
-import { VehicleMapper } from "./mappers/vehicle.mapper";
-import { findAvailableVehicles } from "./queries/vehicle.find-available.queries";
-import { findVehicleById } from "./queries/vehicle.find-by-id.queries";
-import { insertVehicle } from "./queries/vehicle.insert.queries";
-import { reconcileVehicleCompartments } from "./queries/vehicle.reconcile-compartments.queries";
-import { updateVehicle } from "./queries/vehicle.update.queries";
+} from "../../../domain/vehicle.repository.js";
+import { VehicleMapper } from "./mappers/vehicle.mapper.js";
+import { findAvailableVehicles } from "./queries/vehicle.find-available.queries.js";
+import { findVehicleById } from "./queries/vehicle.find-by-id.queries.js";
+import { insertVehicle } from "./queries/vehicle.insert.queries.js";
+import { reconcileVehicleCompartments } from "./queries/vehicle.reconcile-compartments.queries.js";
+import { updateVehicle } from "./queries/vehicle.update.queries.js";
 
 const VEHICLE_REGISTRATION_NUMBER_UNIQUE_CONSTRAINT =
   "vehicles_tenant_registration_number_unique";

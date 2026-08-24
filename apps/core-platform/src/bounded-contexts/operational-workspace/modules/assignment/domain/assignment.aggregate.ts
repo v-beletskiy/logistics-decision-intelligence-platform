@@ -1,18 +1,18 @@
-import { ASSIGNMENT_ERROR_CODES } from "./assignment-error-codes";
+import { ASSIGNMENT_ERROR_CODES } from "./assignment-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
+} from "../../../../../shared/domain/domain.exceptions.js";
 
-import { AssignmentId } from "./assignment-id";
-import { AssignmentShipment } from "./assignment-shipment.entity";
-import type { AssignmentEvent } from "./assignment.events";
-import { DriverId } from "../../driver/domain/driver-id";
-import { RouteId } from "../../route/domain/route-id";
-import { VehicleId } from "../../vehicle/domain/vehicle-id";
+import { AssignmentId } from "./assignment-id.js";
+import { AssignmentShipment } from "./assignment-shipment.entity.js";
+import type { AssignmentEvent } from "./assignment.events.js";
+import { DriverId } from "../../driver/domain/driver-id.js";
+import { RouteId } from "../../route/domain/route-id.js";
+import { VehicleId } from "../../vehicle/domain/vehicle-id.js";
 
 export enum AssignmentStatus {
   Created = "CREATED",

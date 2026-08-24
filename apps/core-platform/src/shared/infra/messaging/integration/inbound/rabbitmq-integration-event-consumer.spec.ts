@@ -4,14 +4,14 @@ import { test } from "node:test";
 import type { ConfirmChannel, ConsumeMessage } from "amqplib";
 import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
-import type { AppConfig } from "../../../config/app-config";
-import { inboxConsumerId } from "./inbox/inbox-message";
-import type { InboxProcessor } from "./inbox/inbox-processor";
-import type { RabbitMqConnection } from "../rabbitmq/connection";
-import { IntegrationTopology } from "../rabbitmq/topology";
-import { RabbitMqIntegrationEventConsumer } from "./rabbitmq-integration-event-consumer";
-import type { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
-import { rabbitMqQueueName } from "./integration-subscription";
+import type { AppConfig } from "../../../config/app-config.js";
+import { inboxConsumerId } from "./inbox/inbox-message.js";
+import type { InboxProcessor } from "./inbox/inbox-processor.js";
+import type { RabbitMqConnection } from "../rabbitmq/connection.js";
+import { IntegrationTopology } from "../rabbitmq/topology.js";
+import { RabbitMqIntegrationEventConsumer } from "./rabbitmq-integration-event-consumer.js";
+import type { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner.js";
+import { rabbitMqQueueName } from "./integration-subscription.js";
 
 test("restores a subscription on a new dedicated channel after channel closure", async () => {
   const channels: ConfirmChannel[] = [];

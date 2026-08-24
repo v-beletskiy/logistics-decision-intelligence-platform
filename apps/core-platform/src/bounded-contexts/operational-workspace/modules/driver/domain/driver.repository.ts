@@ -1,5 +1,5 @@
-import type { Driver } from "./driver.aggregate";
-import type { DriverId } from "./driver-id";
+import type { Driver } from "./driver.aggregate.js";
+import type { DriverId } from "./driver-id.js";
 
 export interface LoadedDriver {
   readonly aggregate: Driver;

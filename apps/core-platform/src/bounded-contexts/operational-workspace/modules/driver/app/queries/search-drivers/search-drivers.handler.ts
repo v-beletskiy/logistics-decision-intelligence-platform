@@ -4,23 +4,23 @@ import {
   validatePagination,
 } from "@logistics-decision-intelligence/querying";
 
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
 import {
   DriverReadStore,
   type DriverListItem,
-} from "../../ports/driver-read-store";
+} from "../../ports/driver-read-store.js";
 import {
   DEFAULT_DRIVER_CURSOR_SORT,
   DEFAULT_DRIVER_PAGE_SORT,
   type DriverCursorSort,
   type DriverPageSort,
-} from "./driver-search-options";
+} from "./driver-search-options.js";
 import {
   SearchDriversQuery,
   type SearchDriversQueryInput,
-} from "./search-drivers.query";
+} from "./search-drivers.query.js";
 
 @Injectable()
 export class SearchDriversHandler {

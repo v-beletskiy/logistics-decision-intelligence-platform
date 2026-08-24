@@ -8,22 +8,22 @@ import {
   Put,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { ActivateDepotCommand } from "../../app/commands/activate-depot/activate-depot.command";
-import { ActivateDepotHandler } from "../../app/commands/activate-depot/activate-depot.handler";
-import { CloseDepotCommand } from "../../app/commands/close-depot/close-depot.command";
-import { CloseDepotHandler } from "../../app/commands/close-depot/close-depot.handler";
-import { CreateDepotCommand } from "../../app/commands/create-depot/create-depot.command";
-import { CreateDepotHandler } from "../../app/commands/create-depot/create-depot.handler";
-import { InactivateDepotCommand } from "../../app/commands/inactivate-depot/inactivate-depot.command";
-import { InactivateDepotHandler } from "../../app/commands/inactivate-depot/inactivate-depot.handler";
-import { UpdateDepotDetailsCommand } from "../../app/commands/update-depot-details/update-depot-details.command";
-import { UpdateDepotDetailsHandler } from "../../app/commands/update-depot-details/update-depot-details.handler";
-import { UpdateDepotDriverCapacityCommand } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.command";
-import { UpdateDepotDriverCapacityHandler } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.handler";
-import { UpdateDepotVehicleCapacityCommand } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.command";
-import { UpdateDepotVehicleCapacityHandler } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.handler";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { ActivateDepotCommand } from "../../app/commands/activate-depot/activate-depot.command.js";
+import { ActivateDepotHandler } from "../../app/commands/activate-depot/activate-depot.handler.js";
+import { CloseDepotCommand } from "../../app/commands/close-depot/close-depot.command.js";
+import { CloseDepotHandler } from "../../app/commands/close-depot/close-depot.handler.js";
+import { CreateDepotCommand } from "../../app/commands/create-depot/create-depot.command.js";
+import { CreateDepotHandler } from "../../app/commands/create-depot/create-depot.handler.js";
+import { InactivateDepotCommand } from "../../app/commands/inactivate-depot/inactivate-depot.command.js";
+import { InactivateDepotHandler } from "../../app/commands/inactivate-depot/inactivate-depot.handler.js";
+import { UpdateDepotDetailsCommand } from "../../app/commands/update-depot-details/update-depot-details.command.js";
+import { UpdateDepotDetailsHandler } from "../../app/commands/update-depot-details/update-depot-details.handler.js";
+import { UpdateDepotDriverCapacityCommand } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.command.js";
+import { UpdateDepotDriverCapacityHandler } from "../../app/commands/update-depot-driver-capacity/update-depot-driver-capacity.handler.js";
+import { UpdateDepotVehicleCapacityCommand } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.command.js";
+import { UpdateDepotVehicleCapacityHandler } from "../../app/commands/update-depot-vehicle-capacity/update-depot-vehicle-capacity.handler.js";
 import type {
   CreateDepotRequest,
   CreatedDepotResponse,
@@ -31,15 +31,15 @@ import type {
   UpdateDepotDetailsRequest,
   UpdateDepotDriverCapacityRequest,
   UpdateDepotVehicleCapacityRequest,
-} from "./depot.http-contracts";
-import { DepotHttpMapper } from "./depot.http-mapper";
+} from "./depot.http-contracts.js";
+import { DepotHttpMapper } from "./depot.http-mapper.js";
 import {
   createDepotRequestPipe,
   depotRouteParamsPipe,
   updateDepotDetailsRequestPipe,
   updateDepotDriverCapacityRequestPipe,
   updateDepotVehicleCapacityRequestPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "depots", version: "1" })
 export class DepotController {

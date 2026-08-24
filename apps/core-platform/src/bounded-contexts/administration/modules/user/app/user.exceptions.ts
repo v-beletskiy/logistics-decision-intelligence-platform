@@ -1,4 +1,4 @@
-import { ApplicationConflictException } from "../../../../../shared/app/app.exceptions";
+import { ApplicationConflictException } from "../../../../../shared/app/app.exceptions.js";
 
 export class UserEmailConflictException extends ApplicationConflictException {
   constructor(options?: ErrorOptions) {

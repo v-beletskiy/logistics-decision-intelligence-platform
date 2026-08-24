@@ -1,13 +1,13 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   RouteStop,
   RouteStopOperationType,
   RouteStopStatus,
   type RouteStopProps,
-} from "../../../../domain/route-stop.aggregate";
-import { RouteId } from "../../../../domain/route-id";
-import { RouteStopId } from "../../../../domain/route-stop-id";
-import { ShipmentId } from "../../../../../shipment/domain/shipment-id";
+} from "../../../../domain/route-stop.aggregate.js";
+import { RouteId } from "../../../../domain/route-id.js";
+import { RouteStopId } from "../../../../domain/route-stop-id.js";
+import { ShipmentId } from "../../../../../shipment/domain/shipment-id.js";
 
 export interface RouteStopPersistenceRow {
   readonly id: string;

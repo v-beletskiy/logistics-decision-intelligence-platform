@@ -3,17 +3,17 @@ import { test } from "node:test";
 
 import type { IDatabaseConnection } from "@pgtyped/runtime";
 
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
 import type {
   DriverCursorSort,
   DriverPageSort,
-} from "../../../app/queries/search-drivers/driver-search-options";
-import { DriverStatus } from "../../../domain/driver.aggregate";
+} from "../../../app/queries/search-drivers/driver-search-options.js";
+import { DriverStatus } from "../../../domain/driver.aggregate.js";
 import {
   searchDriversCursor,
   searchDriversPage,
-} from "./queries/driver.search.queries";
-import { PgDriverReadStore } from "./pg-driver.read-store";
+} from "./queries/driver.search.queries.js";
+import { PgDriverReadStore } from "./pg-driver.read-store.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 const nameCursorSort: DriverCursorSort = {

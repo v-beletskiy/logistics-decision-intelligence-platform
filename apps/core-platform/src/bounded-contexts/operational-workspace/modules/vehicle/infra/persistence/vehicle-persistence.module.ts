@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { VehicleRepository } from "../../domain/vehicle.repository";
-import { PgVehicleRepository } from "./repository/pg-vehicle.repository";
+import { VehicleRepository } from "../../domain/vehicle.repository.js";
+import { PgVehicleRepository } from "./repository/pg-vehicle.repository.js";
 
 @Module({
   providers: [

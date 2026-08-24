@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { CreateRouteRequest } from "./route.http-contracts";
-import { RouteHttpMapper } from "./route.http-mapper";
+import type { CreateRouteRequest } from "./route.http-contracts.js";
+import { RouteHttpMapper } from "./route.http-mapper.js";
 
 const request: CreateRouteRequest = {
   stops: [

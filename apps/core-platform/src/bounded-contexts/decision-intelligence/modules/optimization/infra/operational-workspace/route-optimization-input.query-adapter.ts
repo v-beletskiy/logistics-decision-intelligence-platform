@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 
-import { ApplicationInvariantViolationException } from "../../../../../../shared/app/app.exceptions";
+import { ApplicationInvariantViolationException } from "../../../../../../shared/app/app.exceptions.js";
 import {
   RoutePlanningSnapshotQuery,
   type RoutePlanningStopSnapshot,
-} from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query";
-import type { OptimizationStop } from "../../domain/optimization-stop";
+} from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query.js";
+import type { OptimizationStop } from "../../domain/optimization-stop.js";
 import {
   RouteOptimizationInputQuery,
   type RouteOptimizationInput,
-} from "../../app/ports/route-optimization-input.query";
+} from "../../app/ports/route-optimization-input.query.js";
 
 /** Consumer-owned query adapter from Operational Workspace to Optimization input. */
 @Injectable()

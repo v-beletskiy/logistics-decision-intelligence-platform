@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DriverId } from "./driver-id";
+import { DriverId } from "./driver-id.js";
 
 const driverId = "550e8400-e29b-41d4-a716-446655440000";
 

@@ -44,8 +44,32 @@ x-core-platform-development: &core-platform-development
           - node_modules/
           - dist/
       - action: sync+restart
+        path: ../../packages/integration-event-contracts/typescript
+        target: /workspace/packages/integration-event-contracts/typescript
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
+      - action: sync+restart
+        path: ../../packages/integration-events/typescript
+        target: /workspace/packages/integration-events/typescript
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
+      - action: sync+restart
         path: ../../packages/querying/typescript
         target: /workspace/packages/querying/typescript
+        ignore:
+          - package.json
+          - node_modules/
+          - dist/
+          - "*.tsbuildinfo"
+      - action: sync+restart
+        path: ../../packages/validation/typescript
+        target: /workspace/packages/validation/typescript
         ignore:
           - package.json
           - node_modules/
@@ -60,7 +84,13 @@ x-core-platform-development: &core-platform-development
       - action: rebuild
         path: ../../packages/grpc-contracts/package.json
       - action: rebuild
+        path: ../../packages/integration-event-contracts/typescript/package.json
+      - action: rebuild
+        path: ../../packages/integration-events/typescript/package.json
+      - action: rebuild
         path: ../../packages/querying/typescript/package.json
+      - action: rebuild
+        path: ../../packages/validation/typescript/package.json
       - action: rebuild
         path: ../../package.json
       - action: rebuild

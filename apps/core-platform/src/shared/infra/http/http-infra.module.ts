@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common";
 
-import { HealthController } from "./health.controller";
-import { HttpExceptionFilter } from "./http-exception.filter";
+import { HealthController } from "./health.controller.js";
+import { HttpExceptionFilter } from "./http-exception.filter.js";
 
 @Global()
 @Module({

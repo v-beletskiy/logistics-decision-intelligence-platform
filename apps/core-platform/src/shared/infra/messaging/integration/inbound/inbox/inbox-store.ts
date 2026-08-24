@@ -1,4 +1,4 @@
-import type { InboxMessage, InboxMessageKey } from "./inbox-message";
+import type { InboxMessage, InboxMessageKey } from "./inbox-message.js";
 
 export abstract class InboxStore {
   /** Atomically returns false when this consumer already finalized the event. */

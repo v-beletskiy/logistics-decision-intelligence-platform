@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 
-import { UserEmail } from "./user-email.value-object";
+import { UserEmail } from "./user-email.value-object.js";
 
 test("canonicalizes a local authentication email address", () => {
   const email = UserEmail.create(" Planner@Example.COM ");

@@ -1,4 +1,4 @@
-import type { RouteAnalysisContextResult } from "../queries/get-route-analysis-context/get-route-analysis-context.result";
+import type { RouteAnalysisContextResult } from "../queries/get-route-analysis-context/get-route-analysis-context.result.js";
 
 /** Provides Route query projections without reconstituting Route aggregates. */
 export abstract class RouteReadStore {

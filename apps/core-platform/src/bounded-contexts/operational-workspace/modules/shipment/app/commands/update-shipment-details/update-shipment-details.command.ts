@@ -1,4 +1,4 @@
-import type { ShipmentDetailsInput } from "../../models/shipment-details.input";
+import type { ShipmentDetailsInput } from "../../models/shipment-details.input.js";
 
 export class UpdateShipmentDetailsCommand {
   constructor(

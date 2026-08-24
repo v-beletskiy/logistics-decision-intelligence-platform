@@ -3,8 +3,8 @@ import { test } from "node:test";
 
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
-import type { InternalApplicationEvent } from "../../../app/messaging/internal-application-event-bus";
-import { InMemoryApplicationEventBus } from "./in-memory-application-event-bus";
+import type { InternalApplicationEvent } from "../../../app/messaging/internal-application-event-bus.js";
+import { InMemoryApplicationEventBus } from "./in-memory-application-event-bus.js";
 
 test("delivers a trusted internal application event to subscribed bounded-context handlers", async () => {
   const eventEmitter = new EventEmitter2();

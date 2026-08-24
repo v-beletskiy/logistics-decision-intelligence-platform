@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { InvalidPaginationError } from "./pagination";
+import { InvalidPaginationError } from "./pagination.js";
 
 const CURSOR_ENVELOPE_VERSION = 1 as const;
 

@@ -8,7 +8,7 @@ import type {
   updateVehicleDetailsRequestSchema,
   vehicleCompartmentRouteParamsSchema,
   vehicleRouteParamsSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type VehicleRouteParams = FromSchema<typeof vehicleRouteParamsSchema>;
 

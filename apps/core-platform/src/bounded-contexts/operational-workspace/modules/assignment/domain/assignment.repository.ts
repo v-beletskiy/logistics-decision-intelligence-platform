@@ -1,8 +1,8 @@
-import type { Assignment } from "./assignment.aggregate";
-import type { AssignmentId } from "./assignment-id";
-import type { DriverId } from "../../driver/domain/driver-id";
-import type { RouteId } from "../../route/domain/route-id";
-import type { VehicleId } from "../../vehicle/domain/vehicle-id";
+import type { Assignment } from "./assignment.aggregate.js";
+import type { AssignmentId } from "./assignment-id.js";
+import type { DriverId } from "../../driver/domain/driver-id.js";
+import type { RouteId } from "../../route/domain/route-id.js";
+import type { VehicleId } from "../../vehicle/domain/vehicle-id.js";
 
 export interface LoadedAssignment {
   readonly aggregate: Assignment;

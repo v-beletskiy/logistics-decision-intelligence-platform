@@ -1,6 +1,6 @@
 import type { FromSchema } from "json-schema-to-ts";
 
-import type { DriverStatus } from "../../domain/driver.aggregate";
+import type { DriverStatus } from "../../domain/driver.aggregate.js";
 import type {
   changeDriverAvailabilityRequestSchema,
   driverCertificationRequestSchema,
@@ -9,7 +9,7 @@ import type {
   registerDriverRequestSchema,
   searchDriversRequestSchema,
   updateDriverRequestSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type DriverRouteParams = FromSchema<typeof driverRouteParamsSchema>;
 

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { Channel } from "amqplib";
 
-import { IntegrationTopology } from "./topology";
+import { IntegrationTopology } from "./topology.js";
 
 export interface IntegrationSubscriptionTopology {
   readonly queueName: string;

@@ -1,8 +1,8 @@
 import { Inject } from "@nestjs/common";
 
-import { Permission } from "../permissions/permission.enum";
-import type { UseCaseRequest } from "../execution/use-case-context";
-import { AccessManager, type AuthorizationContext } from "./access-manager";
+import { Permission } from "../permissions/permission.enum.js";
+import type { UseCaseRequest } from "../execution/use-case-context.js";
+import { AccessManager, type AuthorizationContext } from "./access-manager.js";
 
 const ACCESS_MANAGER_PROPERTY = Symbol("authorizedAccessManager");
 

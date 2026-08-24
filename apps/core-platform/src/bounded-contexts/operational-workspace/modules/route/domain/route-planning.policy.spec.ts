@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ShipmentId } from "../../shipment/domain/shipment-id";
-import { RouteStopOperationType } from "./route-stop.aggregate";
-import { RoutePlanningPolicy } from "./route-planning.policy";
+import { ShipmentId } from "../../shipment/domain/shipment-id.js";
+import { RouteStopOperationType } from "./route-stop.aggregate.js";
+import { RoutePlanningPolicy } from "./route-planning.policy.js";
 
 const policy = new RoutePlanningPolicy();
 const start = new Date("2026-08-05T08:00:00Z");

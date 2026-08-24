@@ -1,5 +1,5 @@
-import { Permission } from "../permissions/permission.enum";
-import { Role } from "../../domain/role";
+import { Permission } from "../permissions/permission.enum.js";
+import { Role } from "../../domain/role.js";
 
 const ALL_PERMISSIONS = Object.freeze(Object.values(Permission));
 

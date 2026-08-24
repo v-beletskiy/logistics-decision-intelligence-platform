@@ -1,15 +1,15 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
-import { dimensionsSchema } from "../../../../../../../shared/infra/validation/value-objects/measurement";
-import { weightSchema } from "../../../../../../../shared/infra/validation/value-objects/measurement";
-import { addVehicleCompartmentRequestSchema } from "./add-vehicle-compartment.schema";
-import { changeVehicleAvailabilityRequestSchema } from "./change-vehicle-availability.schema";
-import { registerVehicleRequestSchema } from "./register-vehicle.schema";
-import { updateVehicleCompartmentRequestSchema } from "./update-vehicle-compartment.schema";
-import { updateVehicleDetailsRequestSchema } from "./update-vehicle-details.schema";
-import { vehicleCompartmentRouteParamsSchema } from "./vehicle-compartment-route-params.schema";
-import { vehicleRouteParamsSchema } from "./vehicle-route-params.schema";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
+import { dimensionsSchema } from "../../../../../../../shared/infra/validation/value-objects/measurement/index.js";
+import { weightSchema } from "../../../../../../../shared/infra/validation/value-objects/measurement/index.js";
+import { addVehicleCompartmentRequestSchema } from "./add-vehicle-compartment.schema.js";
+import { changeVehicleAvailabilityRequestSchema } from "./change-vehicle-availability.schema.js";
+import { registerVehicleRequestSchema } from "./register-vehicle.schema.js";
+import { updateVehicleCompartmentRequestSchema } from "./update-vehicle-compartment.schema.js";
+import { updateVehicleDetailsRequestSchema } from "./update-vehicle-details.schema.js";
+import { vehicleCompartmentRouteParamsSchema } from "./vehicle-compartment-route-params.schema.js";
+import { vehicleRouteParamsSchema } from "./vehicle-route-params.schema.js";
 
 export {
   addVehicleCompartmentRequestSchema,

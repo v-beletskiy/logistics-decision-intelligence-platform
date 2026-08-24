@@ -1,8 +1,8 @@
-import { Role } from "../../../../../../../../shared/modules/access-control/domain/role";
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
-import { UserAccount } from "../../../../domain/user-account";
-import type { IFindUserAccountByEmailResult } from "../queries/user.find-by-email.queries";
-import type { IInsertUserAccountParams } from "../queries/user.insert.queries";
+import { Role } from "../../../../../../../../shared/modules/access-control/domain/role.js";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
+import { UserAccount } from "../../../../domain/user-account.js";
+import type { IFindUserAccountByEmailResult } from "../queries/user.find-by-email.queries.js";
+import type { IInsertUserAccountParams } from "../queries/user.insert.queries.js";
 
 /** Maps the User Account aggregate to and from its PostgreSQL representation. */
 export class UserAccountMapper {

@@ -1,13 +1,13 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AuthorizationDeniedException } from "../../app/authorization/authorization.exceptions";
-import { IdentityType } from "../../app/identity/identity-type.enum";
-import { Permission } from "../../app/permissions/permission.enum";
-import { Role } from "../../domain/role";
-import { ROLE_PERMISSIONS } from "../../app/roles/role-permissions";
-import { ServiceScope } from "../../app/scopes/service-scope.enum";
-import { CaslAccessManager } from "./casl-access-manager";
+import { AuthorizationDeniedException } from "../../app/authorization/authorization.exceptions.js";
+import { IdentityType } from "../../app/identity/identity-type.enum.js";
+import { Permission } from "../../app/permissions/permission.enum.js";
+import { Role } from "../../domain/role.js";
+import { ROLE_PERMISSIONS } from "../../app/roles/role-permissions.js";
+import { ServiceScope } from "../../app/scopes/service-scope.enum.js";
+import { CaslAccessManager } from "./casl-access-manager.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

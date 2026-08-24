@@ -5,9 +5,9 @@ import {
   RouteStop,
   RouteStopOperationType,
   RouteStopStatus,
-} from "./route-stop.aggregate";
-import { RouteId } from "./route-id";
-import { ShipmentId } from "../../shipment/domain/shipment-id";
+} from "./route-stop.aggregate.js";
+import { RouteId } from "./route-id.js";
+import { ShipmentId } from "../../shipment/domain/shipment-id.js";
 
 function createStop(): RouteStop {
   return RouteStop.create({

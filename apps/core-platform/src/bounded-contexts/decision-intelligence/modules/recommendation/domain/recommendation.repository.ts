@@ -1,6 +1,6 @@
-import type { RouteReference } from "../../../domain/route-reference";
-import type { Recommendation } from "./recommendation.aggregate";
-import type { RecommendationId } from "./recommendation-id";
+import type { RouteReference } from "../../../domain/route-reference.js";
+import type { Recommendation } from "./recommendation.aggregate.js";
+import type { RecommendationId } from "./recommendation-id.js";
 
 export interface LoadedRecommendation {
   readonly aggregate: Recommendation;

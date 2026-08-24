@@ -1,10 +1,10 @@
 import { Global, Module } from "@nestjs/common";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 
-import { DomainEventBus } from "../../../app/messaging/domain-event-bus";
-import { InternalApplicationEventBus } from "../../../app/messaging/internal-application-event-bus";
-import { InMemoryApplicationEventBus } from "./in-memory-application-event-bus";
-import { InMemoryDomainEventBus } from "./in-memory-domain-event-bus";
+import { DomainEventBus } from "../../../app/messaging/domain-event-bus.js";
+import { InternalApplicationEventBus } from "../../../app/messaging/internal-application-event-bus.js";
+import { InMemoryApplicationEventBus } from "./in-memory-application-event-bus.js";
+import { InMemoryDomainEventBus } from "./in-memory-domain-event-bus.js";
 
 @Global()
 @Module({

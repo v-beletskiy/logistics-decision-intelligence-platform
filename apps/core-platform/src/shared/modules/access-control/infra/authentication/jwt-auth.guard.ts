@@ -5,10 +5,10 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
-import type { Identity } from "../../app/identity/identity";
-import { AuthenticationException } from "../../app/authentication/authentication.exceptions";
-import { IdentityTokenVerifier } from "../../app/authentication/identity-token-verifier";
-import { PUBLIC_ROUTE } from "./public-route.decorator";
+import type { Identity } from "../../app/identity/identity.js";
+import { AuthenticationException } from "../../app/authentication/authentication.exceptions.js";
+import { IdentityTokenVerifier } from "../../app/authentication/identity-token-verifier.js";
+import { PUBLIC_ROUTE } from "./public-route.decorator.js";
 
 export interface AuthenticatedHttpRequest {
   readonly headers: Readonly<Record<string, string | string[] | undefined>>;

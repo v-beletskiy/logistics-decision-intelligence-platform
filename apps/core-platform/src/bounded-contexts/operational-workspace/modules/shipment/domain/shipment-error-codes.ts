@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions.js";
 
 export const SHIPMENT_ERROR_CODES = defineErrorCodes("shipment", {
   invalidEndpoint: "invalid-endpoint",

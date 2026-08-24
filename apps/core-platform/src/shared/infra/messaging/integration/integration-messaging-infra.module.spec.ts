@@ -1,10 +1,10 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { InboxProcessor } from "./inbound/inbox/inbox-processor";
-import { RabbitMqIntegrationEventConsumer } from "./inbound/rabbitmq-integration-event-consumer";
-import { IntegrationMessagingInfraModule } from "./integration-messaging-infra.module";
-import { RabbitMqOutboxPublisher } from "./outbound/outbox/rabbitmq-outbox-publisher";
+import { InboxProcessor } from "./inbound/inbox/inbox-processor.js";
+import { RabbitMqIntegrationEventConsumer } from "./inbound/rabbitmq-integration-event-consumer.js";
+import { IntegrationMessagingInfraModule } from "./integration-messaging-infra.module.js";
+import { RabbitMqOutboxPublisher } from "./outbound/outbox/rabbitmq-outbox-publisher.js";
 
 test("API messaging registers outbox writes without broker workers", () => {
   const module = IntegrationMessagingInfraModule.register("api");

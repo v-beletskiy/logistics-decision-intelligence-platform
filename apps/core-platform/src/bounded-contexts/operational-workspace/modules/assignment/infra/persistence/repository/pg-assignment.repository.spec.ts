@@ -1,24 +1,24 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
 import {
   DimensionUnit,
   Dimensions,
   Weight,
   WeightUnit,
-} from "../../../../../../../shared/domain/value-objects/measurement";
-import { DriverId } from "../../../../driver/domain/driver-id";
-import { RouteId } from "../../../../route/domain/route-id";
-import { ShipmentId } from "../../../../shipment/domain/shipment-id";
-import { VehicleId } from "../../../../vehicle/domain/vehicle-id";
-import { Assignment } from "../../../domain/assignment.aggregate";
-import { AssignmentShipment } from "../../../domain/assignment-shipment.entity";
-import { insertAssignment } from "./queries/assignment.insert.queries";
-import { reconcileAssignmentShipments } from "./queries/assignment.reconcile-shipments.queries";
-import { updateAssignment } from "./queries/assignment.update.queries";
-import { PgAssignmentRepository } from "./pg-assignment.repository";
+} from "../../../../../../../shared/domain/value-objects/measurement/index.js";
+import { DriverId } from "../../../../driver/domain/driver-id.js";
+import { RouteId } from "../../../../route/domain/route-id.js";
+import { ShipmentId } from "../../../../shipment/domain/shipment-id.js";
+import { VehicleId } from "../../../../vehicle/domain/vehicle-id.js";
+import { Assignment } from "../../../domain/assignment.aggregate.js";
+import { AssignmentShipment } from "../../../domain/assignment-shipment.entity.js";
+import { insertAssignment } from "./queries/assignment.insert.queries.js";
+import { reconcileAssignmentShipments } from "./queries/assignment.reconcile-shipments.queries.js";
+import { updateAssignment } from "./queries/assignment.update.queries.js";
+import { PgAssignmentRepository } from "./pg-assignment.repository.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

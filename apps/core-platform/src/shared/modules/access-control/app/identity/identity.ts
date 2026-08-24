@@ -1,7 +1,7 @@
-import { Role } from "../../domain/role";
-import { ServiceScope } from "../scopes/service-scope.enum";
+import { Role } from "../../domain/role.js";
+import { ServiceScope } from "../scopes/service-scope.enum.js";
 
-import { IdentityType } from "./identity-type.enum";
+import { IdentityType } from "./identity-type.enum.js";
 
 interface BaseIdentity {
   readonly id: string;

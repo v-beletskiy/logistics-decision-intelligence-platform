@@ -1,3 +1,3 @@
-export { Duration, DurationUnit, type DurationProps } from "./duration";
-export { Schedule, type ScheduleProps } from "./schedule";
-export { TimeWindow, type TimeWindowProps } from "./time-window";
+export { Duration, DurationUnit, type DurationProps } from "./duration.js";
+export { Schedule, type ScheduleProps } from "./schedule.js";
+export { TimeWindow, type TimeWindowProps } from "./time-window.js";

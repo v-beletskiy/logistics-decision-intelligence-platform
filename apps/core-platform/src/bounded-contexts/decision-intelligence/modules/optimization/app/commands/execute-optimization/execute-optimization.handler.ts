@@ -1,33 +1,33 @@
 import { Injectable } from "@nestjs/common";
 import { recommendationAnalysisRequestedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
 import {
   CommandHandler,
   type DomainEventsSource,
-} from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { decisionIntelligenceIntegrationEventFactory } from "../../../../../app/decision-intelligence-integration-events";
-import { OptimizationId } from "../../../domain/optimization-id";
+} from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { decisionIntelligenceIntegrationEventFactory } from "../../../../../app/decision-intelligence-integration-events.js";
+import { OptimizationId } from "../../../domain/optimization-id.js";
 import {
   Optimization,
   OptimizationStatus,
-} from "../../../domain/optimization.aggregate";
-import { OptimizationRepository } from "../../../domain/optimization.repository";
-import { RouteOptimizationEvaluator } from "../../../domain/route-optimization-evaluator";
-import { Recommendation } from "../../../../recommendation/domain/recommendation.aggregate";
-import { RecommendationRepository } from "../../../../recommendation/domain/recommendation.repository";
-import { RecommendationType } from "../../../../../domain/recommendation-type.enum";
-import { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum";
-import { MeasurementUnit } from "../../../../../domain/measurement-unit.enum";
-import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity";
-import { CandidateRecommendation } from "../../../domain/candidate-recommendation.value-object";
-import { CostMatrixProvider } from "../../ports/cost-matrix-provider";
-import { RouteOptimizationInputQuery } from "../../ports/route-optimization-input.query";
-import { RouteOptimizer } from "../../ports/route-optimizer";
-import { ExecuteOptimizationCommand } from "./execute-optimization.command";
+} from "../../../domain/optimization.aggregate.js";
+import { OptimizationRepository } from "../../../domain/optimization.repository.js";
+import { RouteOptimizationEvaluator } from "../../../domain/route-optimization-evaluator.js";
+import { Recommendation } from "../../../../recommendation/domain/recommendation.aggregate.js";
+import { RecommendationRepository } from "../../../../recommendation/domain/recommendation.repository.js";
+import { RecommendationType } from "../../../../../domain/recommendation-type.enum.js";
+import { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum.js";
+import { MeasurementUnit } from "../../../../../domain/measurement-unit.enum.js";
+import { RecommendationFact } from "../../../../../domain/recommendation-fact.entity.js";
+import { CandidateRecommendation } from "../../../domain/candidate-recommendation.value-object.js";
+import { CostMatrixProvider } from "../../ports/cost-matrix-provider.js";
+import { RouteOptimizationInputQuery } from "../../ports/route-optimization-input.query.js";
+import { RouteOptimizer } from "../../ports/route-optimizer.js";
+import { ExecuteOptimizationCommand } from "./execute-optimization.command.js";
 
 @Injectable()
 export class ExecuteOptimizationHandler extends CommandHandler {

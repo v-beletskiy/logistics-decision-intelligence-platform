@@ -1,6 +1,6 @@
-import { createAppConfig } from "../shared/infra/config/app-config";
-import { PgDatabase } from "../shared/infra/persistence/pg-database";
-import { PgMigrationRunner } from "../shared/infra/persistence/pg-migration-runner";
+import { createAppConfig } from "../shared/infra/config/app-config.js";
+import { PgDatabase } from "../shared/infra/persistence/pg-database.js";
+import { PgMigrationRunner } from "../shared/infra/persistence/pg-migration-runner.js";
 
 async function migrate(): Promise<void> {
   const database = new PgDatabase(createAppConfig());

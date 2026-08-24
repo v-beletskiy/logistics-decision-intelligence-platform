@@ -1,7 +1,7 @@
-import type { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum";
-import type { RecommendationType } from "../../../../../domain/recommendation-type.enum";
-import type { RecommendationStatus } from "../../../domain/recommendation.enums";
-import type { MeasurementUnit } from "../../../../../domain/measurement-unit.enum";
+import type { RecommendationMetric } from "../../../../../domain/recommendation-metric.enum.js";
+import type { RecommendationType } from "../../../../../domain/recommendation-type.enum.js";
+import type { RecommendationStatus } from "../../../domain/recommendation.enums.js";
+import type { MeasurementUnit } from "../../../../../domain/measurement-unit.enum.js";
 
 export interface RecommendationAnalysisFactResult {
   readonly metric: RecommendationMetric;

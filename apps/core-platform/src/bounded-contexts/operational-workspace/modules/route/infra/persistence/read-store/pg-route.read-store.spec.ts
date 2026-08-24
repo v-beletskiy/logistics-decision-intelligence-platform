@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { findRouteAnalysisContextByRouteId } from "./queries/route-analysis-context.find-by-route-id.queries";
-import { PgRouteReadStore } from "./pg-route.read-store";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { findRouteAnalysisContextByRouteId } from "./queries/route-analysis-context.find-by-route-id.queries.js";
+import { PgRouteReadStore } from "./pg-route.read-store.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 const routeId = "00000000-0000-4000-8000-000000000020";

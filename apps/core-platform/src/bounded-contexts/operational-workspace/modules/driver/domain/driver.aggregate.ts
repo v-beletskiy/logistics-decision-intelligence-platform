@@ -1,21 +1,21 @@
-import { DRIVER_ERROR_CODES } from "./driver-error-codes";
+import { DRIVER_ERROR_CODES } from "./driver-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 
-import type { DriverEvent } from "./driver.events";
+import type { DriverEvent } from "./driver.events.js";
 import {
   DriverCertification,
   type DriverCertificationProps,
-} from "./driver-certification.entity";
-import { DriverCertificationId } from "./driver-certification-id";
-import { DriverId } from "./driver-id";
-import { DepotId } from "../../depot/domain/depot-id";
-import { requirePersonFirstName } from "../../../../../shared/domain/validation/domain-fields/person-first-name";
-import { requirePersonLastName } from "../../../../../shared/domain/validation/domain-fields/person-last-name";
+} from "./driver-certification.entity.js";
+import { DriverCertificationId } from "./driver-certification-id.js";
+import { DriverId } from "./driver-id.js";
+import { DepotId } from "../../depot/domain/depot-id.js";
+import { requirePersonFirstName } from "../../../../../shared/domain/validation/domain-fields/person-first-name.js";
+import { requirePersonLastName } from "../../../../../shared/domain/validation/domain-fields/person-last-name.js";
 import {
   DriverAlreadySuspendedException,
   DriverCertificationLimitExceededException,
@@ -23,7 +23,7 @@ import {
   DriverNotSuspendedException,
   DuplicateDriverCertificationException,
   SuspendedDriverAvailabilityChangeException,
-} from "./driver.exceptions";
+} from "./driver.exceptions.js";
 
 export enum DriverStatus {
   Available = "AVAILABLE",

@@ -1,21 +1,21 @@
-import { ASSIGNMENT_ERROR_CODES } from "../modules/assignment/domain/assignment-error-codes";
+import { ASSIGNMENT_ERROR_CODES } from "../modules/assignment/domain/assignment-error-codes.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../shared/domain/domain.exceptions";
+} from "../../../shared/domain/domain.exceptions.js";
 import {
   type Dimensions,
   VolumeUnit,
   type Weight,
   WeightUnit,
-} from "../../../shared/domain/value-objects/measurement";
+} from "../../../shared/domain/value-objects/measurement/index.js";
 
-import type { Driver } from "../modules/driver/domain/driver.aggregate";
-import { DriverStatus } from "../modules/driver/domain/driver.aggregate";
-import type { Route } from "../modules/route/domain/route.aggregate";
-import { RouteStatus } from "../modules/route/domain/route.aggregate";
-import type { Vehicle } from "../modules/vehicle/domain/vehicle.aggregate";
-import { VehicleStatus } from "../modules/vehicle/domain/vehicle.aggregate";
+import type { Driver } from "../modules/driver/domain/driver.aggregate.js";
+import { DriverStatus } from "../modules/driver/domain/driver.aggregate.js";
+import type { Route } from "../modules/route/domain/route.aggregate.js";
+import { RouteStatus } from "../modules/route/domain/route.aggregate.js";
+import type { Vehicle } from "../modules/vehicle/domain/vehicle.aggregate.js";
+import { VehicleStatus } from "../modules/vehicle/domain/vehicle.aggregate.js";
 
 export interface ShipmentLoad {
   readonly weight: Weight;

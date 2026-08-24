@@ -5,14 +5,14 @@ import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
 import {
   Compartment,
   CompartmentType,
   Vehicle,
   VehicleStatus,
-} from "./vehicle.aggregate";
-import { VehicleId } from "./vehicle-id";
+} from "./vehicle.aggregate.js";
+import { VehicleId } from "./vehicle-id.js";
 
 const details = {
   registrationNumber: "AA-1234-BB",

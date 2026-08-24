@@ -3,8 +3,8 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { DimensionUnit } from "../../../../domain/value-objects/measurement";
-import { corePlatformSchemaId } from "../../schema-id";
+import { DimensionUnit } from "../../../../domain/value-objects/measurement/index.js";
+import { corePlatformSchemaId } from "../../schema-id.js";
 
 export const dimensionsSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

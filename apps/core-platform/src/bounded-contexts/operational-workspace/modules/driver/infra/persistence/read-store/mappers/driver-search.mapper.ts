@@ -4,21 +4,21 @@ import type {
   DriverCertificationListItem,
   DriverListItem,
   DriverSearchCriteria,
-} from "../../../../app/ports/driver-read-store";
+} from "../../../../app/ports/driver-read-store.js";
 import {
   type DriverCursorSearchOptions,
   type DriverPageSearchOptions,
   type DriverPageSort,
-} from "../../../../app/queries/search-drivers/driver-search-options";
+} from "../../../../app/queries/search-drivers/driver-search-options.js";
 import {
   hydratePersistenceData,
   parsePersistedTimestamp,
-} from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+} from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import type {
   ISearchDriversCursorParams,
   ISearchDriversPageParams,
-} from "../queries/driver.search.queries";
-import type { DriverSearchCursorPosition } from "../driver-search.cursor";
+} from "../queries/driver.search.queries.js";
+import type { DriverSearchCursorPosition } from "../driver-search.cursor.js";
 
 interface DriverSearchRow {
   readonly id: string;

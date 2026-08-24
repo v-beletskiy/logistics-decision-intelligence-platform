@@ -1,19 +1,19 @@
-import { ROUTE_ERROR_CODES } from "./route-error-codes";
+import { ROUTE_ERROR_CODES } from "./route-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { optionalValidDate } from "../../../../../shared/domain/validation/primitives/date/optional-valid-date";
-import { requireValidDate } from "../../../../../shared/domain/validation/primitives/date/require-valid-date";
-import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { optionalValidDate } from "../../../../../shared/domain/validation/primitives/date/optional-valid-date.js";
+import { requireValidDate } from "../../../../../shared/domain/validation/primitives/date/require-valid-date.js";
+import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer.js";
 
-import { ShipmentId } from "../../shipment/domain/shipment-id";
-import type { RouteStopEvent } from "./route-stop.events";
-import { RouteId } from "./route-id";
-import { RouteStopId } from "./route-stop-id";
+import { ShipmentId } from "../../shipment/domain/shipment-id.js";
+import type { RouteStopEvent } from "./route-stop.events.js";
+import { RouteId } from "./route-id.js";
+import { RouteStopId } from "./route-stop-id.js";
 
 export enum RouteStopStatus {
   Planned = "PLANNED",

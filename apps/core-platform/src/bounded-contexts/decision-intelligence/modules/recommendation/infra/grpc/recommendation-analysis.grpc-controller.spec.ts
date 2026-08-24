@@ -1,19 +1,19 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AggregateNotFoundException } from "../../../../../../shared/app/app.exceptions";
+import { AggregateNotFoundException } from "../../../../../../shared/app/app.exceptions.js";
 import type {
   GetRecommendationAnalysisContextRequest,
   GetRecommendationAnalysisContextResponse,
-} from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_service";
-import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry";
-import { RecommendationMetric } from "../../../../domain/recommendation-metric.enum";
-import { RecommendationType } from "../../../../domain/recommendation-type.enum";
-import { MeasurementUnit } from "../../../../domain/measurement-unit.enum";
-import { RecommendationStatus } from "../../domain/recommendation.enums";
-import type { GetRecommendationAnalysisContextHandler } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.handler";
-import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result";
-import { RecommendationAnalysisGrpcController } from "./recommendation-analysis.grpc-controller";
+} from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_service.js";
+import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry.js";
+import { RecommendationMetric } from "../../../../domain/recommendation-metric.enum.js";
+import { RecommendationType } from "../../../../domain/recommendation-type.enum.js";
+import { MeasurementUnit } from "../../../../domain/measurement-unit.enum.js";
+import { RecommendationStatus } from "../../domain/recommendation.enums.js";
+import type { GetRecommendationAnalysisContextHandler } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.handler.js";
+import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result.js";
+import { RecommendationAnalysisGrpcController } from "./recommendation-analysis.grpc-controller.js";
 
 const context: RecommendationAnalysisContextResult = {
   recommendationId: "00000000-0000-4000-8000-000000000001",

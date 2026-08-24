@@ -1,16 +1,16 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { InvalidCredentialsException } from "../../../../../../../shared/modules/access-control/app/authentication/authentication.exceptions";
-import type { UserIdentity } from "../../../../../../../shared/modules/access-control/app/identity/identity";
-import type { IssuedAccessToken } from "../../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { AccessTokenIssuer } from "../../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { Role } from "../../../../../../../shared/modules/access-control/domain/role";
-import { UserAccount } from "../../../../user/domain/user-account";
-import { UserAccountRepository } from "../../../../user/domain/user-account.repository";
-import { AuthenticateLocalUserCommand } from "./authenticate-local-user.command";
-import { AuthenticateLocalUserHandler } from "./authenticate-local-user.handler";
-import { PasswordHasher } from "../../password-hasher";
+import { InvalidCredentialsException } from "../../../../../../../shared/modules/access-control/app/authentication/authentication.exceptions.js";
+import type { UserIdentity } from "../../../../../../../shared/modules/access-control/app/identity/identity.js";
+import type { IssuedAccessToken } from "../../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { AccessTokenIssuer } from "../../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { Role } from "../../../../../../../shared/modules/access-control/domain/role.js";
+import { UserAccount } from "../../../../user/domain/user-account.js";
+import { UserAccountRepository } from "../../../../user/domain/user-account.repository.js";
+import { AuthenticateLocalUserCommand } from "./authenticate-local-user.command.js";
+import { AuthenticateLocalUserHandler } from "./authenticate-local-user.handler.js";
+import { PasswordHasher } from "../../password-hasher.js";
 
 class FakeUsers extends UserAccountRepository {
   constructor(private readonly account: UserAccount | null) {

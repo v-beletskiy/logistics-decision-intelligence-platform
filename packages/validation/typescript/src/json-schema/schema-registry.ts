@@ -1,12 +1,16 @@
-import Ajv, {
-  type AnySchemaObject,
-  type ErrorObject,
-  type ValidateFunction,
+import * as AjvModule from "ajv";
+import * as addFormatsModule from "ajv-formats";
+import type {
+  AnySchemaObject,
+  ErrorObject,
+  ValidateFunction,
 } from "ajv";
-import addFormats from "ajv-formats";
 import type { JSONSchema7 } from "json-schema";
 
-import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
+import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects.js";
+
+const Ajv = AjvModule.default.default;
+const addFormats = addFormatsModule.default.default;
 
 /** A self-identifying JSON Schema written in the Draft-07 dialect. */
 export type Draft07Schema = ReadonlyDeep<JSONSchema7>;

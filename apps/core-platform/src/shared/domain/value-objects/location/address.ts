@@ -1,7 +1,7 @@
-import { optionalTrimmedString } from "../../validation/primitives/string/optional-trimmed-string";
-import { requireNonBlankString } from "../../validation/primitives/string/require-non-blank-string";
-import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../core/value-object";
+import { optionalTrimmedString } from "../../validation/primitives/string/optional-trimmed-string.js";
+import { requireNonBlankString } from "../../validation/primitives/string/require-non-blank-string.js";
+import { assertPropsObject } from "../../validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../core/value-object.js";
 
 export interface AddressProps {
   readonly country: string;

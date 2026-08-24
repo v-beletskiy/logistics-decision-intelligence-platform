@@ -3,11 +3,11 @@ import { Injectable, type OnModuleInit } from "@nestjs/common";
 import {
   RouteAnalysisService,
   type RouteAnalysisServer,
-} from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_service";
-import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry";
-import { GetRouteAnalysisContextHandler } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.handler";
-import { GetRouteAnalysisContextQuery } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.query";
-import { RouteAnalysisGrpcMapper } from "./route-analysis.grpc-mapper";
+} from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_service.js";
+import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry.js";
+import { GetRouteAnalysisContextHandler } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.handler.js";
+import { GetRouteAnalysisContextQuery } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.query.js";
+import { RouteAnalysisGrpcMapper } from "./route-analysis.grpc-mapper.js";
 
 /** Maps the RouteAnalysis boundary to the Operational Workspace read model. */
 @Injectable()

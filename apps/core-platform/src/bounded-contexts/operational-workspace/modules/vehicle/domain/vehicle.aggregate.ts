@@ -1,25 +1,25 @@
-import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes";
+import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 
-import { Compartment } from "./compartment.entity";
-import type { CompartmentProps } from "./compartment.entity";
-import { CompartmentId } from "./compartment-id";
-import type { VehicleEvent } from "./vehicle.events";
-import { VehicleId } from "./vehicle-id";
-import { DepotId } from "../../depot/domain/depot-id";
+import { Compartment } from "./compartment.entity.js";
+import type { CompartmentProps } from "./compartment.entity.js";
+import { CompartmentId } from "./compartment-id.js";
+import type { VehicleEvent } from "./vehicle.events.js";
+import { VehicleId } from "./vehicle-id.js";
+import { DepotId } from "../../depot/domain/depot-id.js";
 
-export { Capacity } from "./capacity.value-object";
-export type { CapacityProps } from "./capacity.value-object";
-export { Compartment, CompartmentType } from "./compartment.entity";
-export type { CompartmentProps } from "./compartment.entity";
+export { Capacity } from "./capacity.value-object.js";
+export type { CapacityProps } from "./capacity.value-object.js";
+export { Compartment, CompartmentType } from "./compartment.entity.js";
+export type { CompartmentProps } from "./compartment.entity.js";
 
 export enum VehicleStatus {
   Available = "AVAILABLE",

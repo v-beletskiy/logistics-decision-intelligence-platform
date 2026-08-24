@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Address, GeoCoordinate } from ".";
+import { Address, GeoCoordinate } from "./index.js";
 
 test("GeoCoordinate validates geographic bounds and compares by value", () => {
   const coordinate = GeoCoordinate.create({

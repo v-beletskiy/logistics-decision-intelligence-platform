@@ -1,21 +1,21 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { RouteId } from "../../../domain/route-id";
-import { RouteStopId } from "../../../domain/route-stop-id";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { RouteId } from "../../../domain/route-id.js";
+import { RouteStopId } from "../../../domain/route-stop-id.js";
 import {
   RouteStopRepository,
   type LoadedRouteStop,
-} from "../../../domain/route-stop.repository";
-import type { RouteStop } from "../../../domain/route-stop.aggregate";
-import { RouteStopMapper } from "./mappers/route-stop.mapper";
-import { findRouteStopById } from "./queries/route-stop.find-by-id.queries";
-import { findRouteStopByRouteIdAndSequenceForUpdate } from "./queries/route-stop.find-by-route-id-and-sequence-for-update.queries";
-import { findRouteStopByRouteIdAndSequence } from "./queries/route-stop.find-by-route-id-and-sequence.queries";
-import { findRouteStopsByRouteId } from "./queries/route-stop.find-by-route-id.queries";
-import { insertRouteStops } from "./queries/route-stop.insert-many.queries";
-import { updateRouteStop } from "./queries/route-stop.update.queries";
+} from "../../../domain/route-stop.repository.js";
+import type { RouteStop } from "../../../domain/route-stop.aggregate.js";
+import { RouteStopMapper } from "./mappers/route-stop.mapper.js";
+import { findRouteStopById } from "./queries/route-stop.find-by-id.queries.js";
+import { findRouteStopByRouteIdAndSequenceForUpdate } from "./queries/route-stop.find-by-route-id-and-sequence-for-update.queries.js";
+import { findRouteStopByRouteIdAndSequence } from "./queries/route-stop.find-by-route-id-and-sequence.queries.js";
+import { findRouteStopsByRouteId } from "./queries/route-stop.find-by-route-id.queries.js";
+import { insertRouteStops } from "./queries/route-stop.insert-many.queries.js";
+import { updateRouteStop } from "./queries/route-stop.update.queries.js";
 
 @Injectable()
 export class PgRouteStopRepository extends RouteStopRepository {

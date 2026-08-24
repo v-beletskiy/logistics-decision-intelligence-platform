@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions.js";
 
 export const VEHICLE_ERROR_CODES = defineErrorCodes(
   "operational-workspace.vehicle",

@@ -1,10 +1,10 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
-import { assignmentRouteParamsSchema } from "./assignment-route-params.schema";
-import { createAssignmentRequestSchema } from "./create-assignment.schema";
-import { reassignDriverRequestSchema } from "./reassign-driver.schema";
-import { reassignVehicleRequestSchema } from "./reassign-vehicle.schema";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
+import { assignmentRouteParamsSchema } from "./assignment-route-params.schema.js";
+import { createAssignmentRequestSchema } from "./create-assignment.schema.js";
+import { reassignDriverRequestSchema } from "./reassign-driver.schema.js";
+import { reassignVehicleRequestSchema } from "./reassign-vehicle.schema.js";
 
 export {
   assignmentRouteParamsSchema,

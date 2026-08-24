@@ -5,8 +5,8 @@ import {
   VERSION_NEUTRAL,
 } from "@nestjs/common";
 
-import { PgDatabase } from "../persistence/pg-database";
-import { PublicRoute } from "../../modules/access-control/infra/authentication/public-route.decorator";
+import { PgDatabase } from "../persistence/pg-database.js";
+import { PublicRoute } from "../../modules/access-control/infra/authentication/public-route.decorator.js";
 
 export interface HealthResponse {
   readonly status: "live" | "ready";

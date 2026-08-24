@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   type PgConstraintViolationTranslation,
-} from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { UserEmailConflictException } from "../../../app/user.exceptions";
-import { UserAccount } from "../../../domain/user-account";
-import { UserAccountRepository } from "../../../domain/user-account.repository";
-import { UserAccountMapper } from "./mappers/user-account.mapper";
-import { findUserAccountByEmail } from "./queries/user.find-by-email.queries";
-import { insertUserAccount } from "./queries/user.insert.queries";
+} from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { UserEmailConflictException } from "../../../app/user.exceptions.js";
+import { UserAccount } from "../../../domain/user-account.js";
+import { UserAccountRepository } from "../../../domain/user-account.repository.js";
+import { UserAccountMapper } from "./mappers/user-account.mapper.js";
+import { findUserAccountByEmail } from "./queries/user.find-by-email.queries.js";
+import { insertUserAccount } from "./queries/user.insert.queries.js";
 
 const USER_EMAIL_UNIQUE_CONSTRAINT = "users_email_unique";
 const USER_WRITE_CONSTRAINT_TRANSLATIONS = [

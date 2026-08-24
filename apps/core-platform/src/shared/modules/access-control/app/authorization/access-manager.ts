@@ -1,5 +1,5 @@
-import type { Identity } from "../identity/identity";
-import { Permission } from "../permissions/permission.enum";
+import type { Identity } from "../identity/identity.js";
+import { Permission } from "../permissions/permission.enum.js";
 
 /** Resource attributes required to make an authorization decision. */
 export interface AuthorizationContext {

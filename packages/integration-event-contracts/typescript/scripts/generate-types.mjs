@@ -138,7 +138,7 @@ function generateIntegrationContracts(contracts) {
       seenEventTypes.add(contract.eventType);
       seenSymbols.add(symbol);
 
-      const typeImportPath = `./${contract.relativePath.replace(/\.ts$/, "")}`;
+      const typeImportPath = `./${contract.relativePath.replace(/\.ts$/, ".js")}`;
       const schemaImportPath = path
         .relative(outputRoot, contract.schemaPath)
         .replace(/\\/g, "/");
@@ -147,7 +147,7 @@ function generateIntegrationContracts(contracts) {
         : `./${schemaImportPath}`;
 
       return [
-        `import ${symbol}Schema from "${normalizedSchemaImportPath}";`,
+        `import ${symbol}Schema from "${normalizedSchemaImportPath}" with { type: "json" };`,
         `import type { ${contract.payloadType} } from "${typeImportPath}";`,
         `export type { ${contract.payloadType} } from "${typeImportPath}";`,
         "",
@@ -160,7 +160,7 @@ function generateIntegrationContracts(contracts) {
 
   return [
     "/* This file is generated from JSON Schema. Do not edit it manually. */",
-    'import { defineContract } from "../contract";',
+    'import { defineContract } from "../contract.js";',
     "",
     declarations.join("\n\n"),
     "",

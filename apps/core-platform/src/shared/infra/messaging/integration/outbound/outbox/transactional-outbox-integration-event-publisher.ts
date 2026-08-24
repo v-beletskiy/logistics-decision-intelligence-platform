@@ -4,10 +4,10 @@ import {
   type CloudEvent,
 } from "@logistics-decision-intelligence/integration-events";
 
-import { IntegrationEventPublisher } from "../../../../../app/messaging/integration-event-publisher";
-import { APP_CONFIG, type AppConfig } from "../../../../config/app-config";
-import { corePlatformOutboundContracts } from "../core-platform-outbound-contracts";
-import { OutboxStore } from "./outbox-store";
+import { IntegrationEventPublisher } from "../../../../../app/messaging/integration-event-publisher.js";
+import { APP_CONFIG, type AppConfig } from "../../../../config/app-config.js";
+import { corePlatformOutboundContracts } from "../core-platform-outbound-contracts.js";
+import { OutboxStore } from "./outbox-store.js";
 
 /**
  * Distributed event delivery starts by persisting an event in the transaction

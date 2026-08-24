@@ -1,8 +1,8 @@
 import type {
   DimensionsProps,
   WeightProps,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import type { ShipmentEndpointProps } from "../../domain/shipment-endpoint.value-object";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import type { ShipmentEndpointProps } from "../../domain/shipment-endpoint.value-object.js";
 
 /** Transport-independent input shared by create and replace-details use cases. */
 export interface ShipmentDetailsInput {

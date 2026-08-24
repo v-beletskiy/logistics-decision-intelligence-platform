@@ -1,4 +1,4 @@
-import { degreesToRadians } from "../../utils/math";
+import { degreesToRadians } from "../../utils/math.js";
 
 const EARTH_RADIUS_KM = 6371;
 

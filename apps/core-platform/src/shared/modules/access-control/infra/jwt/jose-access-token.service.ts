@@ -10,17 +10,17 @@ import {
   APP_CONFIG,
   AppConfigurationError,
   type ApiAppConfig,
-} from "../../../../infra/config/app-config";
-import { corePlatformSchemaId } from "../../../../infra/validation/schema-id";
-import { AuthenticationException } from "../../app/authentication/authentication.exceptions";
-import type { Identity, UserIdentity } from "../../app/identity/identity";
-import { IdentityType } from "../../app/identity/identity-type.enum";
-import { Role } from "../../domain/role";
+} from "../../../../infra/config/app-config.js";
+import { corePlatformSchemaId } from "../../../../infra/validation/schema-id.js";
+import { AuthenticationException } from "../../app/authentication/authentication.exceptions.js";
+import type { Identity, UserIdentity } from "../../app/identity/identity.js";
+import { IdentityType } from "../../app/identity/identity-type.enum.js";
+import { Role } from "../../domain/role.js";
 import {
   AccessTokenIssuer,
   type IssuedAccessToken,
-} from "../../app/authentication/access-token-issuer";
-import { IdentityTokenVerifier } from "../../app/authentication/identity-token-verifier";
+} from "../../app/authentication/access-token-issuer.js";
+import { IdentityTokenVerifier } from "../../app/authentication/identity-token-verifier.js";
 
 const ALGORITHM = "ES256";
 const TOKEN_TYPE = "at+jwt";

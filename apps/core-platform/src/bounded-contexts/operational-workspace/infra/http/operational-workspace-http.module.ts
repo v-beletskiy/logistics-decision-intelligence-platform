@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common";
 
-import { AssignmentCommandModule } from "../../modules/assignment/composition/assignment-command.module";
-import { DepotCommandModule } from "../../modules/depot/composition/depot-command.module";
-import { DriverCommandModule } from "../../modules/driver/composition/driver-command.module";
-import { DriverQueryModule } from "../../modules/driver/composition/driver-query.module";
-import { RouteCommandModule } from "../../modules/route/composition/route-command.module";
-import { ShipmentCommandModule } from "../../modules/shipment/composition/shipment-command.module";
-import { VehicleCommandModule } from "../../modules/vehicle/composition/vehicle-command.module";
-import { AssignmentController } from "../../modules/assignment/infra/http/assignment.controller";
-import { DepotController } from "../../modules/depot/infra/http/depot.controller";
-import { DriverController } from "../../modules/driver/infra/http/driver.controller";
-import { RouteController } from "../../modules/route/infra/http/route.controller";
-import { ShipmentController } from "../../modules/shipment/infra/http/shipment.controller";
-import { VehicleController } from "../../modules/vehicle/infra/http/vehicle.controller";
+import { AssignmentCommandModule } from "../../modules/assignment/composition/assignment-command.module.js";
+import { DepotCommandModule } from "../../modules/depot/composition/depot-command.module.js";
+import { DriverCommandModule } from "../../modules/driver/composition/driver-command.module.js";
+import { DriverQueryModule } from "../../modules/driver/composition/driver-query.module.js";
+import { RouteCommandModule } from "../../modules/route/composition/route-command.module.js";
+import { ShipmentCommandModule } from "../../modules/shipment/composition/shipment-command.module.js";
+import { VehicleCommandModule } from "../../modules/vehicle/composition/vehicle-command.module.js";
+import { AssignmentController } from "../../modules/assignment/infra/http/assignment.controller.js";
+import { DepotController } from "../../modules/depot/infra/http/depot.controller.js";
+import { DriverController } from "../../modules/driver/infra/http/driver.controller.js";
+import { RouteController } from "../../modules/route/infra/http/route.controller.js";
+import { ShipmentController } from "../../modules/shipment/infra/http/shipment.controller.js";
+import { VehicleController } from "../../modules/vehicle/infra/http/vehicle.controller.js";
 
 @Module({
   imports: [

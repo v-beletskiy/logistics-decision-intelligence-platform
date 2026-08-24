@@ -1,18 +1,18 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { AddressProps } from "../../../../../shared/domain/value-objects/location/address";
-import type { GeoCoordinateProps } from "../../../../../shared/domain/value-objects/location/geo-coordinate";
+import type { AddressProps } from "../../../../../shared/domain/value-objects/location/address.js";
+import type { GeoCoordinateProps } from "../../../../../shared/domain/value-objects/location/geo-coordinate.js";
 import {
   DimensionUnit,
   type DimensionsProps,
   WeightUnit,
   type WeightProps,
-} from "../../../../../shared/domain/value-objects/measurement";
-import type { TimeWindowProps } from "../../../../../shared/domain/value-objects/time";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
+import type { TimeWindowProps } from "../../../../../shared/domain/value-objects/time/index.js";
 
-import { Shipment, ShipmentStatus } from "./shipment.aggregate";
-import { ShipmentId } from "./shipment-id";
+import { Shipment, ShipmentStatus } from "./shipment.aggregate.js";
+import { ShipmentId } from "./shipment-id.js";
 import {
   ShipmentAlreadyCancelledException,
   ShipmentCompletedCancellationException,
@@ -21,7 +21,7 @@ import {
   ShipmentExecutionNotAllowedException,
   ShipmentModificationNotAllowedException,
   ShipmentPickupAlreadyCompletedException,
-} from "./shipment.exceptions";
+} from "./shipment.exceptions.js";
 
 const address: AddressProps = {
   country: "UA",

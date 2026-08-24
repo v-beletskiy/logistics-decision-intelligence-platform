@@ -7,34 +7,34 @@ import {
   type CloudEvent,
 } from "@logistics-decision-intelligence/integration-events";
 
-import type { DomainEvent } from "../../../../../../../shared/domain/domain-event";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
+import type { DomainEvent } from "../../../../../../../shared/domain/domain-event.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
 import {
   RouteOptimizationInputQuery,
   type RouteOptimizationInput,
-} from "../../ports/route-optimization-input.query";
-import { RouteReference } from "../../../../../domain/route-reference";
-import { Recommendation } from "../../../../recommendation/domain/recommendation.aggregate";
-import { RecommendationId } from "../../../../recommendation/domain/recommendation-id";
-import { RecommendationRepository } from "../../../../recommendation/domain/recommendation.repository";
-import type { CostMatrix } from "../../../domain/cost-matrix";
-import { Optimization } from "../../../domain/optimization.aggregate";
-import { OptimizationCostModel } from "../../../domain/optimization-cost-model";
+} from "../../ports/route-optimization-input.query.js";
+import { RouteReference } from "../../../../../domain/route-reference.js";
+import { Recommendation } from "../../../../recommendation/domain/recommendation.aggregate.js";
+import { RecommendationId } from "../../../../recommendation/domain/recommendation-id.js";
+import { RecommendationRepository } from "../../../../recommendation/domain/recommendation.repository.js";
+import type { CostMatrix } from "../../../domain/cost-matrix.js";
+import { Optimization } from "../../../domain/optimization.aggregate.js";
+import { OptimizationCostModel } from "../../../domain/optimization-cost-model.js";
 import {
   OptimizationRepository,
   type LoadedOptimization,
-} from "../../../domain/optimization.repository";
-import { RouteOptimizationEvaluator } from "../../../domain/route-optimization-evaluator";
-import { CostMatrixProvider } from "../../ports/cost-matrix-provider";
+} from "../../../domain/optimization.repository.js";
+import { RouteOptimizationEvaluator } from "../../../domain/route-optimization-evaluator.js";
+import { CostMatrixProvider } from "../../ports/cost-matrix-provider.js";
 import {
   RouteOptimizer,
   type RouteOptimizationProblem,
   type RouteOptimizationSolution,
-} from "../../ports/route-optimizer";
-import { ExecuteOptimizationCommand } from "./execute-optimization.command";
-import { ExecuteOptimizationHandler } from "./execute-optimization.handler";
+} from "../../ports/route-optimizer.js";
+import { ExecuteOptimizationCommand } from "./execute-optimization.command.js";
+import { ExecuteOptimizationHandler } from "./execute-optimization.handler.js";
 
 const tenantId = "11111111-1111-4111-8111-111111111111";
 const routeId = "22222222-2222-4222-8222-222222222222";

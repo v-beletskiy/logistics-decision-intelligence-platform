@@ -10,7 +10,7 @@ import amqp, {
   type ConfirmChannel,
 } from "amqplib";
 
-import { APP_CONFIG, type AppConfig } from "../../../config/app-config";
+import { APP_CONFIG, type AppConfig } from "../../../config/app-config.js";
 
 /** Owns only the physical AMQP connection and creates caller-owned channels. */
 @Injectable()

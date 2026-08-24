@@ -1,10 +1,10 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../domain.exceptions";
-import { requireNonNegativeFiniteNumber } from "../../validation/primitives/number/require-non-negative-finite-number";
-import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../core/value-object";
+import { DomainException } from "../../domain.exceptions.js";
+import { requireNonNegativeFiniteNumber } from "../../validation/primitives/number/require-non-negative-finite-number.js";
+import { assertPropsObject } from "../../validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../core/value-object.js";
 
 export enum DistanceUnit {
   Kilometer = "KILOMETER",

@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Depot } from "../../../domain/depot.aggregate";
-import { DepotId } from "../../../domain/depot-id";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Depot } from "../../../domain/depot.aggregate.js";
+import { DepotId } from "../../../domain/depot-id.js";
 import {
   DepotRepository,
   type LoadedDepot,
-} from "../../../domain/depot.repository";
-import { DepotMapper } from "./mappers/depot.mapper";
-import { findDepotById } from "./queries/depot.find-by-id.queries";
-import { findDepots } from "./queries/depot.find.queries";
-import { insertDepot } from "./queries/depot.insert.queries";
-import { updateDepot } from "./queries/depot.update.queries";
+} from "../../../domain/depot.repository.js";
+import { DepotMapper } from "./mappers/depot.mapper.js";
+import { findDepotById } from "./queries/depot.find-by-id.queries.js";
+import { findDepots } from "./queries/depot.find.queries.js";
+import { insertDepot } from "./queries/depot.insert.queries.js";
+import { updateDepot } from "./queries/depot.update.queries.js";
 
 @Injectable()
 export class PgDepotRepository extends DepotRepository {

@@ -4,13 +4,13 @@ import {
   SchemaValidationError,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { HttpClient } from "../../../../../../shared/infra/http/http-client";
-import type { VroomRequest } from "./vroom-request";
+import { HttpClient } from "../../../../../../shared/infra/http/http-client.js";
+import type { VroomRequest } from "./vroom-request.js";
 import {
   vroomSolutionSchema,
   type SuccessfulVroomSolution,
   type VroomSolution,
-} from "./vroom-solution.schema";
+} from "./vroom-solution.schema.js";
 
 const vroomResponseSchemas = new SchemaRegistry([vroomSolutionSchema]);
 

@@ -5,23 +5,23 @@ import {
   type PaginationResult,
 } from "@logistics-decision-intelligence/querying";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
 import {
   DriverReadStore,
   type DriverListItem,
   type DriverSearchCriteria,
-} from "../../../app/ports/driver-read-store";
+} from "../../../app/ports/driver-read-store.js";
 import type {
   DriverCursorSearchOptions,
   DriverPageSearchOptions,
   DriverSearchOptions,
-} from "../../../app/queries/search-drivers/driver-search-options";
-import { DriverSearchCursor } from "./driver-search.cursor";
-import { DriverSearchMapper } from "./mappers/driver-search.mapper";
+} from "../../../app/queries/search-drivers/driver-search-options.js";
+import { DriverSearchCursor } from "./driver-search.cursor.js";
+import { DriverSearchMapper } from "./mappers/driver-search.mapper.js";
 import {
   searchDriversCursor,
   searchDriversPage,
-} from "./queries/driver.search.queries";
+} from "./queries/driver.search.queries.js";
 
 @Injectable()
 export class PgDriverReadStore extends DriverReadStore {

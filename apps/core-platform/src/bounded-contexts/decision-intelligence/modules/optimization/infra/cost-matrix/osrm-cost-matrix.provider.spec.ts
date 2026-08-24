@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { WorkerAppConfig } from "../../../../../../shared/infra/config/app-config";
-import type { HttpClient } from "../../../../../../shared/infra/http/http-client";
-import { OsrmCostMatrixProvider } from "./osrm-cost-matrix.provider";
+import type { WorkerAppConfig } from "../../../../../../shared/infra/config/app-config.js";
+import type { HttpClient } from "../../../../../../shared/infra/http/http-client.js";
+import { OsrmCostMatrixProvider } from "./osrm-cost-matrix.provider.js";
 
 function config(osrmBaseUrl = "http://osrm:5000"): WorkerAppConfig {
   return {

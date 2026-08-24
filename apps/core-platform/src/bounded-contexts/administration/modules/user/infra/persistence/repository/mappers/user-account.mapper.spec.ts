@@ -1,10 +1,10 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Role } from "../../../../../../../../shared/modules/access-control/domain/role";
-import type { IFindUserAccountByEmailResult } from "../queries/user.find-by-email.queries";
+import { Role } from "../../../../../../../../shared/modules/access-control/domain/role.js";
+import type { IFindUserAccountByEmailResult } from "../queries/user.find-by-email.queries.js";
 
-import { UserAccountMapper } from "./user-account.mapper";
+import { UserAccountMapper } from "./user-account.mapper.js";
 
 const userAccountRow: IFindUserAccountByEmailResult = {
   id: "00000000-0000-4000-8000-000000000001",

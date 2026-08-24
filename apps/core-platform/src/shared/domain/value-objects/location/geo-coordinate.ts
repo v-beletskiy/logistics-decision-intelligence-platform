@@ -1,8 +1,8 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes";
-import { DomainException } from "../../domain.exceptions";
-import { requireFiniteNumber } from "../../validation/primitives/number/require-finite-number";
-import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../core/value-object";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes.js";
+import { DomainException } from "../../domain.exceptions.js";
+import { requireFiniteNumber } from "../../validation/primitives/number/require-finite-number.js";
+import { assertPropsObject } from "../../validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../core/value-object.js";
 
 export interface GeoCoordinateProps {
   readonly latitude: number;

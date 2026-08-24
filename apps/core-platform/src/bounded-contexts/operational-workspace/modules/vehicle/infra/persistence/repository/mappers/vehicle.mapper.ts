@@ -1,4 +1,4 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Compartment,
   CompartmentType,
@@ -6,17 +6,17 @@ import {
   Vehicle,
   VehicleStatus,
   type VehicleProps,
-} from "../../../../domain/vehicle.aggregate";
-import { CompartmentId } from "../../../../domain/compartment-id";
-import { VehicleId } from "../../../../domain/vehicle-id";
-import { DepotId } from "../../../../../depot/domain/depot-id";
+} from "../../../../domain/vehicle.aggregate.js";
+import { CompartmentId } from "../../../../domain/compartment-id.js";
+import { VehicleId } from "../../../../domain/vehicle-id.js";
+import { DepotId } from "../../../../../depot/domain/depot-id.js";
 import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../../../shared/domain/value-objects/measurement";
-import type { IInsertVehicleParams } from "../queries/vehicle.insert.queries";
-import type { IReconcileVehicleCompartmentsParams } from "../queries/vehicle.reconcile-compartments.queries";
+} from "../../../../../../../../shared/domain/value-objects/measurement/index.js";
+import type { IInsertVehicleParams } from "../queries/vehicle.insert.queries.js";
+import type { IReconcileVehicleCompartmentsParams } from "../queries/vehicle.reconcile-compartments.queries.js";
 
 interface CompartmentPersistenceData {
   readonly id: string;

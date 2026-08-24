@@ -4,11 +4,11 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id.js";
 import {
   addressSchema,
   geoCoordinateSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/location";
+} from "../../../../../../../shared/infra/validation/value-objects/location/index.js";
 
 export const depotRouteParamsSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

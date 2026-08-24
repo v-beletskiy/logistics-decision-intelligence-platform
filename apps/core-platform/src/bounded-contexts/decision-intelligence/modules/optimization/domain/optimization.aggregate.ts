@@ -1,15 +1,15 @@
-import { OPTIMIZATION_ERROR_CODES } from "./optimization-error-codes";
+import { OPTIMIZATION_ERROR_CODES } from "./optimization-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import type { RouteReference } from "../../../domain/route-reference";
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import type { RouteReference } from "../../../domain/route-reference.js";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer";
-import type { OptimizationEvent } from "./optimization.events";
-import { OptimizationId } from "./optimization-id";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer.js";
+import type { OptimizationEvent } from "./optimization.events.js";
+import { OptimizationId } from "./optimization-id.js";
 
 export enum OptimizationStatus {
   Queued = "QUEUED",

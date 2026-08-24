@@ -1,4 +1,4 @@
-import type { CreatedAssignmentResponse } from "./assignment.http-contracts";
+import type { CreatedAssignmentResponse } from "./assignment.http-contracts.js";
 
 export class AssignmentHttpMapper {
   static toCreatedAssignmentResponse(id: string): CreatedAssignmentResponse {

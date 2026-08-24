@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/core-platform",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "files": [
     "db",
     "dist"
@@ -15,7 +16,7 @@
     "db:codegen": "pgtyped -c pgtyped.config.json",
     "admin:provision": "node dist/cli/provision-tenant-administrator.js",
     "lint": "eslint src --max-warnings 0",
-    "start": "node dist/main",
+    "start": "node dist/main.js",
     "test": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm build && node --test 'dist/**/*.spec.js'",
     "dev": "pnpm --filter @logistics-decision-intelligence/background-processing build && pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm --filter @logistics-decision-intelligence/querying build && nest start",
     "typecheck": "pnpm --filter @logistics-decision-intelligence/integration-events build && pnpm --filter @logistics-decision-intelligence/querying build && tsc --noEmit"

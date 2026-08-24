@@ -1,11 +1,11 @@
-import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes";
+import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Entity } from "../../../../../shared/domain/core/entity";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
-import { FindingId } from "./finding-id";
-import { FindingCategory } from "./recommendation.enums";
+import { Entity } from "../../../../../shared/domain/core/entity.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
+import { FindingId } from "./finding-id.js";
+import { FindingCategory } from "./recommendation.enums.js";
 
 export interface FindingProps {
   readonly category: FindingCategory;

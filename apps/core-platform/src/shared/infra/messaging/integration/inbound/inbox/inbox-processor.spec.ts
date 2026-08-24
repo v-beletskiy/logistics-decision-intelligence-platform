@@ -5,15 +5,15 @@ import {
   integrationEventId,
   type CloudEvent,
 } from "@logistics-decision-intelligence/integration-events";
-import type { TrxManager } from "../../../../../app/trx/trx-manager";
-import { NonRetryableMessageException } from "../../errors";
-import { InboxProcessor } from "./inbox-processor";
-import type { InboxStore } from "./inbox-store";
+import type { TrxManager } from "../../../../../app/trx/trx-manager.js";
+import { NonRetryableMessageException } from "../../errors.js";
+import { InboxProcessor } from "./inbox-processor.js";
+import type { InboxStore } from "./inbox-store.js";
 import {
   inboxConsumerId,
   type InboxMessage,
   type InboxMessageKey,
-} from "./inbox-message";
+} from "./inbox-message.js";
 
 const event: CloudEvent = {
   specversion: "1.0",

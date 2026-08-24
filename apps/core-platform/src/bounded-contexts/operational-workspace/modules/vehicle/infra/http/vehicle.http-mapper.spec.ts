@@ -5,10 +5,10 @@ import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import { CompartmentType } from "../../domain/compartment.entity";
-import type { RegisterVehicleRequest } from "./vehicle.http-contracts";
-import { VehicleHttpMapper } from "./vehicle.http-mapper";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import { CompartmentType } from "../../domain/compartment.entity.js";
+import type { RegisterVehicleRequest } from "./vehicle.http-contracts.js";
+import { VehicleHttpMapper } from "./vehicle.http-mapper.js";
 
 const request: RegisterVehicleRequest = {
   registrationNumber: "AA1234BC",

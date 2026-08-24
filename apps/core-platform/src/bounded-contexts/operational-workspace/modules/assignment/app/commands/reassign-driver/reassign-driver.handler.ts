@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { AssignmentId } from "../../../domain/assignment-id";
-import { AssignmentRepository } from "../../../domain/assignment.repository";
-import { DriverId } from "../../../../driver/domain/driver-id";
-import { DriverRepository } from "../../../../driver/domain/driver.repository";
-import { AssignmentPlanningPolicy } from "../../../../../domain/assignment-planning.policy";
-import { ReassignDriverCommand } from "./reassign-driver.command";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { AssignmentId } from "../../../domain/assignment-id.js";
+import { AssignmentRepository } from "../../../domain/assignment.repository.js";
+import { DriverId } from "../../../../driver/domain/driver-id.js";
+import { DriverRepository } from "../../../../driver/domain/driver.repository.js";
+import { AssignmentPlanningPolicy } from "../../../../../domain/assignment-planning.policy.js";
+import { ReassignDriverCommand } from "./reassign-driver.command.js";
 
 @Injectable()
 export class ReassignDriverHandler extends CommandHandler {

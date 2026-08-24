@@ -1,4 +1,4 @@
-import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes";
+import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes.js";
 import {
   Dimensions,
   type DimensionsProps,
@@ -6,10 +6,10 @@ import {
   type VolumeProps,
   Weight,
   type WeightProps,
-} from "../../../../../shared/domain/value-objects/measurement";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../../../../shared/domain/core/value-object";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
 
 export interface CapacityProps {
   readonly maxWeight: WeightProps;

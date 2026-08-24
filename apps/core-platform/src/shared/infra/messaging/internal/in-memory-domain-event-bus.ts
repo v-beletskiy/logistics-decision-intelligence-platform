@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
-import { DomainEventBus } from "../../../app/messaging/domain-event-bus";
-import type { DomainEvent } from "../../../domain/domain-event";
+import { DomainEventBus } from "../../../app/messaging/domain-event-bus.js";
+import type { DomainEvent } from "../../../domain/domain-event.js";
 
 @Injectable()
 export class InMemoryDomainEventBus extends DomainEventBus {

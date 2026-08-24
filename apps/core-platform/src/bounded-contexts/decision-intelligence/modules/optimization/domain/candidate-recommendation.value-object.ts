@@ -1,12 +1,12 @@
-import { OPTIMIZATION_ERROR_CODES } from "./optimization-error-codes";
+import { OPTIMIZATION_ERROR_CODES } from "./optimization-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import type { RouteReference } from "../../../domain/route-reference";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { ValueObject } from "../../../../../shared/domain/core/value-object";
-import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number";
-import { RecommendationFact } from "../../../domain/recommendation-fact.entity";
-import { RecommendationType } from "../../../domain/recommendation-type.enum";
+import type { RouteReference } from "../../../domain/route-reference.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
+import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number.js";
+import { RecommendationFact } from "../../../domain/recommendation-fact.entity.js";
+import { RecommendationType } from "../../../domain/recommendation-type.enum.js";
 
 export interface CandidateRecommendationProps {
   readonly routeId: RouteReference;

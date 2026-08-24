@@ -1,8 +1,8 @@
 import type { PreparedQuery } from "@pgtyped/runtime";
 
-import { ConcurrencyConflictException } from "../../app/app.exceptions";
-import { PgDatabase } from "./pg-database";
-import { isPgConstraintViolation, type PgSqlState } from "./pg-error";
+import { ConcurrencyConflictException } from "../../app/app.exceptions.js";
+import { PgDatabase } from "./pg-database.js";
+import { isPgConstraintViolation, type PgSqlState } from "./pg-error.js";
 
 export interface PgConstraintViolationTranslation {
   readonly sqlState: PgSqlState;

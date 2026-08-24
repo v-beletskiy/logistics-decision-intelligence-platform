@@ -6,13 +6,13 @@ import {
   type MongoAbility,
 } from "@casl/ability";
 
-import { AccessManager } from "../../app/authorization/access-manager";
-import { AuthorizationDeniedException } from "../../app/authorization/authorization.exceptions";
-import type { Identity } from "../../app/identity/identity";
-import { IdentityType } from "../../app/identity/identity-type.enum";
-import { Permission } from "../../app/permissions/permission.enum";
-import { ROLE_PERMISSIONS } from "../../app/roles/role-permissions";
-import { ServiceScope } from "../../app/scopes/service-scope.enum";
+import { AccessManager } from "../../app/authorization/access-manager.js";
+import { AuthorizationDeniedException } from "../../app/authorization/authorization.exceptions.js";
+import type { Identity } from "../../app/identity/identity.js";
+import { IdentityType } from "../../app/identity/identity-type.enum.js";
+import { Permission } from "../../app/permissions/permission.enum.js";
+import { ROLE_PERMISSIONS } from "../../app/roles/role-permissions.js";
+import { ServiceScope } from "../../app/scopes/service-scope.enum.js";
 
 const TENANT_RESOURCE = "TenantResource" as const;
 interface TenantResource {

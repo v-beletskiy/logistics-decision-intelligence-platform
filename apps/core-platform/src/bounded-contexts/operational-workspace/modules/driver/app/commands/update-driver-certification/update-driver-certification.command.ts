@@ -1,4 +1,4 @@
-import type { DriverCertificationInput } from "../../models/driver-certification.input";
+import type { DriverCertificationInput } from "../../models/driver-certification.input.js";
 
 export class UpdateDriverCertificationCommand {
   constructor(

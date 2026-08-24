@@ -11,12 +11,12 @@ import {
 } from "@nestjs/common";
 import type { ConfirmChannel } from "amqplib";
 
-import { APP_CONFIG, type AppConfig } from "../../../../config/app-config";
-import { RabbitMqConnection } from "../../rabbitmq/connection";
-import { IntegrationTopology } from "../../rabbitmq/topology";
-import { RabbitMqTopologyProvisioner } from "../../rabbitmq/topology-provisioner";
-import type { ClaimedOutboxEvent } from "./outbox-store";
-import { OutboxStore } from "./outbox-store";
+import { APP_CONFIG, type AppConfig } from "../../../../config/app-config.js";
+import { RabbitMqConnection } from "../../rabbitmq/connection.js";
+import { IntegrationTopology } from "../../rabbitmq/topology.js";
+import { RabbitMqTopologyProvisioner } from "../../rabbitmq/topology-provisioner.js";
+import type { ClaimedOutboxEvent } from "./outbox-store.js";
+import { OutboxStore } from "./outbox-store.js";
 
 /**
  * Publishes claimed outbox events to RabbitMQ in bounded batches with

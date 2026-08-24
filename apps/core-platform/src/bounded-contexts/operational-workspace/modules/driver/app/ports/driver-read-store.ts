@@ -1,7 +1,7 @@
 import type { PaginationResult } from "@logistics-decision-intelligence/querying";
 
-import type { DriverStatus } from "../../domain/driver.aggregate";
-import type { DriverSearchOptions } from "../queries/search-drivers/driver-search-options";
+import type { DriverStatus } from "../../domain/driver.aggregate.js";
+import type { DriverSearchOptions } from "../queries/search-drivers/driver-search-options.js";
 
 export interface DriverCertificationListItem {
   readonly id: string;

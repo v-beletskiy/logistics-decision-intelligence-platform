@@ -1,9 +1,9 @@
-import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { ValueObject } from "../../../../../shared/domain/core/value-object";
-import { requireNonNegativeFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-non-negative-finite-number";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
-import { Finding } from "./finding.entity";
+import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
+import { requireNonNegativeFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-non-negative-finite-number.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
+import { Finding } from "./finding.entity.js";
 
 export interface RecommendationAnalysisProps {
   readonly summary: string;

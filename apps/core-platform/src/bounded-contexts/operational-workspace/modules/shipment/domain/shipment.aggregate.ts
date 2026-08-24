@@ -1,13 +1,13 @@
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 import {
   Dimensions,
   type DimensionsProps,
   Weight,
   type WeightProps,
-} from "../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
 
 import {
   ShipmentAlreadyCancelledException,
@@ -17,14 +17,14 @@ import {
   ShipmentExecutionNotAllowedException,
   ShipmentModificationNotAllowedException,
   ShipmentPickupAlreadyCompletedException,
-} from "./shipment.exceptions";
-import type { ShipmentEvent } from "./shipment.events";
+} from "./shipment.exceptions.js";
+import type { ShipmentEvent } from "./shipment.events.js";
 import {
   ShipmentEndpoint,
   type ShipmentEndpointProps,
-} from "./shipment-endpoint.value-object";
-import { ShipmentId } from "./shipment-id";
-import { SHIPMENT_ERROR_CODES } from "./shipment-error-codes";
+} from "./shipment-endpoint.value-object.js";
+import { ShipmentId } from "./shipment-id.js";
+import { SHIPMENT_ERROR_CODES } from "./shipment-error-codes.js";
 
 export enum ShipmentStatus {
   Created = "CREATED",

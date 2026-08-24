@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/integration-event-contracts",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Language-neutral integration event contracts with a generated TypeScript facade.",
   "sideEffects": false,
   "main": "dist/typescript/src/index.js",

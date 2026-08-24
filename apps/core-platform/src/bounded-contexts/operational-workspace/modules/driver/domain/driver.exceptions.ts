@@ -1,5 +1,5 @@
-import { DomainConflictException } from "../../../../../shared/domain/domain.exceptions";
-import { DRIVER_ERROR_CODES } from "./driver-error-codes";
+import { DomainConflictException } from "../../../../../shared/domain/domain.exceptions.js";
+import { DRIVER_ERROR_CODES } from "./driver-error-codes.js";
 
 export class DriverAlreadySuspendedException extends DomainConflictException {
   constructor() {

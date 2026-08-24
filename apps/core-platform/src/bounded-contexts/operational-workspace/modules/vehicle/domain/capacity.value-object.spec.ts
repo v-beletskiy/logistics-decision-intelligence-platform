@@ -5,9 +5,9 @@ import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
 
-import { Capacity } from "./capacity.value-object";
+import { Capacity } from "./capacity.value-object.js";
 
 const validProps = {
   maxWeight: { value: 1_000, unit: WeightUnit.Kilogram },

@@ -1,24 +1,24 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import type { RouteReference } from "../../../../../domain/route-reference";
-import type { Recommendation } from "../../../domain/recommendation.aggregate";
-import { RecommendationId } from "../../../domain/recommendation-id";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import type { RouteReference } from "../../../../../domain/route-reference.js";
+import type { Recommendation } from "../../../domain/recommendation.aggregate.js";
+import { RecommendationId } from "../../../domain/recommendation-id.js";
 import {
   RecommendationRepository,
   type LoadedRecommendation,
-} from "../../../domain/recommendation.repository";
-import { RecommendationMapper } from "./mappers/recommendation.mapper";
-import { deleteRecommendation } from "./queries/recommendation.delete.queries";
-import { findRecommendationById } from "./queries/recommendation.find-by-id.queries";
-import { findRecommendationsPendingByRouteId } from "./queries/recommendation.find-pending-by-route-id.queries";
-import { findRecommendationsPending } from "./queries/recommendation.find-pending.queries";
-import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries";
-import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries";
-import { addRecommendation } from "./queries/recommendation.add.queries";
-import { addRecommendations } from "./queries/recommendation.add-many.queries";
-import { updateRecommendation } from "./queries/recommendation.update.queries";
+} from "../../../domain/recommendation.repository.js";
+import { RecommendationMapper } from "./mappers/recommendation.mapper.js";
+import { deleteRecommendation } from "./queries/recommendation.delete.queries.js";
+import { findRecommendationById } from "./queries/recommendation.find-by-id.queries.js";
+import { findRecommendationsPendingByRouteId } from "./queries/recommendation.find-pending-by-route-id.queries.js";
+import { findRecommendationsPending } from "./queries/recommendation.find-pending.queries.js";
+import { reconcileRecommendationFacts } from "./queries/recommendation.reconcile-facts.queries.js";
+import { reconcileRecommendationFindings } from "./queries/recommendation.reconcile-findings.queries.js";
+import { addRecommendation } from "./queries/recommendation.add.queries.js";
+import { addRecommendations } from "./queries/recommendation.add-many.queries.js";
+import { updateRecommendation } from "./queries/recommendation.update.queries.js";
 
 @Injectable()
 export class PgRecommendationRepository extends RecommendationRepository {

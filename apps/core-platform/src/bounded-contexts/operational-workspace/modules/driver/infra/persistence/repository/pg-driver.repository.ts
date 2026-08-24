@@ -1,25 +1,25 @@
 import { Injectable } from "@nestjs/common";
 
-import { DriverLicenseNumberConflictException } from "../../../app/driver.exceptions";
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import { DriverLicenseNumberConflictException } from "../../../app/driver.exceptions.js";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   execRevisionedPgUpdate,
   type PgConstraintViolationTranslation,
-} from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Driver } from "../../../domain/driver.aggregate";
-import { DriverId } from "../../../domain/driver-id";
+} from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Driver } from "../../../domain/driver.aggregate.js";
+import { DriverId } from "../../../domain/driver-id.js";
 import {
   DriverRepository,
   type LoadedDriver,
-} from "../../../domain/driver.repository";
-import { DriverMapper } from "./mappers/driver.mapper";
-import { findDriverByIdForUpdate } from "./queries/driver.find-by-id-for-update.queries";
-import { findDriverById } from "./queries/driver.find-by-id.queries";
-import { insertDriver } from "./queries/driver.insert.queries";
-import { reconcileDriverCertifications } from "./queries/driver.reconcile-certifications.queries";
-import { updateDriver } from "./queries/driver.update.queries";
+} from "../../../domain/driver.repository.js";
+import { DriverMapper } from "./mappers/driver.mapper.js";
+import { findDriverByIdForUpdate } from "./queries/driver.find-by-id-for-update.queries.js";
+import { findDriverById } from "./queries/driver.find-by-id.queries.js";
+import { insertDriver } from "./queries/driver.insert.queries.js";
+import { reconcileDriverCertifications } from "./queries/driver.reconcile-certifications.queries.js";
+import { updateDriver } from "./queries/driver.update.queries.js";
 
 const DRIVER_LICENSE_NUMBER_UNIQUE_CONSTRAINT =
   "drivers_tenant_license_number_unique";

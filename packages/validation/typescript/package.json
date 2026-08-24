@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/validation",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Shared JSON Schema validation utilities.",
   "sideEffects": false,
   "main": "dist/index.js",

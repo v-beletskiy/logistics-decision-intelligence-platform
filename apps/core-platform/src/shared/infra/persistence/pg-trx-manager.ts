@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "./pg-database";
-import { TrxManager } from "../../app/trx/trx-manager";
+import { PgDatabase } from "./pg-database.js";
+import { TrxManager } from "../../app/trx/trx-manager.js";
 
 @Injectable()
 export class PgTrxManager extends TrxManager {

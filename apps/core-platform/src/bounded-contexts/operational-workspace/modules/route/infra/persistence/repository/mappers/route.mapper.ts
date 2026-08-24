@@ -1,11 +1,11 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Route,
   RouteStatus,
   type RouteProps,
-} from "../../../../domain/route.aggregate";
-import { RouteId } from "../../../../domain/route-id";
-import type { IInsertRouteParams } from "../queries/route.insert.queries";
+} from "../../../../domain/route.aggregate.js";
+import { RouteId } from "../../../../domain/route-id.js";
+import type { IInsertRouteParams } from "../queries/route.insert.queries.js";
 
 export interface RoutePersistenceRow {
   readonly id: string;

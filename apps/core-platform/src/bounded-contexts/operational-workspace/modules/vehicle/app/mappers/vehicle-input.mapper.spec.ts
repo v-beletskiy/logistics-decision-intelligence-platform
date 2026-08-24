@@ -1,13 +1,13 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { CompartmentType } from "../../domain/compartment.entity";
+import { CompartmentType } from "../../domain/compartment.entity.js";
 import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import { VehicleInputMapper } from "./vehicle-input.mapper";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import { VehicleInputMapper } from "./vehicle-input.mapper.js";
 
 test("VehicleInputMapper converts application values into domain details", () => {
   const details = VehicleInputMapper.toRegistrationDetails({

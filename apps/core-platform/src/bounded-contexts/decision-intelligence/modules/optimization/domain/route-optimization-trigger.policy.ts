@@ -1,7 +1,7 @@
 import {
   OptimizationTriggerPolicy,
   type OptimizationTriggerInput,
-} from "./optimization-trigger.policy";
+} from "./optimization-trigger.policy.js";
 
 /** Re-optimizes when no prior input exists (creation) or the input version advanced. */
 export class RouteOptimizationTriggerPolicy extends OptimizationTriggerPolicy {

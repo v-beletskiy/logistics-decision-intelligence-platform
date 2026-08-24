@@ -3,8 +3,8 @@ import {
   JSON_SCHEMA_DRAFT_07,
   SchemaRegistry,
 } from "@logistics-decision-intelligence/validation/json-schema";
-import { JsonSchemaPipe } from "../../../../../../shared/infra/http/json-schema.pipe";
-import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id";
+import { JsonSchemaPipe } from "../../../../../../shared/infra/http/json-schema.pipe.js";
+import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id.js";
 
 export const loginRequestSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

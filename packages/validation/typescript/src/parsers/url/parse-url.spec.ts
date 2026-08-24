@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { parseUrl } from "./parse-url";
+import { parseUrl } from "./parse-url.js";
 
 test("parses absolute URLs", () => {
   const result = parseUrl("https://example.com/path");

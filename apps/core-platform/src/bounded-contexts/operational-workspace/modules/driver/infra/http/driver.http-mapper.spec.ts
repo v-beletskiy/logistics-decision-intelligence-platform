@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DriverStatus } from "../../domain/driver.aggregate";
-import { DriverHttpMapper } from "./driver.http-mapper";
+import { DriverStatus } from "../../domain/driver.aggregate.js";
+import { DriverHttpMapper } from "./driver.http-mapper.js";
 
 test("DriverHttpMapper maps a registration request into application input", () => {
   const input = DriverHttpMapper.toRegisterDriverInput({

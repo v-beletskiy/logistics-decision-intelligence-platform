@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { PasswordHasher } from "../app/password-hasher";
-import { Argon2PasswordHasher } from "./argon2-password-hasher";
+import { PasswordHasher } from "../app/password-hasher.js";
+import { Argon2PasswordHasher } from "./argon2-password-hasher.js";
 
 @Module({
   providers: [

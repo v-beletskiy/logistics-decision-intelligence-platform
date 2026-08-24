@@ -1,5 +1,5 @@
-import { DomainConflictException } from "../../../../../shared/domain/domain.exceptions";
-import { SHIPMENT_ERROR_CODES } from "./shipment-error-codes";
+import { DomainConflictException } from "../../../../../shared/domain/domain.exceptions.js";
+import { SHIPMENT_ERROR_CODES } from "./shipment-error-codes.js";
 
 export class ShipmentPickupAlreadyCompletedException extends DomainConflictException {
   constructor() {

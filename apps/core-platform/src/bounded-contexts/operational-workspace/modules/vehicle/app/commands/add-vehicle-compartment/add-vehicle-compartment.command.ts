@@ -1,4 +1,4 @@
-import type { VehicleCompartmentInput } from "../../models/vehicle-compartment.input";
+import type { VehicleCompartmentInput } from "../../models/vehicle-compartment.input.js";
 
 export class AddVehicleCompartmentCommand {
   constructor(

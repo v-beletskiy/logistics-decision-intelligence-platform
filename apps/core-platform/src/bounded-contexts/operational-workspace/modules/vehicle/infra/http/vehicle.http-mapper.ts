@@ -1,11 +1,11 @@
-import { CompartmentType } from "../../domain/compartment.entity";
-import type { RegisterVehicleInput } from "../../app/models/register-vehicle.input";
-import type { VehicleCompartmentInput } from "../../app/models/vehicle-compartment.input";
+import { CompartmentType } from "../../domain/compartment.entity.js";
+import type { RegisterVehicleInput } from "../../app/models/register-vehicle.input.js";
+import type { VehicleCompartmentInput } from "../../app/models/vehicle-compartment.input.js";
 import type {
   AddVehicleCompartmentRequest,
   RegisterVehicleRequest,
   UpdateVehicleCompartmentRequest,
-} from "./vehicle.http-contracts";
+} from "./vehicle.http-contracts.js";
 
 export class VehicleHttpMapper {
   static toRegisterVehicleInput(

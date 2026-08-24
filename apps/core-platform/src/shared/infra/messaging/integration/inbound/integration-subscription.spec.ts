@@ -4,7 +4,7 @@ import { test } from "node:test";
 import {
   defineSubscription,
   rabbitMqQueueName,
-} from "./integration-subscription";
+} from "./integration-subscription.js";
 import { recommendationAnalysisCompletedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
 test("defines a stable integration-subscription identity", () => {

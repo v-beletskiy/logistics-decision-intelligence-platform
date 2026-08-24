@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { UuidIdentifier } from "./uuid-identifier";
+import { UuidIdentifier } from "./uuid-identifier.js";
 
 class TestId extends UuidIdentifier<TestId> {
   private constructor(value: unknown) {

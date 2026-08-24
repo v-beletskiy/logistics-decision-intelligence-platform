@@ -6,12 +6,12 @@ import {
   type IntegrationEventId,
 } from "@logistics-decision-intelligence/integration-events";
 
-import type { AppConfig } from "../../../../config/app-config";
-import type { RabbitMqConnection } from "../../rabbitmq/connection";
-import type { RabbitMqTopologyProvisioner } from "../../rabbitmq/topology-provisioner";
-import type { ClaimedOutboxEvent } from "./outbox-store";
-import type { OutboxStore } from "./outbox-store";
-import { RabbitMqOutboxPublisher } from "./rabbitmq-outbox-publisher";
+import type { AppConfig } from "../../../../config/app-config.js";
+import type { RabbitMqConnection } from "../../rabbitmq/connection.js";
+import type { RabbitMqTopologyProvisioner } from "../../rabbitmq/topology-provisioner.js";
+import type { ClaimedOutboxEvent } from "./outbox-store.js";
+import type { OutboxStore } from "./outbox-store.js";
+import { RabbitMqOutboxPublisher } from "./rabbitmq-outbox-publisher.js";
 
 test("claims consecutive PostgreSQL batches and confirms each RabbitMQ batch once", async () => {
   const pages = [[claim("event-1"), claim("event-2")], [claim("event-3")]];

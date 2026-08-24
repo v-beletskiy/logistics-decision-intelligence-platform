@@ -4,8 +4,8 @@ import test from "node:test";
 import {
   RoutePlanningSnapshotQuery,
   type RoutePlanningSnapshot,
-} from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query";
-import { RouteOptimizationInputQueryAdapter } from "./route-optimization-input.query-adapter";
+} from "../../../../../operational-workspace/public-api/queries/route-planning-snapshot.query.js";
+import { RouteOptimizationInputQueryAdapter } from "./route-optimization-input.query-adapter.js";
 
 class StubRoutePlanningSnapshotQuery extends RoutePlanningSnapshotQuery {
   constructor(private readonly snapshot: RoutePlanningSnapshot) {

@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { optionalTrimmedString } from "./optional-trimmed-string";
-import { requireNonBlankString } from "./require-non-blank-string";
+import { optionalTrimmedString } from "./optional-trimmed-string.js";
+import { requireNonBlankString } from "./require-non-blank-string.js";
 
 test("requireNonBlankString returns canonical text", () => {
   assert.equal(requireNonBlankString("  value  ", "Field"), "value");

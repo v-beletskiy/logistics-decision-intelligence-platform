@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { Vehicle } from "../../../domain/vehicle.aggregate";
-import { VehicleRepository } from "../../../domain/vehicle.repository";
-import { VehicleInputMapper } from "../../mappers/vehicle-input.mapper";
-import { RegisterVehicleCommand } from "./register-vehicle.command";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { Vehicle } from "../../../domain/vehicle.aggregate.js";
+import { VehicleRepository } from "../../../domain/vehicle.repository.js";
+import { VehicleInputMapper } from "../../mappers/vehicle-input.mapper.js";
+import { RegisterVehicleCommand } from "./register-vehicle.command.js";
 
 @Injectable()
 export class RegisterVehicleHandler extends CommandHandler {

@@ -1,4 +1,4 @@
-import type { OptimizationStop } from "../../domain/optimization-stop";
+import type { OptimizationStop } from "../../domain/optimization-stop.js";
 
 export interface RouteOptimizationInput {
   readonly routeId: string;

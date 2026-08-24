@@ -9,70 +9,70 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
-import { InternalApplicationEventBus } from "../../../../../../shared/app/messaging/internal-application-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
+import { InternalApplicationEventBus } from "../../../../../../shared/app/messaging/internal-application-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
 import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import { CancelAssignmentHandler } from "../../app/commands/cancel-assignment/cancel-assignment.handler";
-import { CompleteAssignmentHandler } from "../../app/commands/complete-assignment/complete-assignment.handler";
-import { CreateAssignmentHandler } from "../../app/commands/create-assignment/create-assignment.handler";
-import { ReassignDriverHandler } from "../../app/commands/reassign-driver/reassign-driver.handler";
-import { ReassignVehicleHandler } from "../../app/commands/reassign-vehicle/reassign-vehicle.handler";
-import { StartAssignmentHandler } from "../../app/commands/start-assignment/start-assignment.handler";
-import { Assignment } from "../../domain/assignment.aggregate";
-import { AssignmentId } from "../../domain/assignment-id";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import { CancelAssignmentHandler } from "../../app/commands/cancel-assignment/cancel-assignment.handler.js";
+import { CompleteAssignmentHandler } from "../../app/commands/complete-assignment/complete-assignment.handler.js";
+import { CreateAssignmentHandler } from "../../app/commands/create-assignment/create-assignment.handler.js";
+import { ReassignDriverHandler } from "../../app/commands/reassign-driver/reassign-driver.handler.js";
+import { ReassignVehicleHandler } from "../../app/commands/reassign-vehicle/reassign-vehicle.handler.js";
+import { StartAssignmentHandler } from "../../app/commands/start-assignment/start-assignment.handler.js";
+import { Assignment } from "../../domain/assignment.aggregate.js";
+import { AssignmentId } from "../../domain/assignment-id.js";
 import {
   AssignmentRepository,
   type LoadedAssignment,
-} from "../../domain/assignment.repository";
-import { AssignmentPlanningPolicy } from "../../../../domain/assignment-planning.policy";
-import { Driver } from "../../../driver/domain/driver.aggregate";
-import { DriverId } from "../../../driver/domain/driver-id";
+} from "../../domain/assignment.repository.js";
+import { AssignmentPlanningPolicy } from "../../../../domain/assignment-planning.policy.js";
+import { Driver } from "../../../driver/domain/driver.aggregate.js";
+import { DriverId } from "../../../driver/domain/driver-id.js";
 import {
   DriverRepository,
   type LoadedDriver,
-} from "../../../driver/domain/driver.repository";
-import { RouteId } from "../../../route/domain/route-id";
-import { Route } from "../../../route/domain/route.aggregate";
+} from "../../../driver/domain/driver.repository.js";
+import { RouteId } from "../../../route/domain/route-id.js";
+import { Route } from "../../../route/domain/route.aggregate.js";
 import {
   RouteRepository,
   type LoadedRoute,
-} from "../../../route/domain/route.repository";
-import { RouteStop } from "../../../route/domain/route-stop.aggregate";
-import { RouteStopOperationType } from "../../../route/domain/route-stop.aggregate";
+} from "../../../route/domain/route.repository.js";
+import { RouteStop } from "../../../route/domain/route-stop.aggregate.js";
+import { RouteStopOperationType } from "../../../route/domain/route-stop.aggregate.js";
 import {
   RouteStopRepository,
   type LoadedRouteStop,
-} from "../../../route/domain/route-stop.repository";
-import { Shipment } from "../../../shipment/domain/shipment.aggregate";
-import { ShipmentId } from "../../../shipment/domain/shipment-id";
+} from "../../../route/domain/route-stop.repository.js";
+import { Shipment } from "../../../shipment/domain/shipment.aggregate.js";
+import { ShipmentId } from "../../../shipment/domain/shipment-id.js";
 import {
   ShipmentRepository,
   type LoadedShipment,
-} from "../../../shipment/domain/shipment.repository";
+} from "../../../shipment/domain/shipment.repository.js";
 import {
   CompartmentType,
   Vehicle,
-} from "../../../vehicle/domain/vehicle.aggregate";
-import { VehicleId } from "../../../vehicle/domain/vehicle-id";
+} from "../../../vehicle/domain/vehicle.aggregate.js";
+import { VehicleId } from "../../../vehicle/domain/vehicle-id.js";
 import {
   VehicleRepository,
   type LoadedVehicle,
-} from "../../../vehicle/domain/vehicle.repository";
-import { AssignmentController } from "./assignment.controller";
+} from "../../../vehicle/domain/vehicle.repository.js";
+import { AssignmentController } from "./assignment.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

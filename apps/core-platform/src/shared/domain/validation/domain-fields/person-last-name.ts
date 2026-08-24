@@ -1,6 +1,6 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes";
-import { DomainException } from "../../domain.exceptions";
-import { requireNonBlankString } from "../primitives/string/require-non-blank-string";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes.js";
+import { DomainException } from "../../domain.exceptions.js";
+import { requireNonBlankString } from "../primitives/string/require-non-blank-string.js";
 
 export const PERSON_LAST_NAME_MIN_LENGTH = 1;
 export const PERSON_LAST_NAME_MAX_LENGTH = 100;

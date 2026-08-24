@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type { CloudEvent } from "@logistics-decision-intelligence/integration-events";
 
-import { APP_CONFIG, type AppConfig } from "../../../../config/app-config";
-import { PgDatabase } from "../../../../persistence/pg-database";
-import { TrxManager } from "../../../../../app/trx/trx-manager";
-import { type ClaimedOutboxEvent, OutboxStore } from "./outbox-store";
+import { APP_CONFIG, type AppConfig } from "../../../../config/app-config.js";
+import { PgDatabase } from "../../../../persistence/pg-database.js";
+import { TrxManager } from "../../../../../app/trx/trx-manager.js";
+import { type ClaimedOutboxEvent, OutboxStore } from "./outbox-store.js";
 
 interface OutboxRow {
   readonly lock_token: string;

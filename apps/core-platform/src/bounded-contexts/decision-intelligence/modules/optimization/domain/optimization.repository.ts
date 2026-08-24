@@ -1,6 +1,6 @@
-import type { RouteReference } from "../../../domain/route-reference";
-import type { Optimization } from "./optimization.aggregate";
-import type { OptimizationId } from "./optimization-id";
+import type { RouteReference } from "../../../domain/route-reference.js";
+import type { Optimization } from "./optimization.aggregate.js";
+import type { OptimizationId } from "./optimization-id.js";
 
 export interface LoadedOptimization {
   readonly aggregate: Optimization;

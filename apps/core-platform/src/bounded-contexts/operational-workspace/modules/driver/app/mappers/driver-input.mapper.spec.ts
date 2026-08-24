@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DriverInputMapper } from "./driver-input.mapper";
+import { DriverInputMapper } from "./driver-input.mapper.js";
 
 test("DriverInputMapper converts application identifiers at the domain boundary", () => {
   const details = DriverInputMapper.toRegistrationDetails({

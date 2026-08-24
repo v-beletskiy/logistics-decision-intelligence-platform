@@ -1,15 +1,15 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AggregateNotFoundException } from "../../../../../../shared/app/app.exceptions";
+import { AggregateNotFoundException } from "../../../../../../shared/app/app.exceptions.js";
 import type {
   GetRouteAnalysisContextRequest,
   GetRouteAnalysisContextResponse,
-} from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_service";
-import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry";
-import type { GetRouteAnalysisContextHandler } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.handler";
-import type { RouteAnalysisContextResult } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.result";
-import { RouteAnalysisGrpcController } from "./route-analysis.grpc-controller";
+} from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_service.js";
+import { GrpcServiceRegistry } from "../../../../../../shared/infra/grpc/grpc-service-registry.js";
+import type { GetRouteAnalysisContextHandler } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.handler.js";
+import type { RouteAnalysisContextResult } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.result.js";
+import { RouteAnalysisGrpcController } from "./route-analysis.grpc-controller.js";
 
 const context: RouteAnalysisContextResult = {
   routeId: "00000000-0000-4000-8000-000000000001",

@@ -3,16 +3,16 @@ import { test } from "node:test";
 import { Module } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
-import { AccessManager, type AuthorizationContext } from "./access-manager";
-import { AuthorizationDeniedException } from "./authorization.exceptions";
-import { Authorized } from "./authorized.decorator";
+import { AccessManager, type AuthorizationContext } from "./access-manager.js";
+import { AuthorizationDeniedException } from "./authorization.exceptions.js";
+import { Authorized } from "./authorized.decorator.js";
 import {
   UseCaseContext,
   type UseCaseRequest,
-} from "../execution/use-case-context";
-import { IdentityType } from "../identity/identity-type.enum";
-import type { Identity } from "../identity/identity";
-import { Permission } from "../permissions/permission.enum";
+} from "../execution/use-case-context.js";
+import { IdentityType } from "../identity/identity-type.enum.js";
+import type { Identity } from "../identity/identity.js";
+import { Permission } from "../permissions/permission.enum.js";
 
 class FakeAccessManager {
   authorize(

@@ -1,13 +1,13 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RecommendationMetric } from "../../../../domain/recommendation-metric.enum";
-import { RecommendationType } from "../../../../domain/recommendation-type.enum";
-import { MeasurementUnit } from "../../../../domain/measurement-unit.enum";
-import { RecommendationStatus } from "../../domain/recommendation.enums";
-import type { RecommendationContext } from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_types";
-import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result";
-import { RecommendationAnalysisGrpcMapper } from "./recommendation-analysis.grpc-mapper";
+import { RecommendationMetric } from "../../../../domain/recommendation-metric.enum.js";
+import { RecommendationType } from "../../../../domain/recommendation-type.enum.js";
+import { MeasurementUnit } from "../../../../domain/measurement-unit.enum.js";
+import { RecommendationStatus } from "../../domain/recommendation.enums.js";
+import type { RecommendationContext } from "../../../../../../shared/infra/grpc/generated/decision_intelligence/v1/recommendation_analysis_types.js";
+import type { RecommendationAnalysisContextResult } from "../../app/queries/get-recommendation-analysis-context/get-recommendation-analysis-context.result.js";
+import { RecommendationAnalysisGrpcMapper } from "./recommendation-analysis.grpc-mapper.js";
 
 test("RecommendationAnalysisGrpcMapper maps a recommendation context", () => {
   const context: RecommendationAnalysisContextResult = {

@@ -2,11 +2,11 @@ import * as assert from "node:assert/strict";
 import { generateKeyPairSync } from "node:crypto";
 import { test } from "node:test";
 
-import type { ApiAppConfig } from "../../../../infra/config/app-config";
-import { AuthenticationException } from "../../app/authentication/authentication.exceptions";
-import { IdentityType } from "../../app/identity/identity-type.enum";
-import { Role } from "../../domain/role";
-import { JoseAccessTokenService } from "./jose-access-token.service";
+import type { ApiAppConfig } from "../../../../infra/config/app-config.js";
+import { AuthenticationException } from "../../app/authentication/authentication.exceptions.js";
+import { IdentityType } from "../../app/identity/identity-type.enum.js";
+import { Role } from "../../domain/role.js";
+import { JoseAccessTokenService } from "./jose-access-token.service.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

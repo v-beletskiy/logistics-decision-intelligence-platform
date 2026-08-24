@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RouteOptimizationTriggerPolicy } from "./route-optimization-trigger.policy";
+import { RouteOptimizationTriggerPolicy } from "./route-optimization-trigger.policy.js";
 
 test("optimizes when no previous optimization exists", () => {
   const policy = new RouteOptimizationTriggerPolicy();

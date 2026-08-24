@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { UserAccountRepository } from "../../domain/user-account.repository";
-import { PgUserAccountRepository } from "./repository/pg-user-account.repository";
+import { UserAccountRepository } from "../../domain/user-account.repository.js";
+import { PgUserAccountRepository } from "./repository/pg-user-account.repository.js";
 
 @Module({
   providers: [

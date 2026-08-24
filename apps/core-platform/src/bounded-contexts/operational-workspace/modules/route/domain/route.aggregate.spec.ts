@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Route, RouteStatus } from "./route.aggregate";
-import { RouteId } from "./route-id";
+import { Route, RouteStatus } from "./route.aggregate.js";
+import { RouteId } from "./route-id.js";
 
 test("Route serializes stop progression without loading stops", () => {
   const route = Route.create({ plannedStopCount: 2 });

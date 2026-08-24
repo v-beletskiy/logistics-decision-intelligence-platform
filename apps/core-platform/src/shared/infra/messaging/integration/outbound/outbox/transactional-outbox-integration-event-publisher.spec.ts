@@ -7,8 +7,8 @@ import {
   IntegrationEventFactory,
 } from "@logistics-decision-intelligence/integration-events";
 
-import type { OutboxStore } from "./outbox-store";
-import { TransactionalOutboxIntegrationEventPublisher } from "./transactional-outbox-integration-event-publisher";
+import type { OutboxStore } from "./outbox-store.js";
+import { TransactionalOutboxIntegrationEventPublisher } from "./transactional-outbox-integration-event-publisher.js";
 
 const decisionIntelligenceEvents = new IntegrationEventFactory(
   "urn:logistics-decision-intelligence:decision-intelligence",

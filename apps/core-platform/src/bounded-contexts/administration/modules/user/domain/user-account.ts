@@ -1,11 +1,11 @@
 import { isUuid } from "@logistics-decision-intelligence/validation";
 import { randomUUIDv7 } from "node:crypto";
 
-import { Role } from "../../../../../shared/modules/access-control/domain/role";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { Role } from "../../../../../shared/modules/access-control/domain/role.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 
-import { UserEmail } from "./user-email.value-object";
-import { USER_ERROR_CODES } from "./user-error-codes";
+import { UserEmail } from "./user-email.value-object.js";
+import { USER_ERROR_CODES } from "./user-error-codes.js";
 
 export interface UserAccountProps {
   readonly id: string;

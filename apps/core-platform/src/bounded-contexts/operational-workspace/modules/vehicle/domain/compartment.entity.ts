@@ -1,13 +1,13 @@
-import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes";
+import { VEHICLE_ERROR_CODES } from "./vehicle-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object";
-import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string";
-import { Entity } from "../../../../../shared/domain/core/entity";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object.js";
+import { optionalTrimmedString } from "../../../../../shared/domain/validation/primitives/string/optional-trimmed-string.js";
+import { Entity } from "../../../../../shared/domain/core/entity.js";
 
-import { Capacity, type CapacityProps } from "./capacity.value-object";
-import { CompartmentId } from "./compartment-id";
+import { Capacity, type CapacityProps } from "./capacity.value-object.js";
+import { CompartmentId } from "./compartment-id.js";
 
 export enum CompartmentType {
   DryCargo = "DRY_CARGO",

@@ -3,14 +3,14 @@ import { Inject, Injectable } from "@nestjs/common";
 import {
   APP_CONFIG,
   type WorkerAppConfig,
-} from "../../../../../../shared/infra/config/app-config";
+} from "../../../../../../shared/infra/config/app-config.js";
 import type {
   RouteOptimizer,
   RouteOptimizationProblem,
   RouteOptimizationSolution,
-} from "../../app/ports/route-optimizer";
-import { VroomClient } from "./vroom-client";
-import { VroomMapper } from "./vroom.mapper";
+} from "../../app/ports/route-optimizer.js";
+import { VroomClient } from "./vroom-client.js";
+import { VroomMapper } from "./vroom.mapper.js";
 
 /** Solves route problems through the VROOM engine. */
 @Injectable()

@@ -7,15 +7,15 @@ import {
 import {
   APP_CONFIG,
   type WorkerAppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpClient } from "../../../../../../shared/infra/http/http-client";
-import type { GeoCoordinateProps } from "../../../../../../shared/domain/value-objects/location/geo-coordinate";
-import type { CostMatrixProvider } from "../../app/ports/cost-matrix-provider";
-import type { CostMatrix } from "../../domain/cost-matrix";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpClient } from "../../../../../../shared/infra/http/http-client.js";
+import type { GeoCoordinateProps } from "../../../../../../shared/domain/value-objects/location/geo-coordinate.js";
+import type { CostMatrixProvider } from "../../app/ports/cost-matrix-provider.js";
+import type { CostMatrix } from "../../domain/cost-matrix.js";
 import {
   osrmTableResponseSchema,
   type OsrmTableResponse,
-} from "./osrm-table-response.schema";
+} from "./osrm-table-response.schema.js";
 
 const FALLBACK_SPEED_METERS_PER_SECOND = 50 / 3.6;
 

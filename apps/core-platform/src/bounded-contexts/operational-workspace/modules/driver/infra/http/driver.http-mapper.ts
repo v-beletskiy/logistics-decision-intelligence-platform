@@ -1,10 +1,10 @@
 import type { PaginationResult } from "@logistics-decision-intelligence/querying";
 
-import type { DriverCertificationInput } from "../../app/models/driver-certification.input";
-import type { DriverDetailsInput } from "../../app/models/driver-details.input";
-import type { RegisterDriverInput } from "../../app/models/register-driver.input";
-import type { DriverListItem } from "../../app/ports/driver-read-store";
-import type { SearchDriversQueryInput } from "../../app/queries/search-drivers/search-drivers.query";
+import type { DriverCertificationInput } from "../../app/models/driver-certification.input.js";
+import type { DriverDetailsInput } from "../../app/models/driver-details.input.js";
+import type { RegisterDriverInput } from "../../app/models/register-driver.input.js";
+import type { DriverListItem } from "../../app/ports/driver-read-store.js";
+import type { SearchDriversQueryInput } from "../../app/queries/search-drivers/search-drivers.query.js";
 import type {
   CreatedDriverCertificationResponse,
   CreatedDriverResponse,
@@ -14,7 +14,7 @@ import type {
   RegisterDriverRequest,
   SearchDriversRequest,
   SearchDriversResponse,
-} from "./driver.http-contracts";
+} from "./driver.http-contracts.js";
 
 export class DriverHttpMapper {
   static toRegisterDriverInput(

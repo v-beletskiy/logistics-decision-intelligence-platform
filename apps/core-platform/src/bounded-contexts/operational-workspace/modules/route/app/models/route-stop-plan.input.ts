@@ -1,4 +1,4 @@
-import type { RouteStopOperationType } from "../../domain/route-stop.aggregate";
+import type { RouteStopOperationType } from "../../domain/route-stop.aggregate.js";
 
 /** One stop plan accepted by the create-route use case. */
 export interface RouteStopPlanInput {

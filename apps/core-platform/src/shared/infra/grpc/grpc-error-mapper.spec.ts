@@ -5,20 +5,20 @@ import { status } from "@grpc/grpc-js";
 import { InvalidPaginationError } from "@logistics-decision-intelligence/querying";
 import { SchemaValidationError } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { AuthorizationDeniedException } from "../../modules/access-control/app/authorization/authorization.exceptions";
-import { AuthenticationException } from "../../modules/access-control/app/authentication/authentication.exceptions";
+import { AuthorizationDeniedException } from "../../modules/access-control/app/authorization/authorization.exceptions.js";
+import { AuthenticationException } from "../../modules/access-control/app/authentication/authentication.exceptions.js";
 import {
   AggregateNotFoundException,
   ApplicationConflictException,
   ApplicationInputException,
   ConcurrencyConflictException,
-} from "../../app/app.exceptions";
+} from "../../app/app.exceptions.js";
 import {
   defineErrorCodes,
   DomainConflictException,
   DomainException,
-} from "../../domain/domain.exceptions";
-import { toGrpcStatus } from "./grpc-error-mapper";
+} from "../../domain/domain.exceptions.js";
+import { toGrpcStatus } from "./grpc-error-mapper.js";
 
 const TEST_DOMAIN_ERROR_CODES = defineErrorCodes("test", {
   stateConflict: "state-conflict",

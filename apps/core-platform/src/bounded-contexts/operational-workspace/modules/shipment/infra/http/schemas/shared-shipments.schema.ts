@@ -4,16 +4,16 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id.js";
 import {
   addressSchema,
   geoCoordinateSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/location";
+} from "../../../../../../../shared/infra/validation/value-objects/location/index.js";
 import {
   dimensionsSchema,
   weightSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/measurement";
-import { timeWindowSchema } from "../../../../../../../shared/infra/validation/value-objects/time";
+} from "../../../../../../../shared/infra/validation/value-objects/measurement/index.js";
+import { timeWindowSchema } from "../../../../../../../shared/infra/validation/value-objects/time/index.js";
 
 export const shipmentRouteParamsSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

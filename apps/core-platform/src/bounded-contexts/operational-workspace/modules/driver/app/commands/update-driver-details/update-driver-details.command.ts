@@ -1,4 +1,4 @@
-import type { DriverDetailsInput } from "../../models/driver-details.input";
+import type { DriverDetailsInput } from "../../models/driver-details.input.js";
 
 export class UpdateDriverDetailsCommand {
   constructor(

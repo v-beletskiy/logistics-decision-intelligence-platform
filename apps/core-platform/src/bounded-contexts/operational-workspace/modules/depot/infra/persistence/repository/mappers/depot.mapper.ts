@@ -1,19 +1,19 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Depot,
   DepotStatus,
   type DepotProps,
-} from "../../../../domain/depot.aggregate";
-import { DepotId } from "../../../../domain/depot-id";
+} from "../../../../domain/depot.aggregate.js";
+import { DepotId } from "../../../../domain/depot-id.js";
 import {
   Address,
   type AddressProps,
-} from "../../../../../../../../shared/domain/value-objects/location/address";
+} from "../../../../../../../../shared/domain/value-objects/location/address.js";
 import {
   GeoCoordinate,
   type GeoCoordinateProps,
-} from "../../../../../../../../shared/domain/value-objects/location/geo-coordinate";
-import type { IInsertDepotParams } from "../queries/depot.insert.queries";
+} from "../../../../../../../../shared/domain/value-objects/location/geo-coordinate.js";
+import type { IInsertDepotParams } from "../queries/depot.insert.queries.js";
 
 export interface DepotPersistenceRow {
   readonly id: string;

@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/background-processing",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "TypeScript primitives for background processing.",
   "sideEffects": false,
   "main": "dist/index.js",

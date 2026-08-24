@@ -1,4 +1,4 @@
-import { InvalidQueryError } from "../invalid-query.error";
+import { InvalidQueryError } from "../invalid-query.error.js";
 
 const DEFAULT_PAGE_SIZE = 25;
 const DEFAULT_MAX_PAGE_SIZE = 100;

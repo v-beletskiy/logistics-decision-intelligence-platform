@@ -1,8 +1,8 @@
 import { Global, Module } from "@nestjs/common";
 
-import { GrpcClientFactory } from "./grpc-client.factory";
-import { GrpcServer } from "./grpc-server";
-import { GrpcServiceRegistry } from "./grpc-service-registry";
+import { GrpcClientFactory } from "./grpc-client.factory.js";
+import { GrpcServer } from "./grpc-server.js";
+import { GrpcServiceRegistry } from "./grpc-service-registry.js";
 
 @Global()
 @Module({

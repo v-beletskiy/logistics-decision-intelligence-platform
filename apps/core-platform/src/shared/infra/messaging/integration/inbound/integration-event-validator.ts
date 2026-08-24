@@ -6,7 +6,7 @@ import {
   type IntegrationEventsOf,
 } from "@logistics-decision-intelligence/integration-events";
 
-import { NonRetryableMessageException } from "../errors";
+import { NonRetryableMessageException } from "../errors.js";
 
 export type { IntegrationEventContract };
 

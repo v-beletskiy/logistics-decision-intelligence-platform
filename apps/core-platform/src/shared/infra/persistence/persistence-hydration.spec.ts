@@ -4,8 +4,8 @@ import { test } from "node:test";
 import {
   hydratePersistenceData,
   parsePersistedTimestamp,
-} from "./persistence-hydration";
-import { MalformedPersistenceDataException } from "./persistence.exceptions";
+} from "./persistence-hydration.js";
+import { MalformedPersistenceDataException } from "./persistence.exceptions.js";
 
 test("parses valid persisted timestamp text", () => {
   assert.equal(

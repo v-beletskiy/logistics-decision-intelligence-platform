@@ -1,8 +1,8 @@
-import type { OptimizationStop } from "../../domain/optimization-stop";
-import type { CostMatrix } from "../../domain/cost-matrix";
-import type { RouteOptimizationSolution } from "../../app/ports/route-optimizer";
-import type { VroomRequest } from "./vroom-request";
-import type { SuccessfulVroomSolution } from "./vroom-solution.schema";
+import type { OptimizationStop } from "../../domain/optimization-stop.js";
+import type { CostMatrix } from "../../domain/cost-matrix.js";
+import type { RouteOptimizationSolution } from "../../app/ports/route-optimizer.js";
+import type { VroomRequest } from "./vroom-request.js";
+import type { SuccessfulVroomSolution } from "./vroom-solution.schema.js";
 
 function toSeconds(date: Date): number {
   return Math.round(date.getTime() / 1000);

@@ -9,29 +9,29 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
-import { CancelShipmentHandler } from "../../app/commands/cancel-shipment/cancel-shipment.handler";
-import { CompleteDeliveryHandler } from "../../app/commands/complete-delivery/complete-delivery.handler";
-import { CompletePickupHandler } from "../../app/commands/complete-pickup/complete-pickup.handler";
-import { CreateShipmentHandler } from "../../app/commands/create-shipment/create-shipment.handler";
-import { UpdateShipmentDetailsHandler } from "../../app/commands/update-shipment-details/update-shipment-details.handler";
-import { Shipment } from "../../domain/shipment.aggregate";
-import type { ShipmentId } from "../../domain/shipment-id";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
+import { CancelShipmentHandler } from "../../app/commands/cancel-shipment/cancel-shipment.handler.js";
+import { CompleteDeliveryHandler } from "../../app/commands/complete-delivery/complete-delivery.handler.js";
+import { CompletePickupHandler } from "../../app/commands/complete-pickup/complete-pickup.handler.js";
+import { CreateShipmentHandler } from "../../app/commands/create-shipment/create-shipment.handler.js";
+import { UpdateShipmentDetailsHandler } from "../../app/commands/update-shipment-details/update-shipment-details.handler.js";
+import { Shipment } from "../../domain/shipment.aggregate.js";
+import type { ShipmentId } from "../../domain/shipment-id.js";
 import {
   ShipmentRepository,
   type LoadedShipment,
-} from "../../domain/shipment.repository";
-import { ShipmentController } from "./shipment.controller";
+} from "../../domain/shipment.repository.js";
+import { ShipmentController } from "./shipment.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

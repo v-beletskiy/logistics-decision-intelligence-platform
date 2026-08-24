@@ -9,50 +9,50 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
-import { InternalApplicationEventBus } from "../../../../../../shared/app/messaging/internal-application-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
+import { InternalApplicationEventBus } from "../../../../../../shared/app/messaging/internal-application-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
 import {
   DimensionUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import { CancelRouteHandler } from "../../app/commands/cancel-route/cancel-route.handler";
-import { CompleteRouteHandler } from "../../app/commands/complete-route/complete-route.handler";
-import { CreateRouteHandler } from "../../app/commands/create-route/create-route.handler";
-import { RecordRouteStopArrivalHandler } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.handler";
-import { RecordRouteStopDepartureHandler } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.handler";
-import { StartRouteHandler } from "../../app/commands/start-route/start-route.handler";
-import { StartRouteStopHandler } from "../../app/commands/start-route-stop/start-route-stop.handler";
-import { AssignmentRepository } from "../../../assignment/domain/assignment.repository";
-import { RoutePlanningPolicy } from "../../domain/route-planning.policy";
-import { RouteId } from "../../domain/route-id";
-import { RouteStopId } from "../../domain/route-stop-id";
-import { Route } from "../../domain/route.aggregate";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import { CancelRouteHandler } from "../../app/commands/cancel-route/cancel-route.handler.js";
+import { CompleteRouteHandler } from "../../app/commands/complete-route/complete-route.handler.js";
+import { CreateRouteHandler } from "../../app/commands/create-route/create-route.handler.js";
+import { RecordRouteStopArrivalHandler } from "../../app/commands/record-route-stop-arrival/record-route-stop-arrival.handler.js";
+import { RecordRouteStopDepartureHandler } from "../../app/commands/record-route-stop-departure/record-route-stop-departure.handler.js";
+import { StartRouteHandler } from "../../app/commands/start-route/start-route.handler.js";
+import { StartRouteStopHandler } from "../../app/commands/start-route-stop/start-route-stop.handler.js";
+import { AssignmentRepository } from "../../../assignment/domain/assignment.repository.js";
+import { RoutePlanningPolicy } from "../../domain/route-planning.policy.js";
+import { RouteId } from "../../domain/route-id.js";
+import { RouteStopId } from "../../domain/route-stop-id.js";
+import { Route } from "../../domain/route.aggregate.js";
 import {
   RouteRepository,
   type LoadedRoute,
-} from "../../domain/route.repository";
-import { RouteStop } from "../../domain/route-stop.aggregate";
+} from "../../domain/route.repository.js";
+import { RouteStop } from "../../domain/route-stop.aggregate.js";
 import {
   RouteStopRepository,
   type LoadedRouteStop,
-} from "../../domain/route-stop.repository";
-import { Shipment } from "../../../shipment/domain/shipment.aggregate";
-import { ShipmentId } from "../../../shipment/domain/shipment-id";
+} from "../../domain/route-stop.repository.js";
+import { Shipment } from "../../../shipment/domain/shipment.aggregate.js";
+import { ShipmentId } from "../../../shipment/domain/shipment-id.js";
 import {
   ShipmentRepository,
   type LoadedShipment,
-} from "../../../shipment/domain/shipment.repository";
-import { RouteController } from "./route.controller";
+} from "../../../shipment/domain/shipment.repository.js";
+import { RouteController } from "./route.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

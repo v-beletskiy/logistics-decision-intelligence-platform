@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
 
-import { Role } from "../../../../../../../shared/modules/access-control/domain/role";
-import { UserAccount } from "../../../domain/user-account";
-import { UserAccountRepository } from "../../../domain/user-account.repository";
-import { UserEmail } from "../../../domain/user-email.value-object";
-import { LocalPasswordPolicy } from "../../../../authentication/app/local-password.policy";
-import { PasswordHasher } from "../../../../authentication/app/password-hasher";
-import { ProvisionTenantAdministratorCommand } from "./provision-tenant-administrator.command";
-import { UserEmailConflictException } from "../../user.exceptions";
+import { Role } from "../../../../../../../shared/modules/access-control/domain/role.js";
+import { UserAccount } from "../../../domain/user-account.js";
+import { UserAccountRepository } from "../../../domain/user-account.repository.js";
+import { UserEmail } from "../../../domain/user-email.value-object.js";
+import { LocalPasswordPolicy } from "../../../../authentication/app/local-password.policy.js";
+import { PasswordHasher } from "../../../../authentication/app/password-hasher.js";
+import { ProvisionTenantAdministratorCommand } from "./provision-tenant-administrator.command.js";
+import { UserEmailConflictException } from "../../user.exceptions.js";
 
 @Injectable()
 export class ProvisionTenantAdministratorHandler {

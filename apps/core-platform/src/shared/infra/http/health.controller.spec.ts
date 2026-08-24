@@ -3,8 +3,8 @@ import { test } from "node:test";
 
 import { ServiceUnavailableException } from "@nestjs/common";
 
-import { HealthController, HealthResponse } from "./health.controller";
-import type { PgDatabase } from "../persistence/pg-database";
+import { HealthController, HealthResponse } from "./health.controller.js";
+import type { PgDatabase } from "../persistence/pg-database.js";
 
 test("reports readiness after PostgreSQL accepts a query", async () => {
   const controller = new HealthController({

@@ -1,8 +1,8 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes";
-import { DomainException } from "../../domain.exceptions";
-import { requireValidDate } from "../../validation/primitives/date/require-valid-date";
-import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../core/value-object";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes.js";
+import { DomainException } from "../../domain.exceptions.js";
+import { requireValidDate } from "../../validation/primitives/date/require-valid-date.js";
+import { assertPropsObject } from "../../validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../core/value-object.js";
 
 export interface ScheduleProps {
   readonly arrivalTime: Date;

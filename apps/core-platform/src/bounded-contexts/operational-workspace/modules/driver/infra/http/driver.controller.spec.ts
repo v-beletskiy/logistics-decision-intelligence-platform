@@ -9,39 +9,39 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
-import { AddDriverCertificationHandler } from "../../app/commands/add-driver-certification/add-driver-certification.handler";
-import { ChangeDriverAvailabilityHandler } from "../../app/commands/change-driver-availability/change-driver-availability.handler";
-import { RegisterDriverHandler } from "../../app/commands/register-driver/register-driver.handler";
-import { ReinstateDriverHandler } from "../../app/commands/reinstate-driver/reinstate-driver.handler";
-import { RemoveDriverCertificationHandler } from "../../app/commands/remove-driver-certification/remove-driver-certification.handler";
-import { SuspendDriverHandler } from "../../app/commands/suspend-driver/suspend-driver.handler";
-import { UpdateDriverCertificationHandler } from "../../app/commands/update-driver-certification/update-driver-certification.handler";
-import { UpdateDriverDetailsHandler } from "../../app/commands/update-driver-details/update-driver-details.handler";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
+import { AddDriverCertificationHandler } from "../../app/commands/add-driver-certification/add-driver-certification.handler.js";
+import { ChangeDriverAvailabilityHandler } from "../../app/commands/change-driver-availability/change-driver-availability.handler.js";
+import { RegisterDriverHandler } from "../../app/commands/register-driver/register-driver.handler.js";
+import { ReinstateDriverHandler } from "../../app/commands/reinstate-driver/reinstate-driver.handler.js";
+import { RemoveDriverCertificationHandler } from "../../app/commands/remove-driver-certification/remove-driver-certification.handler.js";
+import { SuspendDriverHandler } from "../../app/commands/suspend-driver/suspend-driver.handler.js";
+import { UpdateDriverCertificationHandler } from "../../app/commands/update-driver-certification/update-driver-certification.handler.js";
+import { UpdateDriverDetailsHandler } from "../../app/commands/update-driver-details/update-driver-details.handler.js";
 import {
   DriverReadStore,
   type DriverSearchCriteria,
-} from "../../app/ports/driver-read-store";
-import type { DriverSearchOptions } from "../../app/queries/search-drivers/driver-search-options";
-import { SearchDriversHandler } from "../../app/queries/search-drivers/search-drivers.handler";
-import type { Driver } from "../../domain/driver.aggregate";
-import { DepotRepository } from "../../../depot/domain/depot.repository";
-import type { DriverId } from "../../domain/driver-id";
+} from "../../app/ports/driver-read-store.js";
+import type { DriverSearchOptions } from "../../app/queries/search-drivers/driver-search-options.js";
+import { SearchDriversHandler } from "../../app/queries/search-drivers/search-drivers.handler.js";
+import type { Driver } from "../../domain/driver.aggregate.js";
+import { DepotRepository } from "../../../depot/domain/depot.repository.js";
+import type { DriverId } from "../../domain/driver-id.js";
 import {
   DriverRepository,
   type LoadedDriver,
-} from "../../domain/driver.repository";
-import { DriverController } from "./driver.controller";
+} from "../../domain/driver.repository.js";
+import { DriverController } from "./driver.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createCursorScope, decodeCursor, encodeCursor } from "./cursor";
+import { createCursorScope, decodeCursor, encodeCursor } from "./cursor.js";
 
 test("cursor round-trips within its query and criteria scope", () => {
   const scope = createCursorScope("driver.search", {

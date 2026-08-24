@@ -1,7 +1,7 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes.js";
 import { isPositiveSafeInteger } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../domain.exceptions";
+import { DomainException } from "../../../domain.exceptions.js";
 
 /** Returns a positive integer or raises a domain error. */
 export function requirePositiveSafeInteger(

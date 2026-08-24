@@ -1,18 +1,18 @@
 import type { FromSchema } from "json-schema-to-ts";
 
-import type { addressSchema } from "../../../../../../shared/infra/validation/value-objects/location";
-import type { geoCoordinateSchema } from "../../../../../../shared/infra/validation/value-objects/location";
+import type { addressSchema } from "../../../../../../shared/infra/validation/value-objects/location/index.js";
+import type { geoCoordinateSchema } from "../../../../../../shared/infra/validation/value-objects/location/index.js";
 import type {
   dimensionsSchema,
   weightSchema,
-} from "../../../../../../shared/infra/validation/value-objects/measurement";
-import type { timeWindowSchema } from "../../../../../../shared/infra/validation/value-objects/time";
+} from "../../../../../../shared/infra/validation/value-objects/measurement/index.js";
+import type { timeWindowSchema } from "../../../../../../shared/infra/validation/value-objects/time/index.js";
 import type {
   createShipmentRequestSchema,
   shipmentEndpointSchema,
   shipmentRouteParamsSchema,
   updateShipmentDetailsRequestSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type ShipmentRouteParams = FromSchema<typeof shipmentRouteParamsSchema>;
 

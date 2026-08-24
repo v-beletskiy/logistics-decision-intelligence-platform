@@ -1,27 +1,27 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Assignment,
   AssignmentStatus,
   type AssignmentProps,
-} from "../../../../domain/assignment.aggregate";
-import { AssignmentId } from "../../../../domain/assignment-id";
+} from "../../../../domain/assignment.aggregate.js";
+import { AssignmentId } from "../../../../domain/assignment-id.js";
 import {
   AssignmentShipment,
   type AssignmentShipmentProps,
-} from "../../../../domain/assignment-shipment.entity";
-import { AssignmentShipmentId } from "../../../../domain/assignment-shipment-id";
-import { DriverId } from "../../../../../driver/domain/driver-id";
-import { RouteId } from "../../../../../route/domain/route-id";
-import { ShipmentId } from "../../../../../shipment/domain/shipment-id";
-import { VehicleId } from "../../../../../vehicle/domain/vehicle-id";
+} from "../../../../domain/assignment-shipment.entity.js";
+import { AssignmentShipmentId } from "../../../../domain/assignment-shipment-id.js";
+import { DriverId } from "../../../../../driver/domain/driver-id.js";
+import { RouteId } from "../../../../../route/domain/route-id.js";
+import { ShipmentId } from "../../../../../shipment/domain/shipment-id.js";
+import { VehicleId } from "../../../../../vehicle/domain/vehicle-id.js";
 import {
   DimensionUnit,
   Dimensions,
   Weight,
   WeightUnit,
-} from "../../../../../../../../shared/domain/value-objects/measurement";
-import type { IInsertAssignmentParams } from "../queries/assignment.insert.queries";
-import type { IReconcileAssignmentShipmentsParams } from "../queries/assignment.reconcile-shipments.queries";
+} from "../../../../../../../../shared/domain/value-objects/measurement/index.js";
+import type { IInsertAssignmentParams } from "../queries/assignment.insert.queries.js";
+import type { IReconcileAssignmentShipmentsParams } from "../queries/assignment.reconcile-shipments.queries.js";
 
 interface AssignmentShipmentPersistenceData {
   readonly id: string;

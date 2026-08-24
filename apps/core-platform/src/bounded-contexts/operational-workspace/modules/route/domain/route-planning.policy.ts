@@ -1,10 +1,10 @@
-import { ROUTE_ERROR_CODES } from "./route-error-codes";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { ROUTE_ERROR_CODES } from "./route-error-codes.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 
 import {
   RouteStopOperationType,
   type RouteStopPlan,
-} from "./route-stop.aggregate";
+} from "./route-stop.aggregate.js";
 
 /** Validates cross-stop planning invariants without creating or mutating domain state. */
 export class RoutePlanningPolicy {

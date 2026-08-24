@@ -1,4 +1,4 @@
-import type { DomainEvent } from "../../../../../shared/domain/domain-event";
+import type { DomainEvent } from "../../../../../shared/domain/domain-event.js";
 
 export interface RouteStopDomainEvent extends DomainEvent {
   readonly routeId: string;

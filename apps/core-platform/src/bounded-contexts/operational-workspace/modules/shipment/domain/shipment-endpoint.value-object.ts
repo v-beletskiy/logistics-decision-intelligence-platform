@@ -1,17 +1,17 @@
-import { ValueObject } from "../../../../../shared/domain/core/value-object";
+import { ValueObject } from "../../../../../shared/domain/core/value-object.js";
 import {
   Address,
   type AddressProps,
-} from "../../../../../shared/domain/value-objects/location/address";
+} from "../../../../../shared/domain/value-objects/location/address.js";
 import {
   GeoCoordinate,
   type GeoCoordinateProps,
-} from "../../../../../shared/domain/value-objects/location/geo-coordinate";
+} from "../../../../../shared/domain/value-objects/location/geo-coordinate.js";
 import {
   TimeWindow,
   type TimeWindowProps,
-} from "../../../../../shared/domain/value-objects/time";
-import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object";
+} from "../../../../../shared/domain/value-objects/time/index.js";
+import { assertPropsObject } from "../../../../../shared/domain/validation/primitives/object/assert-props-object.js";
 
 export interface ShipmentEndpointProps {
   readonly address: AddressProps;

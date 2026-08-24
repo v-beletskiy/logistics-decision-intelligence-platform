@@ -1,7 +1,7 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes.js";
 import { isNonBlankString } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../domain.exceptions";
+import { DomainException } from "../../../domain.exceptions.js";
 
 /** Returns a trimmed required string or raises a domain-level validation error. */
 export function requireNonBlankString(value: unknown, label: string): string {

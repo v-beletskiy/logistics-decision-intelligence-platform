@@ -1,18 +1,18 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { USER_ERROR_CODES } from "../../bounded-contexts/administration/modules/user/domain/user-error-codes";
-import { DECISION_INTELLIGENCE_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/domain/decision-intelligence-error-codes";
-import { OPTIMIZATION_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/modules/optimization/domain/optimization-error-codes";
-import { RECOMMENDATION_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/modules/recommendation/domain/recommendation-error-codes";
-import { ASSIGNMENT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/assignment/domain/assignment-error-codes";
-import { DEPOT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/depot/domain/depot-error-codes";
-import { DRIVER_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/driver/domain/driver-error-codes";
-import { ROUTE_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/route/domain/route-error-codes";
-import { SHIPMENT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/shipment/domain/shipment-error-codes";
-import { VEHICLE_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/vehicle/domain/vehicle-error-codes";
-import { SHARED_DOMAIN_ERROR_CODES } from "./domain-error-codes";
-import { defineErrorCodes } from "./domain.exceptions";
+import { USER_ERROR_CODES } from "../../bounded-contexts/administration/modules/user/domain/user-error-codes.js";
+import { DECISION_INTELLIGENCE_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/domain/decision-intelligence-error-codes.js";
+import { OPTIMIZATION_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/modules/optimization/domain/optimization-error-codes.js";
+import { RECOMMENDATION_ERROR_CODES } from "../../bounded-contexts/decision-intelligence/modules/recommendation/domain/recommendation-error-codes.js";
+import { ASSIGNMENT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/assignment/domain/assignment-error-codes.js";
+import { DEPOT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/depot/domain/depot-error-codes.js";
+import { DRIVER_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/driver/domain/driver-error-codes.js";
+import { ROUTE_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/route/domain/route-error-codes.js";
+import { SHIPMENT_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/shipment/domain/shipment-error-codes.js";
+import { VEHICLE_ERROR_CODES } from "../../bounded-contexts/operational-workspace/modules/vehicle/domain/vehicle-error-codes.js";
+import { SHARED_DOMAIN_ERROR_CODES } from "./domain-error-codes.js";
+import { defineErrorCodes } from "./domain.exceptions.js";
 
 const catalogs = [
   SHARED_DOMAIN_ERROR_CODES,

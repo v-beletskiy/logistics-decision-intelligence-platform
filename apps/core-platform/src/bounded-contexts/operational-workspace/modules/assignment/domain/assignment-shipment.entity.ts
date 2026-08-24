@@ -1,13 +1,13 @@
-import { ASSIGNMENT_ERROR_CODES } from "./assignment-error-codes";
-import { Entity } from "../../../../../shared/domain/core/entity";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { ASSIGNMENT_ERROR_CODES } from "./assignment-error-codes.js";
+import { Entity } from "../../../../../shared/domain/core/entity.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 import {
   Dimensions,
   Weight,
-} from "../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
 
-import { AssignmentShipmentId } from "./assignment-shipment-id";
-import { ShipmentId } from "../../shipment/domain/shipment-id";
+import { AssignmentShipmentId } from "./assignment-shipment-id.js";
+import { ShipmentId } from "../../shipment/domain/shipment-id.js";
 
 /** Complete AssignmentShipment state, excluding only its identity. */
 export interface AssignmentShipmentProps {

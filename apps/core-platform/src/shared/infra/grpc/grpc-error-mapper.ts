@@ -2,17 +2,17 @@ import { status, type StatusObject } from "@grpc/grpc-js";
 import { InvalidQueryError } from "@logistics-decision-intelligence/querying";
 import { SchemaValidationError } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { AuthorizationDeniedException } from "../../modules/access-control/app/authorization/authorization.exceptions";
-import { AuthenticationException } from "../../modules/access-control/app/authentication/authentication.exceptions";
+import { AuthorizationDeniedException } from "../../modules/access-control/app/authorization/authorization.exceptions.js";
+import { AuthenticationException } from "../../modules/access-control/app/authentication/authentication.exceptions.js";
 import {
   AggregateNotFoundException,
   ApplicationConflictException,
   ApplicationInputException,
-} from "../../app/app.exceptions";
+} from "../../app/app.exceptions.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../domain/domain.exceptions";
+} from "../../domain/domain.exceptions.js";
 
 /** Maps transport-agnostic exceptions to gRPC statuses at the transport boundary. */
 export function toGrpcStatus(error: unknown): Partial<StatusObject> {

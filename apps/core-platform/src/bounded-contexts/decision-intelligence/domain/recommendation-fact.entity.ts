@@ -1,12 +1,12 @@
-import { DECISION_INTELLIGENCE_ERROR_CODES } from "./decision-intelligence-error-codes";
+import { DECISION_INTELLIGENCE_ERROR_CODES } from "./decision-intelligence-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Entity } from "../../../shared/domain/core/entity";
-import { DomainException } from "../../../shared/domain/domain.exceptions";
-import { requireFiniteNumber } from "../../../shared/domain/validation/primitives/number/require-finite-number";
-import { MeasurementUnit } from "./measurement-unit.enum";
-import { RecommendationMetric } from "./recommendation-metric.enum";
-import { RecommendationFactId } from "./recommendation-fact-id";
+import { Entity } from "../../../shared/domain/core/entity.js";
+import { DomainException } from "../../../shared/domain/domain.exceptions.js";
+import { requireFiniteNumber } from "../../../shared/domain/validation/primitives/number/require-finite-number.js";
+import { MeasurementUnit } from "./measurement-unit.enum.js";
+import { RecommendationMetric } from "./recommendation-metric.enum.js";
+import { RecommendationFactId } from "./recommendation-fact-id.js";
 
 export interface RecommendationFactProps {
   readonly metric: RecommendationMetric;

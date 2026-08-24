@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/querying",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "Database-neutral TypeScript primitives for application queries.",
   "sideEffects": false,
   "main": "dist/index.js",

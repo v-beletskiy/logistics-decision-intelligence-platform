@@ -1,4 +1,4 @@
-import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
+import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects.js";
 
 export const JSON_SCHEMA_PRIMITIVES_SCHEMA_ID =
   "https://schemas.logistics-decision-intelligence.invalid/shared/json-schema/primitives/v1" as const;

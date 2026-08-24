@@ -1,6 +1,6 @@
-import type { DomainEvent } from "../../domain/domain-event";
-import { DomainEventBus } from "../messaging/domain-event-bus";
-import { TrxManager } from "../trx/trx-manager";
+import type { DomainEvent } from "../../domain/domain-event.js";
+import { DomainEventBus } from "../messaging/domain-event-bus.js";
+import { TrxManager } from "../trx/trx-manager.js";
 
 export interface DomainEventsSource {
   pullDomainEvents(): readonly DomainEvent[];

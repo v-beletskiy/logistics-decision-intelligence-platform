@@ -1,9 +1,9 @@
 import { NestFactory } from "@nestjs/core";
 import { env } from "node:process";
 
-import { ProvisionTenantAdministratorCommand } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.command";
-import { ProvisionTenantAdministratorHandler } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.handler";
-import { AdministrationCliCompositionModule } from "../composition/administration-cli-composition.module";
+import { ProvisionTenantAdministratorCommand } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.command.js";
+import { ProvisionTenantAdministratorHandler } from "../bounded-contexts/administration/modules/user/app/commands/provision-tenant-administrator/provision-tenant-administrator.handler.js";
+import { AdministrationCliCompositionModule } from "../composition/administration-cli-composition.module.js";
 
 async function provision(): Promise<void> {
   const tenantId = requiredArgument("--tenant-id");

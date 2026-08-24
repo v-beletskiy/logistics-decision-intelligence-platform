@@ -1,10 +1,10 @@
-export { InvalidQueryError } from "./invalid-query.error";
+export { InvalidQueryError } from "./invalid-query.error.js";
 export {
   createCursorScope,
   decodeCursor,
   encodeCursor,
   type CursorPositionParser,
-} from "./pagination/cursor";
+} from "./pagination/cursor.js";
 export {
   InvalidPaginationError,
   MAX_CURSOR_LENGTH,
@@ -20,10 +20,10 @@ export {
   type PaginationInput,
   type PaginationOptions,
   type PaginationResult,
-} from "./pagination/pagination";
+} from "./pagination/pagination.js";
 export {
   InvalidSortError,
   normalizeSortDirection,
   SORT_DIRECTIONS,
   type SortDirection,
-} from "./sorting/sorting";
+} from "./sorting/sorting.js";

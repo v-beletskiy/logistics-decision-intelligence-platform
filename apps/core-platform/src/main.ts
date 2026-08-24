@@ -5,14 +5,14 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { ApiCompositionModule } from "./composition/api-composition.module";
-import { WorkerCompositionModule } from "./composition/worker-composition.module";
+import { ApiCompositionModule } from "./composition/api-composition.module.js";
+import { WorkerCompositionModule } from "./composition/worker-composition.module.js";
 import {
   APP_CONFIG,
   type ApiAppConfig,
-} from "./shared/infra/config/app-config";
-import { appConfig } from "./shared/infra/config/app-config.module";
-import { HttpExceptionFilter } from "./shared/infra/http/http-exception.filter";
+} from "./shared/infra/config/app-config.js";
+import { appConfig } from "./shared/infra/config/app-config.module.js";
+import { HttpExceptionFilter } from "./shared/infra/http/http-exception.filter.js";
 
 async function bootstrap(): Promise<void> {
   if (appConfig.processRole === "worker") {

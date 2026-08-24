@@ -1,5 +1,5 @@
-import type { Vehicle } from "./vehicle.aggregate";
-import type { VehicleId } from "./vehicle-id";
+import type { Vehicle } from "./vehicle.aggregate.js";
+import type { VehicleId } from "./vehicle-id.js";
 
 export interface LoadedVehicle {
   readonly aggregate: Vehicle;

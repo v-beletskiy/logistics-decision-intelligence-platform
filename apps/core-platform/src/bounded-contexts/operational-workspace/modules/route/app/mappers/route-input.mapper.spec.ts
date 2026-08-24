@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RouteStopOperationType } from "../../domain/route-stop.aggregate";
-import { RouteInputMapper } from "./route-input.mapper";
+import { RouteStopOperationType } from "../../domain/route-stop.aggregate.js";
+import { RouteInputMapper } from "./route-input.mapper.js";
 
 test("RouteInputMapper converts route-stop references into domain details", () => {
   const details = RouteInputMapper.toStopPlan({

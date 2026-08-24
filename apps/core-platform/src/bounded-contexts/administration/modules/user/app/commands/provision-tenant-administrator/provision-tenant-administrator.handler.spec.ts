@@ -1,14 +1,14 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Role } from "../../../../../../../shared/modules/access-control/domain/role";
-import { ApplicationInputException } from "../../../../../../../shared/app/app.exceptions";
-import { UserAccount } from "../../../domain/user-account";
-import { UserAccountRepository } from "../../../domain/user-account.repository";
-import { PasswordHasher } from "../../../../authentication/app/password-hasher";
-import { ProvisionTenantAdministratorCommand } from "./provision-tenant-administrator.command";
-import { ProvisionTenantAdministratorHandler } from "./provision-tenant-administrator.handler";
-import { UserEmailConflictException } from "../../user.exceptions";
+import { Role } from "../../../../../../../shared/modules/access-control/domain/role.js";
+import { ApplicationInputException } from "../../../../../../../shared/app/app.exceptions.js";
+import { UserAccount } from "../../../domain/user-account.js";
+import { UserAccountRepository } from "../../../domain/user-account.repository.js";
+import { PasswordHasher } from "../../../../authentication/app/password-hasher.js";
+import { ProvisionTenantAdministratorCommand } from "./provision-tenant-administrator.command.js";
+import { ProvisionTenantAdministratorHandler } from "./provision-tenant-administrator.handler.js";
+import { UserEmailConflictException } from "../../user.exceptions.js";
 
 class FakeUsers extends UserAccountRepository {
   constructor(private readonly existingAccount: UserAccount | null) {

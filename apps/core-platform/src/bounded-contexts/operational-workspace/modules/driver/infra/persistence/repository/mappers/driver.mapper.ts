@@ -1,18 +1,18 @@
 import {
   hydratePersistenceData,
   parsePersistedTimestamp,
-} from "../../../../../../../../shared/infra/persistence/persistence-hydration";
-import { DriverCertification } from "../../../../domain/driver-certification.entity";
-import { DriverCertificationId } from "../../../../domain/driver-certification-id";
+} from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
+import { DriverCertification } from "../../../../domain/driver-certification.entity.js";
+import { DriverCertificationId } from "../../../../domain/driver-certification-id.js";
 import {
   Driver,
   DriverStatus,
   type DriverProps,
-} from "../../../../domain/driver.aggregate";
-import { DriverId } from "../../../../domain/driver-id";
-import { DepotId } from "../../../../../depot/domain/depot-id";
-import type { IInsertDriverParams } from "../queries/driver.insert.queries";
-import type { IReconcileDriverCertificationsParams } from "../queries/driver.reconcile-certifications.queries";
+} from "../../../../domain/driver.aggregate.js";
+import { DriverId } from "../../../../domain/driver-id.js";
+import { DepotId } from "../../../../../depot/domain/depot-id.js";
+import type { IInsertDriverParams } from "../queries/driver.insert.queries.js";
+import type { IReconcileDriverCertificationsParams } from "../queries/driver.reconcile-certifications.queries.js";
 
 interface DriverCertificationPersistenceData {
   readonly id: string;

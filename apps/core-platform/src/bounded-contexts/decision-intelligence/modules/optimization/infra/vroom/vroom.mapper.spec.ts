@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { OptimizationStop } from "../../domain/optimization-stop";
-import { VroomMapper } from "./vroom.mapper";
+import type { OptimizationStop } from "../../domain/optimization-stop.js";
+import { VroomMapper } from "./vroom.mapper.js";
 
 const fixedOrigin: OptimizationStop = {
   shipmentId: "origin",

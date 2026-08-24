@@ -1,6 +1,6 @@
 import { randomUUIDv7 } from "node:crypto";
 
-import { UuidIdentifier } from "../../../../../shared/domain/core/uuid-identifier";
+import { UuidIdentifier } from "../../../../../shared/domain/core/uuid-identifier.js";
 
 export class CompartmentId extends UuidIdentifier<CompartmentId> {
   private constructor(value: unknown) {

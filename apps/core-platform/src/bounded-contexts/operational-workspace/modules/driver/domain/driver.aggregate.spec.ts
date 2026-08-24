@@ -1,14 +1,14 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
 import {
   Driver,
   DriverStatus,
   MAX_DRIVER_CERTIFICATIONS,
-} from "./driver.aggregate";
-import { DriverCertificationId } from "./driver-certification-id";
-import { DriverId } from "./driver-id";
+} from "./driver.aggregate.js";
+import { DriverCertificationId } from "./driver-certification-id.js";
+import { DriverId } from "./driver-id.js";
 
 const details = {
   firstName: "Alex",

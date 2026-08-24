@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { createSchemaId } from "./schema-id";
+import { createSchemaId } from "./schema-id.js";
 
 test("createSchemaId appends a stable schema path to an owned HTTPS namespace", () => {
   assert.equal(

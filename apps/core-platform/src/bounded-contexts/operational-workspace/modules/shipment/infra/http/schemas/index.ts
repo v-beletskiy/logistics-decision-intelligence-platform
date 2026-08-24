@@ -1,21 +1,21 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
 import {
   addressSchema,
   geoCoordinateSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/location";
+} from "../../../../../../../shared/infra/validation/value-objects/location/index.js";
 import {
   dimensionsSchema,
   weightSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/measurement";
-import { timeWindowSchema } from "../../../../../../../shared/infra/validation/value-objects/time";
-import { createShipmentRequestSchema } from "./create-shipment.schema";
+} from "../../../../../../../shared/infra/validation/value-objects/measurement/index.js";
+import { timeWindowSchema } from "../../../../../../../shared/infra/validation/value-objects/time/index.js";
+import { createShipmentRequestSchema } from "./create-shipment.schema.js";
 import {
   shipmentEndpointSchema,
   shipmentRouteParamsSchema,
-} from "./shared-shipments.schema";
-import { updateShipmentDetailsRequestSchema } from "./update-shipment-details.schema";
+} from "./shared-shipments.schema.js";
+import { updateShipmentDetailsRequestSchema } from "./update-shipment-details.schema.js";
 
 export {
   createShipmentRequestSchema,

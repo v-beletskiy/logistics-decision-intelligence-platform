@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../shared/domain/domain.exceptions.js";
 
 export const DECISION_INTELLIGENCE_ERROR_CODES = defineErrorCodes(
   "decision-intelligence",

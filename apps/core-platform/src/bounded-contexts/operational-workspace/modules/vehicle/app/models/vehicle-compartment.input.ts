@@ -1,5 +1,5 @@
-import type { CapacityProps } from "../../domain/capacity.value-object";
-import type { CompartmentType } from "../../domain/compartment.entity";
+import type { CapacityProps } from "../../domain/capacity.value-object.js";
+import type { CompartmentType } from "../../domain/compartment.entity.js";
 
 export interface VehicleCompartmentInput {
   readonly type: CompartmentType;

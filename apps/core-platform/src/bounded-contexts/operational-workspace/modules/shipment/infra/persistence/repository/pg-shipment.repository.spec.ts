@@ -1,22 +1,22 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
 import {
   Dimensions,
   DimensionUnit,
   Weight,
   WeightUnit,
-} from "../../../../../../../shared/domain/value-objects/measurement";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { Shipment, ShipmentStatus } from "../../../domain/shipment.aggregate";
-import { ShipmentId } from "../../../domain/shipment-id";
-import { ShipmentEndpoint } from "../../../domain/shipment-endpoint.value-object";
-import { PgShipmentRepository } from "./pg-shipment.repository";
-import { findShipmentById } from "./queries/shipment.find-by-id.queries";
-import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries";
-import { insertShipment } from "./queries/shipment.insert.queries";
-import { updateShipment } from "./queries/shipment.update.queries";
+} from "../../../../../../../shared/domain/value-objects/measurement/index.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { Shipment, ShipmentStatus } from "../../../domain/shipment.aggregate.js";
+import { ShipmentId } from "../../../domain/shipment-id.js";
+import { ShipmentEndpoint } from "../../../domain/shipment-endpoint.value-object.js";
+import { PgShipmentRepository } from "./pg-shipment.repository.js";
+import { findShipmentById } from "./queries/shipment.find-by-id.queries.js";
+import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries.js";
+import { insertShipment } from "./queries/shipment.insert.queries.js";
+import { updateShipment } from "./queries/shipment.update.queries.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

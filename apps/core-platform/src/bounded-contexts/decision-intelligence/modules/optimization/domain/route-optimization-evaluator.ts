@@ -1,8 +1,8 @@
-import type { OptimizationStop } from "./optimization-stop";
-import type { CostMatrix } from "./cost-matrix";
-import { OptimizationCostModel } from "./optimization-cost-model";
-import type { RouteMetrics } from "./route-metrics";
-import { percentageChange } from "../../../domain/calculations/percentage-change";
+import type { OptimizationStop } from "./optimization-stop.js";
+import type { CostMatrix } from "./cost-matrix.js";
+import { OptimizationCostModel } from "./optimization-cost-model.js";
+import type { RouteMetrics } from "./route-metrics.js";
+import { percentageChange } from "../../../domain/calculations/percentage-change.js";
 
 export interface RouteOptimizationEvaluation {
   readonly score: number;

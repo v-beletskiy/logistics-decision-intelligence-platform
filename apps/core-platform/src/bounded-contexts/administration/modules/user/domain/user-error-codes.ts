@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions.js";
 
 export const USER_ERROR_CODES = defineErrorCodes("user", {
   invalidId: "invalid-id",

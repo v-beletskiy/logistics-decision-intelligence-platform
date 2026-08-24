@@ -1,5 +1,5 @@
-import type { Depot } from "./depot.aggregate";
-import type { DepotId } from "./depot-id";
+import type { Depot } from "./depot.aggregate.js";
+import type { DepotId } from "./depot-id.js";
 
 export interface LoadedDepot {
   readonly aggregate: Depot;

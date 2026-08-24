@@ -1,5 +1,5 @@
-import { AuthorizationDeniedException } from "../authorization/authorization.exceptions";
-import type { Identity } from "../identity/identity";
+import { AuthorizationDeniedException } from "../authorization/authorization.exceptions.js";
+import type { Identity } from "../identity/identity.js";
 
 /** Trusted caller and tenant scope, created at the authenticated transport boundary. */
 export class UseCaseContext {

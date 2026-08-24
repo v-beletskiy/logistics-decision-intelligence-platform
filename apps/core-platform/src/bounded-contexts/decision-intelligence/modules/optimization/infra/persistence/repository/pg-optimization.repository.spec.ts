@@ -1,14 +1,14 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { RouteReference } from "../../../../../domain/route-reference";
-import { Optimization } from "../../../domain/optimization.aggregate";
-import type { LoadedOptimization } from "../../../domain/optimization.repository";
-import { addOptimization } from "./queries/optimization.add.queries";
-import { updateOptimization } from "./queries/optimization.update.queries";
-import { PgOptimizationRepository } from "./pg-optimization.repository";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { RouteReference } from "../../../../../domain/route-reference.js";
+import { Optimization } from "../../../domain/optimization.aggregate.js";
+import type { LoadedOptimization } from "../../../domain/optimization.repository.js";
+import { addOptimization } from "./queries/optimization.add.queries.js";
+import { updateOptimization } from "./queries/optimization.update.queries.js";
+import { PgOptimizationRepository } from "./pg-optimization.repository.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { ShipmentStatus } from "../../../../domain/shipment.aggregate";
-import { ShipmentMapper } from "./shipment.mapper";
-import type { IFindShipmentByIdResult } from "../queries/shipment.find-by-id.queries";
+import { ShipmentStatus } from "../../../../domain/shipment.aggregate.js";
+import { ShipmentMapper } from "./shipment.mapper.js";
+import type { IFindShipmentByIdResult } from "../queries/shipment.find-by-id.queries.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

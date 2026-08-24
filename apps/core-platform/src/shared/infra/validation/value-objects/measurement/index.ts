@@ -1,2 +1,2 @@
-export { dimensionsSchema } from "./dimensions.schema";
-export { weightSchema } from "./weight.schema";
+export { dimensionsSchema } from "./dimensions.schema.js";
+export { weightSchema } from "./weight.schema.js";

@@ -1,20 +1,20 @@
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
 import {
   Shipment,
   ShipmentStatus,
   type ShipmentProps,
-} from "../../../../domain/shipment.aggregate";
-import { ShipmentEndpoint } from "../../../../domain/shipment-endpoint.value-object";
-import { ShipmentId } from "../../../../domain/shipment-id";
+} from "../../../../domain/shipment.aggregate.js";
+import { ShipmentEndpoint } from "../../../../domain/shipment-endpoint.value-object.js";
+import { ShipmentId } from "../../../../domain/shipment-id.js";
 import {
   Dimensions,
   type DimensionsProps,
   Weight,
   type WeightProps,
-} from "../../../../../../../../shared/domain/value-objects/measurement";
-import type { AddressProps } from "../../../../../../../../shared/domain/value-objects/location/address";
-import type { GeoCoordinateProps } from "../../../../../../../../shared/domain/value-objects/location/geo-coordinate";
-import type { IInsertShipmentParams } from "../queries/shipment.insert.queries";
+} from "../../../../../../../../shared/domain/value-objects/measurement/index.js";
+import type { AddressProps } from "../../../../../../../../shared/domain/value-objects/location/address.js";
+import type { GeoCoordinateProps } from "../../../../../../../../shared/domain/value-objects/location/geo-coordinate.js";
+import type { IInsertShipmentParams } from "../queries/shipment.insert.queries.js";
 
 export interface ShipmentPersistenceRow {
   readonly id: string;

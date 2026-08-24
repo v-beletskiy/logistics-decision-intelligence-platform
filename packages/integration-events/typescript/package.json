@@ -2,6 +2,7 @@
   "name": "@logistics-decision-intelligence/integration-events",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Transport-neutral integration event creation, serialization, and validation.",
   "sideEffects": false,
   "main": "dist/index.js",

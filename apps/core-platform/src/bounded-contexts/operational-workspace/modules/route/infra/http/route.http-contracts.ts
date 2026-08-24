@@ -6,7 +6,7 @@ import type {
   recordRouteStopDepartureRequestSchema,
   routeRouteParamsSchema,
   routeStopRouteParamsSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type RouteRouteParams = FromSchema<typeof routeRouteParamsSchema>;
 

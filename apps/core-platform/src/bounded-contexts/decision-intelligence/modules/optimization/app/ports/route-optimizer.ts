@@ -1,6 +1,6 @@
-import type { OptimizationStop } from "../../domain/optimization-stop";
-import type { CostMatrix } from "../../domain/cost-matrix";
-import type { RouteMetrics } from "../../domain/route-metrics";
+import type { OptimizationStop } from "../../domain/optimization-stop.js";
+import type { CostMatrix } from "../../domain/cost-matrix.js";
+import type { RouteMetrics } from "../../domain/route-metrics.js";
 
 export interface RouteOptimizationProblem {
   /** A fixed stop anchoring the route; it is never submitted as a VROOM job. */

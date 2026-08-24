@@ -4,7 +4,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import {
   InternalApplicationEventBus,
   type InternalApplicationEvent,
-} from "../../../app/messaging/internal-application-event-bus";
+} from "../../../app/messaging/internal-application-event-bus.js";
 
 @Injectable()
 export class InMemoryApplicationEventBus extends InternalApplicationEventBus {

@@ -1,11 +1,11 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
-import { createRouteRequestSchema } from "./create-route.schema";
-import { recordRouteStopArrivalRequestSchema } from "./record-route-stop-arrival.schema";
-import { recordRouteStopDepartureRequestSchema } from "./record-route-stop-departure.schema";
-import { routeRouteParamsSchema } from "./route-route-params.schema";
-import { routeStopRouteParamsSchema } from "./route-stop-route-params.schema";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
+import { createRouteRequestSchema } from "./create-route.schema.js";
+import { recordRouteStopArrivalRequestSchema } from "./record-route-stop-arrival.schema.js";
+import { recordRouteStopDepartureRequestSchema } from "./record-route-stop-departure.schema.js";
+import { routeRouteParamsSchema } from "./route-route-params.schema.js";
+import { routeStopRouteParamsSchema } from "./route-stop-route-params.schema.js";
 
 export {
   createRouteRequestSchema,

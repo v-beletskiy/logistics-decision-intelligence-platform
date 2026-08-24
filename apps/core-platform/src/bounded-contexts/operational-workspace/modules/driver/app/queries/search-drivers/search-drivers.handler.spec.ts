@@ -1,25 +1,25 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AccessManager } from "../../../../../../../shared/modules/access-control/app/authorization/access-manager";
-import type { Identity } from "../../../../../../../shared/modules/access-control/app/identity/identity";
-import { IdentityType } from "../../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import type { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
+import { AccessManager } from "../../../../../../../shared/modules/access-control/app/authorization/access-manager.js";
+import type { Identity } from "../../../../../../../shared/modules/access-control/app/identity/identity.js";
+import { IdentityType } from "../../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import type { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
 import {
   UseCaseContext,
   type UseCaseRequest,
-} from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { DriverStatus } from "../../../domain/driver.aggregate";
+} from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { DriverStatus } from "../../../domain/driver.aggregate.js";
 import {
   DriverReadStore,
   type DriverSearchCriteria,
-} from "../../ports/driver-read-store";
-import type { DriverSearchOptions } from "./driver-search-options";
-import { SearchDriversHandler } from "./search-drivers.handler";
+} from "../../ports/driver-read-store.js";
+import type { DriverSearchOptions } from "./driver-search-options.js";
+import { SearchDriversHandler } from "./search-drivers.handler.js";
 import {
   SearchDriversQuery,
   type SearchDriversQueryInput,
-} from "./search-drivers.query";
+} from "./search-drivers.query.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 const identity: Identity = {

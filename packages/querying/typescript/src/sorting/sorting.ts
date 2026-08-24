@@ -1,4 +1,4 @@
-import { InvalidQueryError } from "../invalid-query.error";
+import { InvalidQueryError } from "../invalid-query.error.js";
 
 export const SORT_DIRECTIONS = ["asc", "desc"] as const;
 

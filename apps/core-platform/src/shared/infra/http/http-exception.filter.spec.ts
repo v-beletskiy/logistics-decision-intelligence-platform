@@ -9,19 +9,19 @@ import {
 } from "@logistics-decision-intelligence/querying";
 import { SchemaValidationError } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { HttpExceptionFilter } from "./http-exception.filter";
+import { HttpExceptionFilter } from "./http-exception.filter.js";
 import {
   AggregateNotFoundException,
   ApplicationConflictException,
   ApplicationInputException,
   ConcurrencyConflictException,
   IdempotencyViolationException,
-} from "../../app/app.exceptions";
+} from "../../app/app.exceptions.js";
 import {
   defineErrorCodes,
   DomainConflictException,
   DomainException,
-} from "../../domain/domain.exceptions";
+} from "../../domain/domain.exceptions.js";
 
 const TEST_DOMAIN_ERROR_CODES = defineErrorCodes("test", {
   alreadyInState: "already-in-state",

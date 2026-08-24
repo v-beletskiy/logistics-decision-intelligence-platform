@@ -1,6 +1,6 @@
 import { Injectable, type OnModuleInit } from "@nestjs/common";
 
-import type { WorkerAppConfig } from "../../../config/app-config";
+import type { WorkerAppConfig } from "../../../config/app-config.js";
 
 /**
  * Base for background-job consumers: subscribes only when running in the

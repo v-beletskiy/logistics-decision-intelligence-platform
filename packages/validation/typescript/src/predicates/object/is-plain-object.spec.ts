@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isPlainObject } from "./is-plain-object";
+import { isPlainObject } from "./is-plain-object.js";
 
 test("recognizes object literals and null-prototype maps", () => {
   assert.equal(isPlainObject({}), true);

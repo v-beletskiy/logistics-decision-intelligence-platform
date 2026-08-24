@@ -1,10 +1,10 @@
-import { DepotId } from "../../../depot/domain/depot-id";
+import { DepotId } from "../../../depot/domain/depot-id.js";
 import type {
   DriverDetails,
   RegisterDriverParams,
-} from "../../domain/driver.aggregate";
-import type { DriverDetailsInput } from "../models/driver-details.input";
-import type { RegisterDriverInput } from "../models/register-driver.input";
+} from "../../domain/driver.aggregate.js";
+import type { DriverDetailsInput } from "../models/driver-details.input.js";
+import type { RegisterDriverInput } from "../models/register-driver.input.js";
 
 export class DriverInputMapper {
   static toDetails(input: DriverDetailsInput): DriverDetails {

@@ -8,7 +8,7 @@ import {
   API_PROCESS_ROLE,
   SUPPORTED_PROCESS_ROLES,
   WORKER_PROCESS_ROLE,
-} from "./app-config.types";
+} from "./app-config.types.js";
 
 export const APP_CONFIG_SCHEMA_ID =
   "https://schemas.logistics-decision-intelligence.com/core-platform/configuration/app-config/v1";

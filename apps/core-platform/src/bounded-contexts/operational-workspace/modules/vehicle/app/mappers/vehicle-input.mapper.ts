@@ -1,10 +1,10 @@
-import { DepotId } from "../../../depot/domain/depot-id";
+import { DepotId } from "../../../depot/domain/depot-id.js";
 import type {
   RegisterVehicleParams,
   VehicleDetails,
-} from "../../domain/vehicle.aggregate";
-import type { VehicleDetailsInput } from "../models/vehicle-details.input";
-import type { RegisterVehicleInput } from "../models/register-vehicle.input";
+} from "../../domain/vehicle.aggregate.js";
+import type { VehicleDetailsInput } from "../models/vehicle-details.input.js";
+import type { RegisterVehicleInput } from "../models/register-vehicle.input.js";
 
 export class VehicleInputMapper {
   static toDetails(input: VehicleDetailsInput): VehicleDetails {

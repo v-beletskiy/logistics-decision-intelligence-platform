@@ -1,5 +1,5 @@
-import type { Route } from "./route.aggregate";
-import type { RouteId } from "./route-id";
+import type { Route } from "./route.aggregate.js";
+import type { RouteId } from "./route-id.js";
 
 export interface LoadedRoute {
   readonly aggregate: Route;

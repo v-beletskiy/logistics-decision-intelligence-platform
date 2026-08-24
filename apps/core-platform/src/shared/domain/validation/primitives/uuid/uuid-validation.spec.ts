@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { requireUuid } from "./require-uuid";
+import { requireUuid } from "./require-uuid.js";
 
 const uuid = "550e8400-e29b-41d4-a716-446655440000";
 

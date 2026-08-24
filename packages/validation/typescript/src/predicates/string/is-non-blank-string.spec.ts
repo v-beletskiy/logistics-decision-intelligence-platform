@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isNonBlankString } from "./is-non-blank-string";
+import { isNonBlankString } from "./is-non-blank-string.js";
 
 test("recognizes strings containing non-whitespace characters", () => {
   assert.equal(isNonBlankString(" vehicle "), true);

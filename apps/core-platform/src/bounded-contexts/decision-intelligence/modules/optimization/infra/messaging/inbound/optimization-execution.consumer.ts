@@ -4,12 +4,12 @@ import { optimizationJobEnqueuedV1 } from "@logistics-decision-intelligence/inte
 import {
   APP_CONFIG,
   type WorkerAppConfig,
-} from "../../../../../../../shared/infra/config/app-config";
-import { IntegrationJobWorker } from "../../../../../../../shared/infra/messaging/integration/inbound/integration-job-worker";
-import { RabbitMqIntegrationEventConsumer } from "../../../../../../../shared/infra/messaging/integration/inbound/rabbitmq-integration-event-consumer";
-import { defineSubscription } from "../../../../../../../shared/infra/messaging/integration/inbound/integration-subscription";
-import { ExecuteOptimizationCommand } from "../../../app/commands/execute-optimization/execute-optimization.command";
-import { ExecuteOptimizationHandler } from "../../../app/commands/execute-optimization/execute-optimization.handler";
+} from "../../../../../../../shared/infra/config/app-config.js";
+import { IntegrationJobWorker } from "../../../../../../../shared/infra/messaging/integration/inbound/integration-job-worker.js";
+import { RabbitMqIntegrationEventConsumer } from "../../../../../../../shared/infra/messaging/integration/inbound/rabbitmq-integration-event-consumer.js";
+import { defineSubscription } from "../../../../../../../shared/infra/messaging/integration/inbound/integration-subscription.js";
+import { ExecuteOptimizationCommand } from "../../../app/commands/execute-optimization/execute-optimization.command.js";
+import { ExecuteOptimizationHandler } from "../../../app/commands/execute-optimization/execute-optimization.handler.js";
 
 export const OPTIMIZATION_EXECUTION_SUBSCRIPTION = defineSubscription({
   consumerId: "core-platform.decision-intelligence.optimization-executor.v1",

@@ -1,4 +1,4 @@
-import type { DepotDetailsInput } from "../../models/depot-details.input";
+import type { DepotDetailsInput } from "../../models/depot-details.input.js";
 
 export class CreateDepotCommand {
   constructor(

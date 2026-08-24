@@ -5,8 +5,8 @@
  * must continue to reject unknown keywords, while `readonlySchema` proves that
  * `as const` schemas remain assignable to IdentifiedSchema.
  */
-import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
-import type { IdentifiedSchema } from "./schema-registry";
+import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects.js";
+import type { IdentifiedSchema } from "./schema-registry.js";
 
 const validSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

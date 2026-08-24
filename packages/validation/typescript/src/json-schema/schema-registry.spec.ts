@@ -5,12 +5,12 @@ import {
   SchemaRegistry,
   SchemaValidationError,
   type IdentifiedSchema,
-} from "./schema-registry";
-import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects";
+} from "./schema-registry.js";
+import { JSON_SCHEMA_DRAFT_07 } from "./schema-dialects.js";
 import {
   jsonSchemaPrimitives,
   positiveSafeIntegerSchemaRef,
-} from "./schema-primitives";
+} from "./schema-primitives.js";
 
 const schemaId = "urn:logistics-decision-intelligence:test-bc:test-event:v1";
 const driverSchema: IdentifiedSchema = {

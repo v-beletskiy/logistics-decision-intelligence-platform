@@ -5,7 +5,7 @@ import {
   InvalidPaginationError,
   MAX_CURSOR_LENGTH,
   validatePagination,
-} from "./pagination";
+} from "./pagination.js";
 
 test("validatePagination applies bounded defaults to page and cursor input", () => {
   assert.deepEqual(validatePagination({ mode: "page" }), {

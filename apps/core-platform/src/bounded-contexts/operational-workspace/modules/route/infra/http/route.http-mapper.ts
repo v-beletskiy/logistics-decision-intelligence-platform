@@ -1,9 +1,9 @@
-import type { RouteStopPlanInput } from "../../app/models/route-stop-plan.input";
-import { RouteStopOperationType } from "../../domain/route-stop.aggregate";
+import type { RouteStopPlanInput } from "../../app/models/route-stop-plan.input.js";
+import { RouteStopOperationType } from "../../domain/route-stop.aggregate.js";
 import type {
   CreateRouteRequest,
   CreatedRouteResponse,
-} from "./route.http-contracts";
+} from "./route.http-contracts.js";
 
 export class RouteHttpMapper {
   static toRouteStopsInput(request: CreateRouteRequest): RouteStopPlanInput[] {

@@ -1,11 +1,11 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../domain-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../domain.exceptions";
-import { requirePositiveFiniteNumber } from "../../validation/primitives/number/require-positive-finite-number";
-import { assertPropsObject } from "../../validation/primitives/object/assert-props-object";
-import { ValueObject } from "../../core/value-object";
-import { Volume, VolumeUnit } from "./volume";
+import { DomainException } from "../../domain.exceptions.js";
+import { requirePositiveFiniteNumber } from "../../validation/primitives/number/require-positive-finite-number.js";
+import { assertPropsObject } from "../../validation/primitives/object/assert-props-object.js";
+import { ValueObject } from "../../core/value-object.js";
+import { Volume, VolumeUnit } from "./volume.js";
 
 export enum DimensionUnit {
   Meter = "METER",

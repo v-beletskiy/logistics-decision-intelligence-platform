@@ -5,7 +5,7 @@ import type {
   createAssignmentRequestSchema,
   reassignDriverRequestSchema,
   reassignVehicleRequestSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type AssignmentRouteParams = FromSchema<
   typeof assignmentRouteParamsSchema

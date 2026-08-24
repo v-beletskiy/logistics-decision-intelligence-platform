@@ -21,6 +21,8 @@ COPY --chown=node:node package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY --chown=node:node apps/core-platform/package.json apps/core-platform/package.json
 COPY --chown=node:node packages/background-processing/typescript/package.json packages/background-processing/typescript/package.json
 COPY --chown=node:node packages/grpc-contracts/package.json packages/grpc-contracts/package.json
+COPY --chown=node:node packages/integration-event-contracts/typescript/package.json packages/integration-event-contracts/typescript/package.json
+COPY --chown=node:node packages/integration-events/typescript/package.json packages/integration-events/typescript/package.json
 COPY --chown=node:node packages/querying/typescript/package.json packages/querying/typescript/package.json
 COPY --chown=node:node packages/validation/typescript/package.json packages/validation/typescript/package.json
 

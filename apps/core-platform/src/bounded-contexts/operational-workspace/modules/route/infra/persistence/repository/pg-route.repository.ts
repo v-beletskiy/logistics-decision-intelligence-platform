@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Route } from "../../../domain/route.aggregate";
-import { RouteId } from "../../../domain/route-id";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Route } from "../../../domain/route.aggregate.js";
+import { RouteId } from "../../../domain/route-id.js";
 import {
   RouteRepository,
   type LoadedRoute,
-} from "../../../domain/route.repository";
-import { RouteMapper } from "./mappers/route.mapper";
-import { findRouteByIdForUpdate } from "./queries/route.find-by-id-for-update.queries";
-import { findRouteById } from "./queries/route.find-by-id.queries";
-import { insertRoute } from "./queries/route.insert.queries";
-import { updateRoute } from "./queries/route.update.queries";
+} from "../../../domain/route.repository.js";
+import { RouteMapper } from "./mappers/route.mapper.js";
+import { findRouteByIdForUpdate } from "./queries/route.find-by-id-for-update.queries.js";
+import { findRouteById } from "./queries/route.find-by-id.queries.js";
+import { insertRoute } from "./queries/route.insert.queries.js";
+import { updateRoute } from "./queries/route.update.queries.js";
 
 @Injectable()
 export class PgRouteRepository extends RouteRepository {

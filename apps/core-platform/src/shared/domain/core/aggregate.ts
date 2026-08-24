@@ -1,6 +1,6 @@
-import type { DomainEvent } from "../domain-event";
+import type { DomainEvent } from "../domain-event.js";
 
-import { Entity, type EntityId } from "./entity";
+import { Entity, type EntityId } from "./entity.js";
 
 /**
  * Entity that is a consistency boundary and records its uncommitted domain

@@ -1,5 +1,5 @@
-import type { Shipment } from "./shipment.aggregate";
-import type { ShipmentId } from "./shipment-id";
+import type { Shipment } from "./shipment.aggregate.js";
+import type { ShipmentId } from "./shipment-id.js";
 
 export interface LoadedShipment {
   readonly aggregate: Shipment;

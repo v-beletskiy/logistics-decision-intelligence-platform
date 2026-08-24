@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AuthorizationDeniedException } from "../authorization/authorization.exceptions";
-import { IdentityType } from "../identity/identity-type.enum";
-import { UseCaseContext } from "./use-case-context";
+import { AuthorizationDeniedException } from "../authorization/authorization.exceptions.js";
+import { IdentityType } from "../identity/identity-type.enum.js";
+import { UseCaseContext } from "./use-case-context.js";
 
 test("UseCaseContext derives its tenant scope from the authenticated identity", () => {
   const identity = {

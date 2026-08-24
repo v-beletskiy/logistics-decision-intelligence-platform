@@ -1,10 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 
 import type { CloudEvent } from "@logistics-decision-intelligence/integration-events";
-import { TrxManager } from "../../../../../app/trx/trx-manager";
-import { NonRetryableMessageException } from "../../errors";
-import { InboxStore } from "./inbox-store";
-import { toInboxMessage, type InboxConsumerId } from "./inbox-message";
+import { TrxManager } from "../../../../../app/trx/trx-manager.js";
+import { NonRetryableMessageException } from "../../errors.js";
+import { InboxStore } from "./inbox-store.js";
+import { toInboxMessage, type InboxConsumerId } from "./inbox-message.js";
 
 @Injectable()
 export class InboxProcessor {

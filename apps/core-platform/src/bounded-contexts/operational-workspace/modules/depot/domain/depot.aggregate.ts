@@ -1,28 +1,28 @@
-import { DEPOT_ERROR_CODES } from "./depot-error-codes";
+import { DEPOT_ERROR_CODES } from "./depot-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { requirePositiveFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-positive-finite-number";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { requirePositiveFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-positive-finite-number.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
 import {
   Address,
   type AddressProps,
-} from "../../../../../shared/domain/value-objects/location/address";
+} from "../../../../../shared/domain/value-objects/location/address.js";
 import {
   GeoCoordinate,
   type GeoCoordinateProps,
-} from "../../../../../shared/domain/value-objects/location/geo-coordinate";
+} from "../../../../../shared/domain/value-objects/location/geo-coordinate.js";
 
 import {
   DepotDriverCapacityExceededException,
   DepotVehicleCapacityExceededException,
-} from "./depot.exceptions";
-import type { DepotEvent } from "./depot.events";
-import { DepotId } from "./depot-id";
+} from "./depot.exceptions.js";
+import type { DepotEvent } from "./depot.events.js";
+import { DepotId } from "./depot-id.js";
 
 export enum DepotStatus {
   Active = "ACTIVE",

@@ -5,15 +5,15 @@ import {
   type Provider,
 } from "@nestjs/common";
 
-import { IntegrationEventPublisher } from "../../../app/messaging/integration-event-publisher";
-import type { ProcessRole } from "../../config/app-config";
-import { PersistenceInfraModule } from "../../persistence/persistence-infra.module";
-import { InboxProcessor } from "./inbound/inbox/inbox-processor";
-import { RabbitMqIntegrationEventConsumer } from "./inbound/rabbitmq-integration-event-consumer";
-import { RabbitMqOutboxPublisher } from "./outbound/outbox/rabbitmq-outbox-publisher";
-import { TransactionalOutboxIntegrationEventPublisher } from "./outbound/outbox/transactional-outbox-integration-event-publisher";
-import { RabbitMqConnection } from "./rabbitmq/connection";
-import { RabbitMqTopologyProvisioner } from "./rabbitmq/topology-provisioner";
+import { IntegrationEventPublisher } from "../../../app/messaging/integration-event-publisher.js";
+import type { ProcessRole } from "../../config/app-config.js";
+import { PersistenceInfraModule } from "../../persistence/persistence-infra.module.js";
+import { InboxProcessor } from "./inbound/inbox/inbox-processor.js";
+import { RabbitMqIntegrationEventConsumer } from "./inbound/rabbitmq-integration-event-consumer.js";
+import { RabbitMqOutboxPublisher } from "./outbound/outbox/rabbitmq-outbox-publisher.js";
+import { TransactionalOutboxIntegrationEventPublisher } from "./outbound/outbox/transactional-outbox-integration-event-publisher.js";
+import { RabbitMqConnection } from "./rabbitmq/connection.js";
+import { RabbitMqTopologyProvisioner } from "./rabbitmq/topology-provisioner.js";
 
 const publisherProviders: Provider[] = [
   TransactionalOutboxIntegrationEventPublisher,

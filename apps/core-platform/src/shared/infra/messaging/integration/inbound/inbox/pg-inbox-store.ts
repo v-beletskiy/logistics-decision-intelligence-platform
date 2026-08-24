@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../persistence/pg-database";
-import { InboxStore } from "./inbox-store";
-import type { InboxMessage, InboxMessageKey } from "./inbox-message";
+import { PgDatabase } from "../../../../persistence/pg-database.js";
+import { InboxStore } from "./inbox-store.js";
+import type { InboxMessage, InboxMessageKey } from "./inbox-message.js";
 
 @Injectable()
 export class PgInboxStore extends InboxStore {

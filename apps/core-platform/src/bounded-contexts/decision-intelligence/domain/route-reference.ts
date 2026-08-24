@@ -1,4 +1,4 @@
-import { UuidIdentifier } from "../../../shared/domain/core/uuid-identifier";
+import { UuidIdentifier } from "../../../shared/domain/core/uuid-identifier.js";
 
 /** Decision Intelligence's local reference to an Operational Workspace route. */
 export class RouteReference extends UuidIdentifier<RouteReference> {

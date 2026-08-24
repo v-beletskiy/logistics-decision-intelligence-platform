@@ -1,6 +1,6 @@
-import { requireUuid } from "../validation/primitives/uuid/require-uuid";
+import { requireUuid } from "../validation/primitives/uuid/require-uuid.js";
 
-import { ValueObject } from "./value-object";
+import { ValueObject } from "./value-object.js";
 
 /** Base class for immutable UUID-backed domain identifiers. */
 export abstract class UuidIdentifier<

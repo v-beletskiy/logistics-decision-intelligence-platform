@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Driver, DriverStatus } from "../../../../domain/driver.aggregate";
-import { DriverMapper } from "./driver.mapper";
-import type { IFindDriverByIdResult } from "../queries/driver.find-by-id.queries";
+import { Driver, DriverStatus } from "../../../../domain/driver.aggregate.js";
+import { DriverMapper } from "./driver.mapper.js";
+import type { IFindDriverByIdResult } from "../queries/driver.find-by-id.queries.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 const driverRow: IFindDriverByIdResult = {

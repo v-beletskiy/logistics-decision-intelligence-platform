@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isEnumValue } from "./is-enum-value";
+import { isEnumValue } from "./is-enum-value.js";
 
 enum Availability {
   Available = "AVAILABLE",

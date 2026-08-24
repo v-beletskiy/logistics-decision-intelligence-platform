@@ -1,11 +1,11 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Role } from "../../../../../../../shared/modules/access-control/domain/role";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { UserEmailConflictException } from "../../../app/user.exceptions";
-import { UserAccount } from "../../../domain/user-account";
-import { PgUserAccountRepository } from "./pg-user-account.repository";
+import { Role } from "../../../../../../../shared/modules/access-control/domain/role.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { UserEmailConflictException } from "../../../app/user.exceptions.js";
+import { UserAccount } from "../../../domain/user-account.js";
+import { PgUserAccountRepository } from "./pg-user-account.repository.js";
 
 test("add translates the email constraint race into an application conflict", async () => {
   const pgError = {

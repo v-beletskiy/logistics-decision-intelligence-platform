@@ -1,10 +1,10 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { isFiniteNumber } from "./is-finite-number";
-import { isNonNegativeFiniteNumber } from "./is-non-negative-finite-number";
-import { isPositiveFiniteNumber } from "./is-positive-finite-number";
-import { isPositiveSafeInteger } from "./is-positive-safe-integer";
+import { isFiniteNumber } from "./is-finite-number.js";
+import { isNonNegativeFiniteNumber } from "./is-non-negative-finite-number.js";
+import { isPositiveFiniteNumber } from "./is-positive-finite-number.js";
+import { isPositiveSafeInteger } from "./is-positive-safe-integer.js";
 
 test("recognizes finite numbers", () => {
   assert.equal(isFiniteNumber(0), true);

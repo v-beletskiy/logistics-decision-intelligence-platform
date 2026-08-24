@@ -1,10 +1,10 @@
-import { Entity } from "../../../../../shared/domain/core/entity";
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { requireValidDate } from "../../../../../shared/domain/validation/primitives/date/require-valid-date";
-import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string";
+import { Entity } from "../../../../../shared/domain/core/entity.js";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { requireValidDate } from "../../../../../shared/domain/validation/primitives/date/require-valid-date.js";
+import { requireNonBlankString } from "../../../../../shared/domain/validation/primitives/string/require-non-blank-string.js";
 
-import { DriverCertificationId } from "./driver-certification-id";
-import { DRIVER_ERROR_CODES } from "./driver-error-codes";
+import { DriverCertificationId } from "./driver-certification-id.js";
+import { DRIVER_ERROR_CODES } from "./driver-error-codes.js";
 
 export const MAX_DRIVER_CERTIFICATION_TYPE_LENGTH = 100;
 export const MAX_DRIVER_CERTIFICATION_CREDENTIAL_NUMBER_LENGTH = 100;

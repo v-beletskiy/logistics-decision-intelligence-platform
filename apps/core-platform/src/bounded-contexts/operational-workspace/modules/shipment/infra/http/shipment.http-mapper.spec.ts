@@ -1,12 +1,12 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { CreateShipmentRequest } from "./shipment.http-contracts";
+import type { CreateShipmentRequest } from "./shipment.http-contracts.js";
 import {
   DimensionUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
-import { ShipmentHttpMapper } from "./shipment.http-mapper";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
+import { ShipmentHttpMapper } from "./shipment.http-mapper.js";
 
 const request: CreateShipmentRequest = {
   pickup: {

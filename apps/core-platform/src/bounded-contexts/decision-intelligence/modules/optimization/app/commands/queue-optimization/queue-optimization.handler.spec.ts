@@ -3,29 +3,29 @@ import test from "node:test";
 
 import type { CloudEvent } from "@logistics-decision-intelligence/integration-events";
 
-import type { DomainEvent } from "../../../../../../../shared/domain/domain-event";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { UseCaseContext } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { SYSTEM_PRINCIPALS } from "../../../../../../../shared/modules/access-control/app/identity/system-principals";
+import type { DomainEvent } from "../../../../../../../shared/domain/domain-event.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { UseCaseContext } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { SYSTEM_PRINCIPALS } from "../../../../../../../shared/modules/access-control/app/identity/system-principals.js";
 import {
   RouteOptimizationInputQuery,
   type RouteOptimizationInput,
-} from "../../ports/route-optimization-input.query";
-import { RouteReference } from "../../../../../domain/route-reference";
+} from "../../ports/route-optimization-input.query.js";
+import { RouteReference } from "../../../../../domain/route-reference.js";
 import {
   Optimization,
   OptimizationStatus,
-} from "../../../domain/optimization.aggregate";
-import { OptimizationId } from "../../../domain/optimization-id";
+} from "../../../domain/optimization.aggregate.js";
+import { OptimizationId } from "../../../domain/optimization-id.js";
 import {
   OptimizationRepository,
   type LoadedOptimization,
-} from "../../../domain/optimization.repository";
-import { RouteOptimizationTriggerPolicy } from "../../../domain/route-optimization-trigger.policy";
-import { QueueOptimizationCommand } from "./queue-optimization.command";
-import { QueueOptimizationHandler } from "./queue-optimization.handler";
+} from "../../../domain/optimization.repository.js";
+import { RouteOptimizationTriggerPolicy } from "../../../domain/route-optimization-trigger.policy.js";
+import { QueueOptimizationCommand } from "./queue-optimization.command.js";
+import { QueueOptimizationHandler } from "./queue-optimization.handler.js";
 
 const tenantId = "11111111-1111-4111-8111-111111111111";
 const routeId = "22222222-2222-4222-8222-222222222222";

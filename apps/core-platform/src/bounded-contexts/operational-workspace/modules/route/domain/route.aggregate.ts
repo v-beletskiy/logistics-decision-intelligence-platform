@@ -1,15 +1,15 @@
-import { ROUTE_ERROR_CODES } from "./route-error-codes";
+import { ROUTE_ERROR_CODES } from "./route-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { requirePositiveSafeInteger } from "../../../../../shared/domain/validation/primitives/number/require-positive-safe-integer.js";
 
-import type { RouteEvent } from "./route.events";
-import { RouteId } from "./route-id";
+import type { RouteEvent } from "./route.events.js";
+import { RouteId } from "./route-id.js";
 
 export enum RouteStatus {
   Draft = "DRAFT",

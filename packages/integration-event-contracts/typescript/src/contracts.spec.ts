@@ -5,7 +5,7 @@ import {
   integrationEventEnvelopeV1Schema,
   recommendationAnalysisCompletedV1,
   recommendationAnalysisRequestedV1,
-} from "./index";
+} from "./index.js";
 
 test("published integration contracts have unique event types and schema identifiers", () => {
   const requestedEventType: "decision-intelligence.recommendation-analysis-requested.v1" =

@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { optimizationJobEnqueuedV1 } from "@logistics-decision-intelligence/integration-event-contracts";
 
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
 import {
   CommandHandler,
   type DomainEventsSource,
-} from "../../../../../../../shared/app/handlers/command-handler";
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { decisionIntelligenceIntegrationEventFactory } from "../../../../../app/decision-intelligence-integration-events";
-import { RouteReference } from "../../../../../domain/route-reference";
-import { Optimization } from "../../../domain/optimization.aggregate";
-import { OptimizationRepository } from "../../../domain/optimization.repository";
-import { OptimizationTriggerPolicy } from "../../../domain/optimization-trigger.policy";
-import { RouteOptimizationInputQuery } from "../../ports/route-optimization-input.query";
-import { QueueOptimizationCommand } from "./queue-optimization.command";
+} from "../../../../../../../shared/app/handlers/command-handler.js";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { IntegrationEventPublisher } from "../../../../../../../shared/app/messaging/integration-event-publisher.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { decisionIntelligenceIntegrationEventFactory } from "../../../../../app/decision-intelligence-integration-events.js";
+import { RouteReference } from "../../../../../domain/route-reference.js";
+import { Optimization } from "../../../domain/optimization.aggregate.js";
+import { OptimizationRepository } from "../../../domain/optimization.repository.js";
+import { OptimizationTriggerPolicy } from "../../../domain/optimization-trigger.policy.js";
+import { RouteOptimizationInputQuery } from "../../ports/route-optimization-input.query.js";
+import { QueueOptimizationCommand } from "./queue-optimization.command.js";
 
 @Injectable()
 export class QueueOptimizationHandler extends CommandHandler {

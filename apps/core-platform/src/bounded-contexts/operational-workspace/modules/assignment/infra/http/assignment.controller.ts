@@ -8,34 +8,34 @@ import {
   Put,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { CancelAssignmentCommand } from "../../app/commands/cancel-assignment/cancel-assignment.command";
-import { CancelAssignmentHandler } from "../../app/commands/cancel-assignment/cancel-assignment.handler";
-import { CompleteAssignmentCommand } from "../../app/commands/complete-assignment/complete-assignment.command";
-import { CompleteAssignmentHandler } from "../../app/commands/complete-assignment/complete-assignment.handler";
-import { CreateAssignmentCommand } from "../../app/commands/create-assignment/create-assignment.command";
-import { CreateAssignmentHandler } from "../../app/commands/create-assignment/create-assignment.handler";
-import { ReassignDriverCommand } from "../../app/commands/reassign-driver/reassign-driver.command";
-import { ReassignDriverHandler } from "../../app/commands/reassign-driver/reassign-driver.handler";
-import { ReassignVehicleCommand } from "../../app/commands/reassign-vehicle/reassign-vehicle.command";
-import { ReassignVehicleHandler } from "../../app/commands/reassign-vehicle/reassign-vehicle.handler";
-import { StartAssignmentCommand } from "../../app/commands/start-assignment/start-assignment.command";
-import { StartAssignmentHandler } from "../../app/commands/start-assignment/start-assignment.handler";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { CancelAssignmentCommand } from "../../app/commands/cancel-assignment/cancel-assignment.command.js";
+import { CancelAssignmentHandler } from "../../app/commands/cancel-assignment/cancel-assignment.handler.js";
+import { CompleteAssignmentCommand } from "../../app/commands/complete-assignment/complete-assignment.command.js";
+import { CompleteAssignmentHandler } from "../../app/commands/complete-assignment/complete-assignment.handler.js";
+import { CreateAssignmentCommand } from "../../app/commands/create-assignment/create-assignment.command.js";
+import { CreateAssignmentHandler } from "../../app/commands/create-assignment/create-assignment.handler.js";
+import { ReassignDriverCommand } from "../../app/commands/reassign-driver/reassign-driver.command.js";
+import { ReassignDriverHandler } from "../../app/commands/reassign-driver/reassign-driver.handler.js";
+import { ReassignVehicleCommand } from "../../app/commands/reassign-vehicle/reassign-vehicle.command.js";
+import { ReassignVehicleHandler } from "../../app/commands/reassign-vehicle/reassign-vehicle.handler.js";
+import { StartAssignmentCommand } from "../../app/commands/start-assignment/start-assignment.command.js";
+import { StartAssignmentHandler } from "../../app/commands/start-assignment/start-assignment.handler.js";
 import type {
   AssignmentRouteParams,
   CreateAssignmentRequest,
   CreatedAssignmentResponse,
   ReassignDriverRequest,
   ReassignVehicleRequest,
-} from "./assignment.http-contracts";
-import { AssignmentHttpMapper } from "./assignment.http-mapper";
+} from "./assignment.http-contracts.js";
+import { AssignmentHttpMapper } from "./assignment.http-mapper.js";
 import {
   assignmentRouteParamsPipe,
   createAssignmentRequestPipe,
   reassignDriverRequestPipe,
   reassignVehicleRequestPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "assignments", version: "1" })
 export class AssignmentController {

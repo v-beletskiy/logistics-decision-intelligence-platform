@@ -2,4 +2,4 @@ export {
   drainBatches,
   type DrainBatchesOptions,
   type DrainBatchesResult,
-} from "./batch-processing/drain-batches";
+} from "./batch-processing/drain-batches.js";

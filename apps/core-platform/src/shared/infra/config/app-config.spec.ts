@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { AppConfigurationError, createAppConfig } from "./app-config";
+import { AppConfigurationError, createAppConfig } from "./app-config.js";
 
 const validEnvironment: NodeJS.ProcessEnv = {
   PROCESS_ROLE: "api",

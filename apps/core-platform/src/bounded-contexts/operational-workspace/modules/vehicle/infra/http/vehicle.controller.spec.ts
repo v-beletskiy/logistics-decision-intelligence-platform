@@ -9,33 +9,33 @@ import {
   type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 
-import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module";
-import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer";
-import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum";
-import { Role } from "../../../../../../shared/modules/access-control/domain/role";
-import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus";
+import { AccessControlModule } from "../../../../../../shared/modules/access-control/access-control.module.js";
+import { AccessTokenIssuer } from "../../../../../../shared/modules/access-control/app/authentication/access-token-issuer.js";
+import { IdentityType } from "../../../../../../shared/modules/access-control/app/identity/identity-type.enum.js";
+import { Role } from "../../../../../../shared/modules/access-control/domain/role.js";
+import { DomainEventBus } from "../../../../../../shared/app/messaging/domain-event-bus.js";
 import {
   APP_CONFIG,
   type AppConfig,
-} from "../../../../../../shared/infra/config/app-config";
-import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter";
-import { TrxManager } from "../../../../../../shared/app/trx/trx-manager";
-import { AddVehicleCompartmentHandler } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.handler";
-import { ChangeVehicleAvailabilityHandler } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.handler";
-import { DecommissionVehicleHandler } from "../../app/commands/decommission-vehicle/decommission-vehicle.handler";
-import { RegisterVehicleHandler } from "../../app/commands/register-vehicle/register-vehicle.handler";
-import { RemoveVehicleCompartmentHandler } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.handler";
-import { ReturnVehicleFromMaintenanceHandler } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.handler";
-import { SendVehicleToMaintenanceHandler } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.handler";
-import { UpdateVehicleCompartmentHandler } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.handler";
-import { UpdateVehicleDetailsHandler } from "../../app/commands/update-vehicle-details/update-vehicle-details.handler";
-import { VehicleId } from "../../domain/vehicle-id";
-import { Vehicle } from "../../domain/vehicle.aggregate";
+} from "../../../../../../shared/infra/config/app-config.js";
+import { HttpExceptionFilter } from "../../../../../../shared/infra/http/http-exception.filter.js";
+import { TrxManager } from "../../../../../../shared/app/trx/trx-manager.js";
+import { AddVehicleCompartmentHandler } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.handler.js";
+import { ChangeVehicleAvailabilityHandler } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.handler.js";
+import { DecommissionVehicleHandler } from "../../app/commands/decommission-vehicle/decommission-vehicle.handler.js";
+import { RegisterVehicleHandler } from "../../app/commands/register-vehicle/register-vehicle.handler.js";
+import { RemoveVehicleCompartmentHandler } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.handler.js";
+import { ReturnVehicleFromMaintenanceHandler } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.handler.js";
+import { SendVehicleToMaintenanceHandler } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.handler.js";
+import { UpdateVehicleCompartmentHandler } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.handler.js";
+import { UpdateVehicleDetailsHandler } from "../../app/commands/update-vehicle-details/update-vehicle-details.handler.js";
+import { VehicleId } from "../../domain/vehicle-id.js";
+import { Vehicle } from "../../domain/vehicle.aggregate.js";
 import {
   VehicleRepository,
   type LoadedVehicle,
-} from "../../domain/vehicle.repository";
-import { VehicleController } from "./vehicle.controller";
+} from "../../domain/vehicle.repository.js";
+import { VehicleController } from "./vehicle.controller.js";
 
 const { privateKey, publicKey } = generateKeyPairSync("ec", {
   namedCurve: "prime256v1",

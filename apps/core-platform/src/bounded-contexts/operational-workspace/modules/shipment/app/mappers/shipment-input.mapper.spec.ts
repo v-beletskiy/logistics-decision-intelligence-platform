@@ -4,9 +4,9 @@ import { test } from "node:test";
 import {
   DimensionUnit,
   WeightUnit,
-} from "../../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../../shared/domain/value-objects/measurement/index.js";
 
-import { ShipmentInputMapper } from "./shipment-input.mapper";
+import { ShipmentInputMapper } from "./shipment-input.mapper.js";
 
 const input = {
   pickup: {

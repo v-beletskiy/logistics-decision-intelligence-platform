@@ -1,6 +1,6 @@
-import type { RouteStop } from "./route-stop.aggregate";
-import type { RouteId } from "./route-id";
-import type { RouteStopId } from "./route-stop-id";
+import type { RouteStop } from "./route-stop.aggregate.js";
+import type { RouteId } from "./route-id.js";
+import type { RouteStopId } from "./route-stop-id.js";
 
 export interface LoadedRouteStop {
   readonly aggregate: RouteStop;

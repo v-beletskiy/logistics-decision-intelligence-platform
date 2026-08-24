@@ -7,37 +7,37 @@ import {
   VolumeUnit,
   Weight,
   WeightUnit,
-} from "../../../shared/domain/value-objects/measurement";
+} from "../../../shared/domain/value-objects/measurement/index.js";
 
 import {
   Assignment,
   AssignmentStatus,
-} from "../modules/assignment/domain/assignment.aggregate";
-import { AssignmentId } from "../modules/assignment/domain/assignment-id";
-import { AssignmentShipment } from "../modules/assignment/domain/assignment-shipment.entity";
+} from "../modules/assignment/domain/assignment.aggregate.js";
+import { AssignmentId } from "../modules/assignment/domain/assignment-id.js";
+import { AssignmentShipment } from "../modules/assignment/domain/assignment-shipment.entity.js";
 import {
   Driver,
   DriverStatus,
-} from "../modules/driver/domain/driver.aggregate";
-import { DriverId } from "../modules/driver/domain/driver-id";
-import { Route } from "../modules/route/domain/route.aggregate";
-import { RouteId } from "../modules/route/domain/route-id";
-import { ShipmentId } from "../modules/shipment/domain/shipment-id";
+} from "../modules/driver/domain/driver.aggregate.js";
+import { DriverId } from "../modules/driver/domain/driver-id.js";
+import { Route } from "../modules/route/domain/route.aggregate.js";
+import { RouteId } from "../modules/route/domain/route-id.js";
+import { ShipmentId } from "../modules/shipment/domain/shipment-id.js";
 import {
   Compartment,
   CompartmentType,
   Vehicle,
   VehicleStatus,
   type CapacityProps,
-} from "../modules/vehicle/domain/vehicle.aggregate";
-import { CompartmentId } from "../modules/vehicle/domain/compartment-id";
-import { VehicleId } from "../modules/vehicle/domain/vehicle-id";
+} from "../modules/vehicle/domain/vehicle.aggregate.js";
+import { CompartmentId } from "../modules/vehicle/domain/compartment-id.js";
+import { VehicleId } from "../modules/vehicle/domain/vehicle-id.js";
 
 import {
   AssignmentPlanningPolicy,
   type AssignmentPlanningContext,
   type ShipmentLoad,
-} from "./assignment-planning.policy";
+} from "./assignment-planning.policy.js";
 
 const policy = new AssignmentPlanningPolicy();
 

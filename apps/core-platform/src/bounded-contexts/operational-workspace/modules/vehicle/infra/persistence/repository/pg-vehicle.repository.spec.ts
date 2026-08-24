@@ -1,18 +1,18 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { VehicleRegistrationNumberConflictException } from "../../../app/vehicle.exceptions";
-import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
+import { VehicleRegistrationNumberConflictException } from "../../../app/vehicle.exceptions.js";
+import type { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
 import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../../shared/domain/value-objects/measurement";
-import { CompartmentType, Vehicle } from "../../../domain/vehicle.aggregate";
-import { insertVehicle } from "./queries/vehicle.insert.queries";
-import { reconcileVehicleCompartments } from "./queries/vehicle.reconcile-compartments.queries";
-import { updateVehicle } from "./queries/vehicle.update.queries";
-import { PgVehicleRepository } from "./pg-vehicle.repository";
+} from "../../../../../../../shared/domain/value-objects/measurement/index.js";
+import { CompartmentType, Vehicle } from "../../../domain/vehicle.aggregate.js";
+import { insertVehicle } from "./queries/vehicle.insert.queries.js";
+import { reconcileVehicleCompartments } from "./queries/vehicle.reconcile-compartments.queries.js";
+import { updateVehicle } from "./queries/vehicle.update.queries.js";
+import { PgVehicleRepository } from "./pg-vehicle.repository.js";
 
 const tenantId = "00000000-0000-4000-8000-000000000010";
 

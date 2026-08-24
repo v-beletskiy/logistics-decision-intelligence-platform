@@ -1,11 +1,11 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { RecommendationFact } from "../../../domain/recommendation-fact.entity";
-import { MeasurementUnit } from "../../../domain/measurement-unit.enum";
-import { RecommendationMetric } from "../../../domain/recommendation-metric.enum";
-import { Finding } from "./finding.entity";
-import { FindingCategory } from "./recommendation.enums";
+import { RecommendationFact } from "../../../domain/recommendation-fact.entity.js";
+import { MeasurementUnit } from "../../../domain/measurement-unit.enum.js";
+import { RecommendationMetric } from "../../../domain/recommendation-metric.enum.js";
+import { Finding } from "./finding.entity.js";
+import { FindingCategory } from "./recommendation.enums.js";
 
 test("RecommendationFact create assigns a stable identity", () => {
   const fact = RecommendationFact.create({

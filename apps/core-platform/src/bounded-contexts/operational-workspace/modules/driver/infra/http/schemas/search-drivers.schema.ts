@@ -5,8 +5,8 @@ import {
 } from "@logistics-decision-intelligence/validation/json-schema";
 import { MAX_CURSOR_LENGTH } from "@logistics-decision-intelligence/querying";
 
-import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id";
-import { DriverStatus } from "../../../domain/driver.aggregate";
+import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id.js";
+import { DriverStatus } from "../../../domain/driver.aggregate.js";
 
 const pageSearchModeSchema = {
   properties: {

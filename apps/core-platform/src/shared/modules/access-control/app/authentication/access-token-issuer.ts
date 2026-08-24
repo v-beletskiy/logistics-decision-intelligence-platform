@@ -1,4 +1,4 @@
-import type { UserIdentity } from "../identity/identity";
+import type { UserIdentity } from "../identity/identity.js";
 
 export interface IssuedAccessToken {
   readonly accessToken: string;

@@ -1,4 +1,4 @@
-import type { VehicleDetailsInput } from "../../models/vehicle-details.input";
+import type { VehicleDetailsInput } from "../../models/vehicle-details.input.js";
 
 export class UpdateVehicleDetailsCommand {
   constructor(

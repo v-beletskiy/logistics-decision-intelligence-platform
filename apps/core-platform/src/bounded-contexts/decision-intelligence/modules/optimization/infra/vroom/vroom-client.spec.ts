@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { HttpClient } from "../../../../../../shared/infra/http/http-client";
-import { VroomClient } from "./vroom-client";
-import type { VroomRequest } from "./vroom-request";
+import type { HttpClient } from "../../../../../../shared/infra/http/http-client.js";
+import { VroomClient } from "./vroom-client.js";
+import type { VroomRequest } from "./vroom-request.js";
 
 const request: VroomRequest = { jobs: [], vehicles: [{ id: 1 }] };
 

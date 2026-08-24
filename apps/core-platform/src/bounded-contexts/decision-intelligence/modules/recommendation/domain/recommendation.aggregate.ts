@@ -1,20 +1,20 @@
-import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes";
+import { RECOMMENDATION_ERROR_CODES } from "./recommendation-error-codes.js";
 import { isEnumValue } from "@logistics-decision-intelligence/validation";
 
-import type { RouteReference } from "../../../domain/route-reference";
-import { Aggregate } from "../../../../../shared/domain/core/aggregate";
+import type { RouteReference } from "../../../domain/route-reference.js";
+import { Aggregate } from "../../../../../shared/domain/core/aggregate.js";
 import {
   DomainConflictException,
   DomainException,
-} from "../../../../../shared/domain/domain.exceptions";
-import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number";
-import { OptimizationId } from "../../optimization/domain/optimization-id";
-import { RecommendationType } from "../../../domain/recommendation-type.enum";
-import { RecommendationFact } from "../../../domain/recommendation-fact.entity";
-import type { RecommendationEvent } from "./recommendation.events";
-import { RecommendationAnalysis } from "./recommendation-analysis.value-object";
-import { RecommendationId } from "./recommendation-id";
-import { RecommendationStatus } from "./recommendation.enums";
+} from "../../../../../shared/domain/domain.exceptions.js";
+import { requireFiniteNumber } from "../../../../../shared/domain/validation/primitives/number/require-finite-number.js";
+import { OptimizationId } from "../../optimization/domain/optimization-id.js";
+import { RecommendationType } from "../../../domain/recommendation-type.enum.js";
+import { RecommendationFact } from "../../../domain/recommendation-fact.entity.js";
+import type { RecommendationEvent } from "./recommendation.events.js";
+import { RecommendationAnalysis } from "./recommendation-analysis.value-object.js";
+import { RecommendationId } from "./recommendation-id.js";
+import { RecommendationStatus } from "./recommendation.enums.js";
 
 export interface CreateRecommendationParams {
   readonly routeId: RouteReference;

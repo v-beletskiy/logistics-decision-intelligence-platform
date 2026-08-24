@@ -1,10 +1,10 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes.js";
 import {
   isFiniteNumber,
   isPositiveFiniteNumber,
 } from "@logistics-decision-intelligence/validation";
 
-import { DomainException } from "../../../domain.exceptions";
+import { DomainException } from "../../../domain.exceptions.js";
 
 /** Returns a finite number greater than zero or raises a domain error. */
 export function requirePositiveFiniteNumber(

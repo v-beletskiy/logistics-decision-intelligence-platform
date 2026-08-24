@@ -13,17 +13,17 @@ import {
   SchemaValidationError,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { DEFAULT_SCHEMA_BASE_URI } from "../validation/schema-id";
-import { APP_CONFIG_SCHEMA_ID, appConfigSchema } from "./app-config.schema";
+import { DEFAULT_SCHEMA_BASE_URI } from "../validation/schema-id.js";
+import { APP_CONFIG_SCHEMA_ID, appConfigSchema } from "./app-config.schema.js";
 import {
   API_PROCESS_ROLE,
   SUPPORTED_PROCESS_ROLES,
   type ProcessRole,
   WORKER_PROCESS_ROLE,
-} from "./app-config.types";
+} from "./app-config.types.js";
 
 export const APP_CONFIG = Symbol("APP_CONFIG");
-export type { ProcessRole } from "./app-config.types";
+export type { ProcessRole } from "./app-config.types.js";
 
 export interface DatabaseConfig {
   readonly url: string;

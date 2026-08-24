@@ -1,8 +1,8 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { CreateDepotRequest } from "./depot.http-contracts";
-import { DepotHttpMapper } from "./depot.http-mapper";
+import type { CreateDepotRequest } from "./depot.http-contracts.js";
+import { DepotHttpMapper } from "./depot.http-mapper.js";
 
 const request: CreateDepotRequest = {
   details: {

@@ -1,4 +1,4 @@
-import { requireValidDate } from "./require-valid-date";
+import { requireValidDate } from "./require-valid-date.js";
 
 /** Returns no value or a defensive copy of a valid Date. */
 export function optionalValidDate(

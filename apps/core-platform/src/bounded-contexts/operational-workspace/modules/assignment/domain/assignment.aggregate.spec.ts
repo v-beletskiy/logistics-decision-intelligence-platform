@@ -6,19 +6,19 @@ import {
   Dimensions,
   Weight,
   WeightUnit,
-} from "../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../shared/domain/value-objects/measurement/index.js";
 
 import {
   Assignment,
   AssignmentStatus,
   type AssignmentProps,
-} from "./assignment.aggregate";
-import { AssignmentId } from "./assignment-id";
-import { AssignmentShipment } from "./assignment-shipment.entity";
-import { DriverId } from "../../driver/domain/driver-id";
-import { RouteId } from "../../route/domain/route-id";
-import { ShipmentId } from "../../shipment/domain/shipment-id";
-import { VehicleId } from "../../vehicle/domain/vehicle-id";
+} from "./assignment.aggregate.js";
+import { AssignmentId } from "./assignment-id.js";
+import { AssignmentShipment } from "./assignment-shipment.entity.js";
+import { DriverId } from "../../driver/domain/driver-id.js";
+import { RouteId } from "../../route/domain/route-id.js";
+import { ShipmentId } from "../../shipment/domain/shipment-id.js";
+import { VehicleId } from "../../vehicle/domain/vehicle-id.js";
 
 const shipmentIdA = ShipmentId.from("550e8400-e29b-41d4-a716-446655440001");
 const shipmentIdB = ShipmentId.from("550e8400-e29b-41d4-a716-446655440002");

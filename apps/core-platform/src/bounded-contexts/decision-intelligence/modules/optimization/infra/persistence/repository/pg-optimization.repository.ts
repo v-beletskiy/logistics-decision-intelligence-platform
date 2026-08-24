@@ -1,27 +1,27 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   execRevisionedPgUpdate,
   type PgConstraintViolationTranslation,
-} from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import type { RouteReference } from "../../../../../domain/route-reference";
-import { Optimization } from "../../../domain/optimization.aggregate";
-import { OptimizationId } from "../../../domain/optimization-id";
+} from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import type { RouteReference } from "../../../../../domain/route-reference.js";
+import { Optimization } from "../../../domain/optimization.aggregate.js";
+import { OptimizationId } from "../../../domain/optimization-id.js";
 import {
   OptimizationRepository,
   type LoadedOptimization,
-} from "../../../domain/optimization.repository";
-import { OptimizationMapper } from "./mappers/optimization.mapper";
-import { acquireOptimizationRouteLock } from "./queries/optimization.acquire-route-lock.queries";
-import { addOptimization } from "./queries/optimization.add.queries";
-import { deleteOptimization } from "./queries/optimization.delete.queries";
-import { findOptimizationById } from "./queries/optimization.find-by-id.queries";
-import { findActiveOptimizationByRouteIdForUpdate } from "./queries/optimization.find-active-by-route-id-for-update.queries";
-import { updateOptimization } from "./queries/optimization.update.queries";
+} from "../../../domain/optimization.repository.js";
+import { OptimizationMapper } from "./mappers/optimization.mapper.js";
+import { acquireOptimizationRouteLock } from "./queries/optimization.acquire-route-lock.queries.js";
+import { addOptimization } from "./queries/optimization.add.queries.js";
+import { deleteOptimization } from "./queries/optimization.delete.queries.js";
+import { findOptimizationById } from "./queries/optimization.find-by-id.queries.js";
+import { findActiveOptimizationByRouteIdForUpdate } from "./queries/optimization.find-active-by-route-id-for-update.queries.js";
+import { updateOptimization } from "./queries/optimization.update.queries.js";
 
 const ACTIVE_OPTIMIZATION_ROUTE_UNIQUE_CONSTRAINT =
   "optimizations_tenant_active_route_uniq";

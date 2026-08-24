@@ -1,4 +1,4 @@
-import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions";
+import { defineErrorCodes } from "../../../../../shared/domain/domain.exceptions.js";
 
 export const DRIVER_ERROR_CODES = defineErrorCodes("driver", {
   driverStatusIsInvalid: "driver-status-is-invalid",

@@ -1,14 +1,14 @@
 import type { FromSchema } from "json-schema-to-ts";
 
-import type { addressSchema } from "../../../../../../shared/infra/validation/value-objects/location";
-import type { geoCoordinateSchema } from "../../../../../../shared/infra/validation/value-objects/location";
+import type { addressSchema } from "../../../../../../shared/infra/validation/value-objects/location/index.js";
+import type { geoCoordinateSchema } from "../../../../../../shared/infra/validation/value-objects/location/index.js";
 import type {
   createDepotRequestSchema,
   depotRouteParamsSchema,
   updateDepotDetailsRequestSchema,
   updateDepotDriverCapacityRequestSchema,
   updateDepotVehicleCapacityRequestSchema,
-} from "./schemas";
+} from "./schemas/index.js";
 
 export type DepotRouteParams = FromSchema<typeof depotRouteParamsSchema>;
 

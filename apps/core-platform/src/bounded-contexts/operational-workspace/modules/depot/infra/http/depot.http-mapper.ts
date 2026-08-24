@@ -1,9 +1,9 @@
-import type { DepotDetailsInput } from "../../app/models/depot-details.input";
+import type { DepotDetailsInput } from "../../app/models/depot-details.input.js";
 import type {
   CreateDepotRequest,
   CreatedDepotResponse,
   UpdateDepotDetailsRequest,
-} from "./depot.http-contracts";
+} from "./depot.http-contracts.js";
 
 export class DepotHttpMapper {
   static toDepotDetailsInput(

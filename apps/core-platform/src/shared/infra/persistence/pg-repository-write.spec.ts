@@ -2,13 +2,13 @@ import * as assert from "node:assert/strict";
 import { test } from "node:test";
 import type { PreparedQuery } from "@pgtyped/runtime";
 
-import { ConcurrencyConflictException } from "../../app/app.exceptions";
-import type { PgDatabase } from "./pg-database";
-import { PG_SQLSTATE } from "./pg-error";
+import { ConcurrencyConflictException } from "../../app/app.exceptions.js";
+import type { PgDatabase } from "./pg-database.js";
+import { PG_SQLSTATE } from "./pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   execRevisionedPgUpdate,
-} from "./pg-repository-write";
+} from "./pg-repository-write.js";
 
 interface TestParams {
   readonly id: string;

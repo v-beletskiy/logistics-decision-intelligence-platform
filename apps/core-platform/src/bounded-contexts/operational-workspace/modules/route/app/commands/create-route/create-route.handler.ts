@@ -1,22 +1,22 @@
 import { Injectable } from "@nestjs/common";
 
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { InternalApplicationEventBus } from "../../../../../../../shared/app/messaging/internal-application-event-bus";
-import { routeInputChangedAppEvent } from "../../../../../public-api/events/route-input-changed.application-event";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { Route } from "../../../domain/route.aggregate";
-import { RouteStop } from "../../../domain/route-stop.aggregate";
-import { RouteRepository } from "../../../domain/route.repository";
-import { RouteStopRepository } from "../../../domain/route-stop.repository";
-import { ShipmentRepository } from "../../../../shipment/domain/shipment.repository";
-import { RoutePlanningPolicy } from "../../../domain/route-planning.policy";
-import { RouteInputMapper } from "../../mappers/route-input.mapper";
-import { CreateRouteCommand } from "./create-route.command";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { InternalApplicationEventBus } from "../../../../../../../shared/app/messaging/internal-application-event-bus.js";
+import { routeInputChangedAppEvent } from "../../../../../public-api/events/route-input-changed.application-event.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { Route } from "../../../domain/route.aggregate.js";
+import { RouteStop } from "../../../domain/route-stop.aggregate.js";
+import { RouteRepository } from "../../../domain/route.repository.js";
+import { RouteStopRepository } from "../../../domain/route-stop.repository.js";
+import { ShipmentRepository } from "../../../../shipment/domain/shipment.repository.js";
+import { RoutePlanningPolicy } from "../../../domain/route-planning.policy.js";
+import { RouteInputMapper } from "../../mappers/route-input.mapper.js";
+import { CreateRouteCommand } from "./create-route.command.js";
 
 @Injectable()
 export class CreateRouteHandler extends CommandHandler {

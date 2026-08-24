@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-
-import { PgDatabase } from "./pg-database";
+import { fileURLToPath } from "node:url";
+import { PgDatabase } from "./pg-database.js";
 
 interface AppliedMigrationRow {
   readonly filename: string;
@@ -10,9 +10,8 @@ interface AppliedMigrationRow {
 export class PgMigrationRunner {
   constructor(
     private readonly database: PgDatabase,
-    private readonly migrationsDirectory = resolve(
-      __dirname,
-      "../../../../db/migrations",
+    private readonly migrationsDirectory = fileURLToPath(
+      new URL("../../../../db/migrations", import.meta.url),
     ),
   ) {}
 

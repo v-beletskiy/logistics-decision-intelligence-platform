@@ -1,18 +1,18 @@
 import { Injectable } from "@nestjs/common";
 
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Shipment } from "../../../domain/shipment.aggregate";
-import { ShipmentId } from "../../../domain/shipment-id";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { execRevisionedPgUpdate } from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Shipment } from "../../../domain/shipment.aggregate.js";
+import { ShipmentId } from "../../../domain/shipment-id.js";
 import {
   ShipmentRepository,
   type LoadedShipment,
-} from "../../../domain/shipment.repository";
-import { ShipmentMapper } from "./mappers/shipment.mapper";
-import { findShipmentById } from "./queries/shipment.find-by-id.queries";
-import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries";
-import { insertShipment } from "./queries/shipment.insert.queries";
-import { updateShipment } from "./queries/shipment.update.queries";
+} from "../../../domain/shipment.repository.js";
+import { ShipmentMapper } from "./mappers/shipment.mapper.js";
+import { findShipmentById } from "./queries/shipment.find-by-id.queries.js";
+import { findShipmentsByIds } from "./queries/shipment.find-by-ids.queries.js";
+import { insertShipment } from "./queries/shipment.insert.queries.js";
+import { updateShipment } from "./queries/shipment.update.queries.js";
 
 @Injectable()
 export class PgShipmentRepository extends ShipmentRepository {

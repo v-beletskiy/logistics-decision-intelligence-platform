@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import { RecommendationRepository } from "../../../domain/recommendation.repository";
-import { RecommendationId } from "../../../domain/recommendation-id";
-import { GetRecommendationAnalysisContextQuery } from "./get-recommendation-analysis-context.query";
-import type { RecommendationAnalysisContextResult } from "./get-recommendation-analysis-context.result";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import { RecommendationRepository } from "../../../domain/recommendation.repository.js";
+import { RecommendationId } from "../../../domain/recommendation-id.js";
+import { GetRecommendationAnalysisContextQuery } from "./get-recommendation-analysis-context.query.js";
+import type { RecommendationAnalysisContextResult } from "./get-recommendation-analysis-context.result.js";
 
 @Injectable()
 export class GetRecommendationAnalysisContextHandler {

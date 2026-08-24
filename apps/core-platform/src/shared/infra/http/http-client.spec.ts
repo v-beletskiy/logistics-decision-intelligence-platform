@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { afterEach, beforeEach, test } from "node:test";
 
-import { FetchHttpClient, HttpStatusError } from "./http-client";
+import { FetchHttpClient, HttpStatusError } from "./http-client.js";
 
 const originalFetch = globalThis.fetch;
 

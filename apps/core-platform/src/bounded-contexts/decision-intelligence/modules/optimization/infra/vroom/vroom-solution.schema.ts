@@ -5,7 +5,7 @@ import {
   type IdentifiedSchema,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../shared/infra/validation/schema-id.js";
 
 const nonNegativeNumber = { type: "number", minimum: 0 } as const;
 const nonNegativeInteger = { type: "integer", minimum: 0 } as const;

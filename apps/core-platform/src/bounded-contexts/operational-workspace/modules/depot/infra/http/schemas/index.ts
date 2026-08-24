@@ -1,15 +1,15 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
 import {
   addressSchema,
   geoCoordinateSchema,
-} from "../../../../../../../shared/infra/validation/value-objects/location";
-import { createDepotRequestSchema } from "./create-depot.schema";
-import { depotRouteParamsSchema } from "./shared-depots.schema";
-import { updateDepotDetailsRequestSchema } from "./update-depot-details.schema";
-import { updateDepotDriverCapacityRequestSchema } from "./update-driver-capacity.schema";
-import { updateDepotVehicleCapacityRequestSchema } from "./update-vehicle-capacity.schema";
+} from "../../../../../../../shared/infra/validation/value-objects/location/index.js";
+import { createDepotRequestSchema } from "./create-depot.schema.js";
+import { depotRouteParamsSchema } from "./shared-depots.schema.js";
+import { updateDepotDetailsRequestSchema } from "./update-depot-details.schema.js";
+import { updateDepotDriverCapacityRequestSchema } from "./update-driver-capacity.schema.js";
+import { updateDepotVehicleCapacityRequestSchema } from "./update-vehicle-capacity.schema.js";
 
 export {
   createDepotRequestSchema,

@@ -14,9 +14,9 @@ import {
   type OnApplicationShutdown,
 } from "@nestjs/common";
 
-import { APP_CONFIG, type ApiAppConfig } from "../config/app-config";
-import { toGrpcStatus } from "./grpc-error-mapper";
-import { GrpcServiceRegistry } from "./grpc-service-registry";
+import { APP_CONFIG, type ApiAppConfig } from "../config/app-config.js";
+import { toGrpcStatus } from "./grpc-error-mapper.js";
+import { GrpcServiceRegistry } from "./grpc-service-registry.js";
 
 @Injectable()
 export class GrpcServer

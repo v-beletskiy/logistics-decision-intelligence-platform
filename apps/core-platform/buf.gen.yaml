@@ -4,4 +4,5 @@ plugins:
     out: src/shared/infra/grpc/generated
     opt:
       - env=node
+      - importSuffix=.js
       - outputServices=grpc-js

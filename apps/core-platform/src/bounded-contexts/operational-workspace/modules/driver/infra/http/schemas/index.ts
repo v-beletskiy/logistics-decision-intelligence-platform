@@ -1,15 +1,15 @@
 import { SchemaRegistry } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe";
-import { changeDriverAvailabilityRequestSchema } from "./change-driver-availability.schema";
-import { registerDriverRequestSchema } from "./register-driver.schema";
-import { searchDriversRequestSchema } from "./search-drivers.schema";
+import { JsonSchemaPipe } from "../../../../../../../shared/infra/http/json-schema.pipe.js";
+import { changeDriverAvailabilityRequestSchema } from "./change-driver-availability.schema.js";
+import { registerDriverRequestSchema } from "./register-driver.schema.js";
+import { searchDriversRequestSchema } from "./search-drivers.schema.js";
 import {
   driverCertificationRequestSchema,
   driverCertificationRouteParamsSchema,
   driverRouteParamsSchema,
-} from "./shared-drivers.schema";
-import { updateDriverRequestSchema } from "./update-driver-details.schema";
+} from "./shared-drivers.schema.js";
+import { updateDriverRequestSchema } from "./update-driver-details.schema.js";
 
 export {
   changeDriverAvailabilityRequestSchema,

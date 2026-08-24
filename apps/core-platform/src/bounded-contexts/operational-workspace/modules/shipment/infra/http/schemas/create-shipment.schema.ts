@@ -3,11 +3,11 @@ import {
   JSON_SCHEMA_DRAFT_07,
 } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id";
+import { corePlatformSchemaId } from "../../../../../../../shared/infra/validation/schema-id.js";
 import {
   shipmentDetailsRequestFields,
   shipmentDetailsRequestRequiredFields,
-} from "./shared-shipments.schema";
+} from "./shared-shipments.schema.js";
 
 export const createShipmentRequestSchema = {
   $schema: JSON_SCHEMA_DRAFT_07,

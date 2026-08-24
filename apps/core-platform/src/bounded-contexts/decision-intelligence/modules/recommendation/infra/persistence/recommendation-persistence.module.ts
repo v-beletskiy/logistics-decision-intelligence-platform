@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
-import { RecommendationRepository } from "../../domain/recommendation.repository";
-import { PgRecommendationRepository } from "./repository/pg-recommendation.repository";
+import { RecommendationRepository } from "../../domain/recommendation.repository.js";
+import { PgRecommendationRepository } from "./repository/pg-recommendation.repository.js";
 
 @Module({
   providers: [

@@ -1,32 +1,32 @@
 import { Injectable } from "@nestjs/common";
 
-import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions";
-import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database";
-import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error";
+import { ConcurrencyConflictException } from "../../../../../../../shared/app/app.exceptions.js";
+import { PgDatabase } from "../../../../../../../shared/infra/persistence/pg-database.js";
+import { PG_SQLSTATE } from "../../../../../../../shared/infra/persistence/pg-error.js";
 import {
   execAndTranslatePgConstraintViolations,
   execRevisionedPgUpdate,
   type PgConstraintViolationTranslation,
-} from "../../../../../../../shared/infra/persistence/pg-repository-write";
-import { Assignment } from "../../../domain/assignment.aggregate";
-import { AssignmentId } from "../../../domain/assignment-id";
+} from "../../../../../../../shared/infra/persistence/pg-repository-write.js";
+import { Assignment } from "../../../domain/assignment.aggregate.js";
+import { AssignmentId } from "../../../domain/assignment-id.js";
 import {
   AssignmentRepository,
   type LoadedAssignment,
-} from "../../../domain/assignment.repository";
-import { DriverId } from "../../../../driver/domain/driver-id";
-import { RouteId } from "../../../../route/domain/route-id";
-import { VehicleId } from "../../../../vehicle/domain/vehicle-id";
-import { AssignmentMapper } from "./mappers/assignment.mapper";
-import { existsActiveAssignmentForDriver } from "./queries/assignment.exists-active-for-driver.queries";
-import { existsActiveAssignmentForRoute } from "./queries/assignment.exists-active-for-route.queries";
-import { existsActiveAssignmentForVehicle } from "./queries/assignment.exists-active-for-vehicle.queries";
-import { existsRunningAssignmentForRoute } from "./queries/assignment.exists-running-for-route.queries";
-import { findAssignmentById } from "./queries/assignment.find-by-id.queries";
-import { findAssignmentsByIds } from "./queries/assignment.find-by-ids.queries";
-import { insertAssignment } from "./queries/assignment.insert.queries";
-import { reconcileAssignmentShipments } from "./queries/assignment.reconcile-shipments.queries";
-import { updateAssignment } from "./queries/assignment.update.queries";
+} from "../../../domain/assignment.repository.js";
+import { DriverId } from "../../../../driver/domain/driver-id.js";
+import { RouteId } from "../../../../route/domain/route-id.js";
+import { VehicleId } from "../../../../vehicle/domain/vehicle-id.js";
+import { AssignmentMapper } from "./mappers/assignment.mapper.js";
+import { existsActiveAssignmentForDriver } from "./queries/assignment.exists-active-for-driver.queries.js";
+import { existsActiveAssignmentForRoute } from "./queries/assignment.exists-active-for-route.queries.js";
+import { existsActiveAssignmentForVehicle } from "./queries/assignment.exists-active-for-vehicle.queries.js";
+import { existsRunningAssignmentForRoute } from "./queries/assignment.exists-running-for-route.queries.js";
+import { findAssignmentById } from "./queries/assignment.find-by-id.queries.js";
+import { findAssignmentsByIds } from "./queries/assignment.find-by-ids.queries.js";
+import { insertAssignment } from "./queries/assignment.insert.queries.js";
+import { reconcileAssignmentShipments } from "./queries/assignment.reconcile-shipments.queries.js";
+import { updateAssignment } from "./queries/assignment.update.queries.js";
 
 const ACTIVE_ASSIGNMENT_UNIQUE_CONSTRAINTS = [
   "assignments_tenant_active_vehicle_unique",

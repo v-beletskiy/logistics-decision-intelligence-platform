@@ -1,5 +1,5 @@
-import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes";
-import { DomainException } from "../../../domain.exceptions";
+import { SHARED_DOMAIN_ERROR_CODES } from "../../../domain-error-codes.js";
+import { DomainException } from "../../../domain.exceptions.js";
 
 /** Returns a trimmed optional string, treating blank text as absent. */
 export function optionalTrimmedString(

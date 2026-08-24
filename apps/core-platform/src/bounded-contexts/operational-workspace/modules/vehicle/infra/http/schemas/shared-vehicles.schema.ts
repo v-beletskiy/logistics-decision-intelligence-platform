@@ -1,11 +1,11 @@
 import type { Draft07Schema } from "@logistics-decision-intelligence/validation/json-schema";
 
-import { CompartmentType } from "../../../domain/compartment.entity";
+import { CompartmentType } from "../../../domain/compartment.entity.js";
 import {
   DimensionUnit,
   VolumeUnit,
   WeightUnit,
-} from "../../../../../../../shared/domain/value-objects/measurement";
+} from "../../../../../../../shared/domain/value-objects/measurement/index.js";
 
 export const vehicleDetailsRequestFields = {
   registrationNumber: { type: "string", minLength: 1, maxLength: 50 },

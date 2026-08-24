@@ -6,9 +6,9 @@ import {
 } from "@nestjs/common";
 import type { ConfirmChannel, ConsumeMessage } from "amqplib";
 
-import { APP_CONFIG, type AppConfig } from "../../../config/app-config";
-import { inboxConsumerId, type InboxConsumerId } from "./inbox/inbox-message";
-import { InboxProcessor } from "./inbox/inbox-processor";
+import { APP_CONFIG, type AppConfig } from "../../../config/app-config.js";
+import { inboxConsumerId, type InboxConsumerId } from "./inbox/inbox-message.js";
+import { InboxProcessor } from "./inbox/inbox-processor.js";
 import type {
   CloudEvent,
   IntegrationEventsOf,
@@ -18,16 +18,16 @@ import {
   InvalidIntegrationEventException,
   IntegrationEventValidator,
   type IntegrationEventContract,
-} from "./integration-event-validator";
-import { NonRetryableMessageException } from "../errors";
-import { RabbitMqConnection } from "../rabbitmq/connection";
-import { IntegrationTopology } from "../rabbitmq/topology";
-import { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner";
+} from "./integration-event-validator.js";
+import { NonRetryableMessageException } from "../errors.js";
+import { RabbitMqConnection } from "../rabbitmq/connection.js";
+import { IntegrationTopology } from "../rabbitmq/topology.js";
+import { RabbitMqTopologyProvisioner } from "../rabbitmq/topology-provisioner.js";
 import {
   rabbitMqQueueName,
   type IntegrationSubscription,
   type RabbitMqQueueName,
-} from "./integration-subscription";
+} from "./integration-subscription.js";
 
 export interface RabbitMqSubscription<
   TContracts extends readonly IntegrationEventContract[] =

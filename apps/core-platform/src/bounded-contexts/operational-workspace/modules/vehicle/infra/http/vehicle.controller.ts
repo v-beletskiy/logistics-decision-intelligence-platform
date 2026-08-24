@@ -9,26 +9,26 @@ import {
   Put,
 } from "@nestjs/common";
 
-import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator";
-import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { AddVehicleCompartmentCommand } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.command";
-import { AddVehicleCompartmentHandler } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.handler";
-import { ChangeVehicleAvailabilityCommand } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.command";
-import { ChangeVehicleAvailabilityHandler } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.handler";
-import { DecommissionVehicleCommand } from "../../app/commands/decommission-vehicle/decommission-vehicle.command";
-import { DecommissionVehicleHandler } from "../../app/commands/decommission-vehicle/decommission-vehicle.handler";
-import { RegisterVehicleCommand } from "../../app/commands/register-vehicle/register-vehicle.command";
-import { RegisterVehicleHandler } from "../../app/commands/register-vehicle/register-vehicle.handler";
-import { RemoveVehicleCompartmentCommand } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.command";
-import { RemoveVehicleCompartmentHandler } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.handler";
-import { ReturnVehicleFromMaintenanceCommand } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.command";
-import { ReturnVehicleFromMaintenanceHandler } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.handler";
-import { SendVehicleToMaintenanceCommand } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.command";
-import { SendVehicleToMaintenanceHandler } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.handler";
-import { UpdateVehicleCompartmentCommand } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.command";
-import { UpdateVehicleCompartmentHandler } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.handler";
-import { UpdateVehicleDetailsCommand } from "../../app/commands/update-vehicle-details/update-vehicle-details.command";
-import { UpdateVehicleDetailsHandler } from "../../app/commands/update-vehicle-details/update-vehicle-details.handler";
+import { CurrentUseCaseContext } from "../../../../../../shared/modules/access-control/infra/authentication/current-use-case-context.decorator.js";
+import type { UseCaseContext } from "../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { AddVehicleCompartmentCommand } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.command.js";
+import { AddVehicleCompartmentHandler } from "../../app/commands/add-vehicle-compartment/add-vehicle-compartment.handler.js";
+import { ChangeVehicleAvailabilityCommand } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.command.js";
+import { ChangeVehicleAvailabilityHandler } from "../../app/commands/change-vehicle-availability/change-vehicle-availability.handler.js";
+import { DecommissionVehicleCommand } from "../../app/commands/decommission-vehicle/decommission-vehicle.command.js";
+import { DecommissionVehicleHandler } from "../../app/commands/decommission-vehicle/decommission-vehicle.handler.js";
+import { RegisterVehicleCommand } from "../../app/commands/register-vehicle/register-vehicle.command.js";
+import { RegisterVehicleHandler } from "../../app/commands/register-vehicle/register-vehicle.handler.js";
+import { RemoveVehicleCompartmentCommand } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.command.js";
+import { RemoveVehicleCompartmentHandler } from "../../app/commands/remove-vehicle-compartment/remove-vehicle-compartment.handler.js";
+import { ReturnVehicleFromMaintenanceCommand } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.command.js";
+import { ReturnVehicleFromMaintenanceHandler } from "../../app/commands/return-vehicle-from-maintenance/return-vehicle-from-maintenance.handler.js";
+import { SendVehicleToMaintenanceCommand } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.command.js";
+import { SendVehicleToMaintenanceHandler } from "../../app/commands/send-vehicle-to-maintenance/send-vehicle-to-maintenance.handler.js";
+import { UpdateVehicleCompartmentCommand } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.command.js";
+import { UpdateVehicleCompartmentHandler } from "../../app/commands/update-vehicle-compartment/update-vehicle-compartment.handler.js";
+import { UpdateVehicleDetailsCommand } from "../../app/commands/update-vehicle-details/update-vehicle-details.command.js";
+import { UpdateVehicleDetailsHandler } from "../../app/commands/update-vehicle-details/update-vehicle-details.handler.js";
 import type {
   AddVehicleCompartmentRequest,
   ChangeVehicleAvailabilityRequest,
@@ -38,8 +38,8 @@ import type {
   UpdateVehicleDetailsRequest,
   VehicleCompartmentRouteParams,
   VehicleRouteParams,
-} from "./vehicle.http-contracts";
-import { VehicleHttpMapper } from "./vehicle.http-mapper";
+} from "./vehicle.http-contracts.js";
+import { VehicleHttpMapper } from "./vehicle.http-mapper.js";
 import {
   addVehicleCompartmentRequestPipe,
   changeVehicleAvailabilityRequestPipe,
@@ -48,7 +48,7 @@ import {
   updateVehicleDetailsRequestPipe,
   vehicleCompartmentRouteParamsPipe,
   vehicleRouteParamsPipe,
-} from "./schemas";
+} from "./schemas/index.js";
 
 @Controller({ path: "vehicles", version: "1" })
 export class VehicleController {

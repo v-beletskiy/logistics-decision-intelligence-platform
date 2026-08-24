@@ -1,25 +1,25 @@
 import { Injectable } from "@nestjs/common";
-import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator";
-import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum";
-import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context";
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
-import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler";
-import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus";
-import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager";
-import { Assignment } from "../../../domain/assignment.aggregate";
-import { AssignmentRepository } from "../../../domain/assignment.repository";
-import { AssignmentShipment } from "../../../domain/assignment-shipment.entity";
-import { DriverId } from "../../../../driver/domain/driver-id";
-import { DriverRepository } from "../../../../driver/domain/driver.repository";
-import { RouteId } from "../../../../route/domain/route-id";
-import { RouteRepository } from "../../../../route/domain/route.repository";
-import { RouteStopRepository } from "../../../../route/domain/route-stop.repository";
-import { ShipmentId } from "../../../../shipment/domain/shipment-id";
-import { ShipmentRepository } from "../../../../shipment/domain/shipment.repository";
-import { VehicleId } from "../../../../vehicle/domain/vehicle-id";
-import { VehicleRepository } from "../../../../vehicle/domain/vehicle.repository";
-import { AssignmentPlanningPolicy } from "../../../../../domain/assignment-planning.policy";
-import { CreateAssignmentCommand } from "./create-assignment.command";
+import { Authorized } from "../../../../../../../shared/modules/access-control/app/authorization/authorized.decorator.js";
+import { Permission } from "../../../../../../../shared/modules/access-control/app/permissions/permission.enum.js";
+import type { UseCaseRequest } from "../../../../../../../shared/modules/access-control/app/execution/use-case-context.js";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
+import { CommandHandler } from "../../../../../../../shared/app/handlers/command-handler.js";
+import { DomainEventBus } from "../../../../../../../shared/app/messaging/domain-event-bus.js";
+import { TrxManager } from "../../../../../../../shared/app/trx/trx-manager.js";
+import { Assignment } from "../../../domain/assignment.aggregate.js";
+import { AssignmentRepository } from "../../../domain/assignment.repository.js";
+import { AssignmentShipment } from "../../../domain/assignment-shipment.entity.js";
+import { DriverId } from "../../../../driver/domain/driver-id.js";
+import { DriverRepository } from "../../../../driver/domain/driver.repository.js";
+import { RouteId } from "../../../../route/domain/route-id.js";
+import { RouteRepository } from "../../../../route/domain/route.repository.js";
+import { RouteStopRepository } from "../../../../route/domain/route-stop.repository.js";
+import { ShipmentId } from "../../../../shipment/domain/shipment-id.js";
+import { ShipmentRepository } from "../../../../shipment/domain/shipment.repository.js";
+import { VehicleId } from "../../../../vehicle/domain/vehicle-id.js";
+import { VehicleRepository } from "../../../../vehicle/domain/vehicle.repository.js";
+import { AssignmentPlanningPolicy } from "../../../../../domain/assignment-planning.policy.js";
+import { CreateAssignmentCommand } from "./create-assignment.command.js";
 
 @Injectable()
 export class CreateAssignmentHandler extends CommandHandler {

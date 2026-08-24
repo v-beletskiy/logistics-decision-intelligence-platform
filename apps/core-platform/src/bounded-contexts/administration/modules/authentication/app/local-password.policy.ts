@@ -1,4 +1,4 @@
-import { ApplicationInputException } from "../../../../../shared/app/app.exceptions";
+import { ApplicationInputException } from "../../../../../shared/app/app.exceptions.js";
 
 export const MIN_LOCAL_PASSWORD_LENGTH = 12;
 export const MAX_LOCAL_PASSWORD_LENGTH = 128;

@@ -10,7 +10,7 @@ import {
   VolumeUnit,
   Weight,
   WeightUnit,
-} from ".";
+} from "./index.js";
 
 test("Weight validates its value and unit and compares by value", () => {
   const weight = Weight.create({ value: 0, unit: WeightUnit.Kilogram });

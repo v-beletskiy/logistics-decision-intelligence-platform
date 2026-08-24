@@ -1,15 +1,15 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { AddressProps } from "../../../../../shared/domain/value-objects/location/address";
-import type { GeoCoordinateProps } from "../../../../../shared/domain/value-objects/location/geo-coordinate";
+import type { AddressProps } from "../../../../../shared/domain/value-objects/location/address.js";
+import type { GeoCoordinateProps } from "../../../../../shared/domain/value-objects/location/geo-coordinate.js";
 
-import { Depot, DepotStatus } from "./depot.aggregate";
+import { Depot, DepotStatus } from "./depot.aggregate.js";
 import {
   DepotDriverCapacityExceededException,
   DepotVehicleCapacityExceededException,
-} from "./depot.exceptions";
-import { DepotId } from "./depot-id";
+} from "./depot.exceptions.js";
+import { DepotId } from "./depot-id.js";
 
 const address: AddressProps = {
   country: "UA",

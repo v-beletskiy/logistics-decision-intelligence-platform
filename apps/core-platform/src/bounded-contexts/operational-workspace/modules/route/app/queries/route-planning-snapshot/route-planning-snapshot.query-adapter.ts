@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 
-import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions";
+import { AggregateNotFoundException } from "../../../../../../../shared/app/app.exceptions.js";
 import {
   RoutePlanningSnapshotQuery,
   type RoutePlanningSnapshot,
   type RoutePlanningStopSnapshot,
-} from "../../../../../public-api/queries/route-planning-snapshot.query";
-import { GetRouteAnalysisContextHandler } from "../get-route-analysis-context/get-route-analysis-context.handler";
-import { GetRouteAnalysisContextQuery } from "../get-route-analysis-context/get-route-analysis-context.query";
-import type { RouteAnalysisStopResult } from "../get-route-analysis-context/get-route-analysis-context.result";
+} from "../../../../../public-api/queries/route-planning-snapshot.query.js";
+import { GetRouteAnalysisContextHandler } from "../get-route-analysis-context/get-route-analysis-context.handler.js";
+import { GetRouteAnalysisContextQuery } from "../get-route-analysis-context/get-route-analysis-context.query.js";
+import type { RouteAnalysisStopResult } from "../get-route-analysis-context/get-route-analysis-context.result.js";
 
 /** Maps the Route read model to Operational Workspace's published snapshot. */
 @Injectable()

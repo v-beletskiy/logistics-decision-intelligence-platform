@@ -6,7 +6,7 @@ import * as grpc from "@grpc/grpc-js";
 import {
   GrpcClientFactory,
   type GrpcClientConnection,
-} from "./grpc-client.factory";
+} from "./grpc-client.factory.js";
 
 class TestGrpcClient {
   constructor(

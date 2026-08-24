@@ -1,25 +1,25 @@
-import { RouteReference } from "../../../../../../domain/route-reference";
-import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration";
-import { MeasurementUnit } from "../../../../../../domain/measurement-unit.enum";
-import { RecommendationMetric } from "../../../../../../domain/recommendation-metric.enum";
-import { RecommendationType } from "../../../../../../domain/recommendation-type.enum";
-import { RecommendationFact } from "../../../../../../domain/recommendation-fact.entity";
-import { RecommendationFactId } from "../../../../../../domain/recommendation-fact-id";
-import { OptimizationId } from "../../../../../optimization/domain/optimization-id";
-import { Finding } from "../../../../domain/finding.entity";
-import { FindingId } from "../../../../domain/finding-id";
-import { Recommendation } from "../../../../domain/recommendation.aggregate";
-import { RecommendationAnalysis } from "../../../../domain/recommendation-analysis.value-object";
+import { RouteReference } from "../../../../../../domain/route-reference.js";
+import { hydratePersistenceData } from "../../../../../../../../shared/infra/persistence/persistence-hydration.js";
+import { MeasurementUnit } from "../../../../../../domain/measurement-unit.enum.js";
+import { RecommendationMetric } from "../../../../../../domain/recommendation-metric.enum.js";
+import { RecommendationType } from "../../../../../../domain/recommendation-type.enum.js";
+import { RecommendationFact } from "../../../../../../domain/recommendation-fact.entity.js";
+import { RecommendationFactId } from "../../../../../../domain/recommendation-fact-id.js";
+import { OptimizationId } from "../../../../../optimization/domain/optimization-id.js";
+import { Finding } from "../../../../domain/finding.entity.js";
+import { FindingId } from "../../../../domain/finding-id.js";
+import { Recommendation } from "../../../../domain/recommendation.aggregate.js";
+import { RecommendationAnalysis } from "../../../../domain/recommendation-analysis.value-object.js";
 import {
   FindingCategory,
   RecommendationStatus,
-} from "../../../../domain/recommendation.enums";
-import { RecommendationId } from "../../../../domain/recommendation-id";
-import type { IFindRecommendationByIdResult } from "../queries/recommendation.find-by-id.queries";
-import type { IReconcileRecommendationFactsParams } from "../queries/recommendation.reconcile-facts.queries";
-import type { IReconcileRecommendationFindingsParams } from "../queries/recommendation.reconcile-findings.queries";
-import type { IAddRecommendationParams } from "../queries/recommendation.add.queries";
-import type { IAddRecommendationsParams } from "../queries/recommendation.add-many.queries";
+} from "../../../../domain/recommendation.enums.js";
+import { RecommendationId } from "../../../../domain/recommendation-id.js";
+import type { IFindRecommendationByIdResult } from "../queries/recommendation.find-by-id.queries.js";
+import type { IReconcileRecommendationFactsParams } from "../queries/recommendation.reconcile-facts.queries.js";
+import type { IReconcileRecommendationFindingsParams } from "../queries/recommendation.reconcile-findings.queries.js";
+import type { IAddRecommendationParams } from "../queries/recommendation.add.queries.js";
+import type { IAddRecommendationsParams } from "../queries/recommendation.add-many.queries.js";
 
 interface RecommendationFactPersistenceData {
   readonly id: string;

@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Role } from "../../../../../shared/modules/access-control/domain/role";
+import { Role } from "../../../../../shared/modules/access-control/domain/role.js";
 
-import { UserAccount } from "./user-account";
+import { UserAccount } from "./user-account.js";
 
 const props = {
   id: "00000000-0000-4000-8000-000000000001",

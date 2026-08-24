@@ -1,5 +1,5 @@
-import type { ShipmentDetails } from "../../domain/shipment.aggregate";
-import type { ShipmentDetailsInput } from "../models/shipment-details.input";
+import type { ShipmentDetails } from "../../domain/shipment.aggregate.js";
+import type { ShipmentDetailsInput } from "../models/shipment-details.input.js";
 
 export class ShipmentInputMapper {
   static toDetails(input: ShipmentDetailsInput): ShipmentDetails {

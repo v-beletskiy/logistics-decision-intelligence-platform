@@ -1,5 +1,5 @@
-import { DomainException } from "../../../../../shared/domain/domain.exceptions";
-import { DEPOT_ERROR_CODES } from "./depot-error-codes";
+import { DomainException } from "../../../../../shared/domain/domain.exceptions.js";
+import { DEPOT_ERROR_CODES } from "./depot-error-codes.js";
 
 export class DepotVehicleCapacityExceededException extends DomainException {
   constructor(vehicleCount: number, vehicleCapacity: number) {

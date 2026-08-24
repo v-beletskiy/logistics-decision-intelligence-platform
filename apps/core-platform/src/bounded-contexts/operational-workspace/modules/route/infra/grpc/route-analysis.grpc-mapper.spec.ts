@@ -1,9 +1,9 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import type { RouteAnalysisContext } from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_types";
-import type { RouteAnalysisContextResult } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.result";
-import { RouteAnalysisGrpcMapper } from "./route-analysis.grpc-mapper";
+import type { RouteAnalysisContext } from "../../../../../../shared/infra/grpc/generated/operational_workspace/v1/route_analysis_types.js";
+import type { RouteAnalysisContextResult } from "../../app/queries/get-route-analysis-context/get-route-analysis-context.result.js";
+import { RouteAnalysisGrpcMapper } from "./route-analysis.grpc-mapper.js";
 
 test("RouteAnalysisGrpcMapper maps a loaded route context", () => {
   const context: RouteAnalysisContextResult = {

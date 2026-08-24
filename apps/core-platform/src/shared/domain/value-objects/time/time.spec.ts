@@ -1,7 +1,7 @@
 import * as assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { Duration, DurationUnit, Schedule, TimeWindow } from ".";
+import { Duration, DurationUnit, Schedule, TimeWindow } from "./index.js";
 
 test("Duration validates its value and unit", () => {
   const duration = Duration.create({ value: 30, unit: DurationUnit.Minute });
